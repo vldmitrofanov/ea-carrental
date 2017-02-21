@@ -1,7 +1,7 @@
 <header class="main-header">
     <!-- Logo -->
     <a href="{{ url('admin/dashboard') }}" class="logo">
-        <span class="logo-mini"><b>CRIC</b></span>
+        <span class="logo-mini"><b>EA</b></span>
         <span class="logo-lg"><b>Administration</b></span>
     </a>
     <nav class="navbar navbar-static-top">
