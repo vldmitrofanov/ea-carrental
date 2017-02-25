@@ -16,6 +16,9 @@ class RoleTableSeeder extends Seeder
         $users = [
             [
                 'name' => 'admin'
+            ],
+            [
+                'name' => 'editor'
             ]
         ];
 

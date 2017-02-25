@@ -57,6 +57,19 @@
                 </ul>
             </li>
 
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-users"></i> <span>Users Management</span>
+                    <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{{ url('admin/users') }}"><i class="fa fa-list"></i> List</a></li>
+                    <li><a href="{{ url('admin/users/create') }}"><i class="fa fa-plus-square"></i> Add New</a></li>
+                </ul>
+            </li>
+
 
             
         </ul>

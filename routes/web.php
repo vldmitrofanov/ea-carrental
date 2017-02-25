@@ -50,6 +50,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::patch('update/{id}', 'Admin\RentalCarsController@update');
     });
 
+    Route::group(['prefix' => 'users'], function(){
+        Route::get('/', 'Admin\UsersController@index');
+        Route::get('/create', 'Admin\UsersController@create');
+        Route::post('store', 'Admin\UsersController@store');
+        Route::get('{id}/edit', 'Admin\UsersController@edit');
+        Route::patch('update/{id}', 'Admin\UsersController@update');
+        Route::get('{id}/delete', 'Admin\UsersController@destroy');
+    });
+
 });
 
 Route::get('/', function () {
