@@ -42,6 +42,14 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::patch('update/{id}', 'Admin\CarExtrasController@update');
     });
 
+    Route::group(['prefix' => 'cars'], function(){
+        Route::get('/', 'Admin\RentalCarsController@index');
+        Route::get('/create', 'Admin\RentalCarsController@create');
+        Route::post('store', 'Admin\RentalCarsController@store');
+        Route::get('{id}/edit', 'Admin\RentalCarsController@edit');
+        Route::patch('update/{id}', 'Admin\RentalCarsController@update');
+    });
+
 });
 
 Route::get('/', function () {
