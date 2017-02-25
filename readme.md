@@ -29,3 +29,18 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
+
+
+## Storage 	
+ 
+ According to Laravel 5.2 docs, your publicly accessible files should be put in directory
+ 
+ storage/app/public
+ 
+ To make them accessible from the web, you should create a symbolic link from public/storage to storage/app/public.
+ 
+ ln -s /path/to/laravel/storage/app/public /path/to/laravel/public/storage
+ 
+ Now you can create in your view an URL to the files using the asset helper:
+ 
+ echo asset('storage/file.txt');

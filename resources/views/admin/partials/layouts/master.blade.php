@@ -15,6 +15,9 @@
         <link rel="stylesheet" href="{{ asset('administration/plugins/iCheck/flat/blue.css') }}">
         <link rel="stylesheet" href="{{ asset('administration/plugins/jvectormap/jquery-jvectormap-1.2.2.css') }}">
         <link rel="stylesheet" href="{{ asset('administration/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('administration/plugins/tooltip/protip.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('administration/plugins/datepicker/datepicker3.css') }}">
+        <link rel="stylesheet" href="{{ asset('administration/plugins/timepicker/bootstrap-timepicker.min.css') }}">
 
         @yield('stylesheet')
         <link rel="stylesheet" href="{{ asset('administration/dist/css/AdminLTE.min.css') }}">
@@ -51,6 +54,9 @@
     <script src="{{ asset('administration/plugins/fastclick/fastclick.min.js') }}"></script>
     <script src="{{ asset('administration/plugins/slimScroll/jquery.slimscroll.min.js') }}"></script>
     <script src="{{ asset('administration/plugins/jQueryBlock/jquery.blockUI.js') }}"></script>
+    <script src="{{ asset('administration/plugins/tooltip/protip.min.js') }}"></script>
+    <script src="{{ asset('administration/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('administration/plugins/timepicker/bootstrap-timepicker.min.js') }}"></script>
     <script src="{{ asset('administration/dist/js/app.min.js') }}"></script>
     @yield('javascript')
 

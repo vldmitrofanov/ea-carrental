@@ -10,3 +10,4 @@ Homestead.yaml
 /nbproject/private/
 composer.lock
 /nbproject/
+/public/uploads/car_types/*

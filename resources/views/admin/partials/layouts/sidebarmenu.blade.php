@@ -9,14 +9,6 @@
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
         </div>
-        <?php /*<form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Search...">
-                <span class="input-group-btn">
-                    <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-                </span>
-            </div>
-        </form>*/ ?>
         <ul class="sidebar-menu">
             <li class="header">MAIN NAVIGATION</li>
             <li data-breadcrumb="{{ url('admin/dashboard') }}" class="treeview">
@@ -24,6 +16,32 @@
                 <i class="fa fa-dashboard"></i>
                 <span>Dashboard</span>
               </a>
+            </li>
+
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-bank"></i> <span>Office Locations</span>
+                    <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{{ url('admin/locations') }}"><i class="fa fa-list"></i> List</a></li>
+                    <li><a href="{{ url('admin/locations/create') }}"><i class="fa fa-plus-square"></i> Add New</a></li>
+                </ul>
+            </li>
+
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-book"></i> <span>Types and Rates</span>
+                    <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{{ url('admin/types') }}"><i class="fa fa-book"></i> Types</a></li>
+                    <li><a href="{{ url('admin/extras') }}"><i class="fa fa-book"></i> Extras</a></li>
+                </ul>
             </li>
 
 
