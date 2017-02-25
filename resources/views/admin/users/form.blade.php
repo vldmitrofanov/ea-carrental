@@ -13,7 +13,7 @@
     </div>
     <div class="form-group">
         {!! Form::label('password', 'Password') !!}
-        {!! Form::password('password', ['class' => 'form-control', 'id' => 'password', 'placeholder' => 'Password']) !!}
+        {!! Form::password('password', ['class' => 'form-control', 'autocomplete' => 'off', 'id' => 'password', 'placeholder' => 'Password']) !!}
     </div>
     <div class="form-group">
         {!! Form::label('phone', 'Phone') !!}

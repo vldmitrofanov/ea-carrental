@@ -16,7 +16,7 @@
                 <div class="col-md-12">
                     <div class="box box-primary">
                         @include('admin.partials.errors.errors')
-                        {!! Form::model($oUser, array('url' =>array('admin/users/update', $oUser->id), 'id' => 'user_form', 'method' => 'PATCH', 'enctype'=>'multipart/form-data')) !!}
+                        {!! Form::model($oUser, array('url' =>array('admin/users/update', $oUser->id), 'id' => 'user_form', 'autocomplete' => "off", 'method' => 'PATCH', 'enctype'=>'multipart/form-data')) !!}
                         {{ Form::hidden('user',$oUser->id ) }}
                         @include('admin.users.form', ['submit_button'=>'Create'])
                     </div>
