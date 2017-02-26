@@ -19,6 +19,9 @@ class RoleTableSeeder extends Seeder
             ],
             [
                 'name' => 'editor'
+            ],
+            [
+                'name' => 'customer'
             ]
         ];
 

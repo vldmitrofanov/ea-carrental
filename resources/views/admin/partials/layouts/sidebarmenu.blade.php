@@ -18,6 +18,13 @@
               </a>
             </li>
 
+            <li data-breadcrumb="{{ url('admin/settings') }}" class="treeview">
+              <a href="{{ url('admin/settings') }}">
+                <i class="fa fa-cogs"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+
             <li class="treeview">
                 <a href="#">
                     <i class="fa fa-bank"></i> <span>Office Locations</span>
@@ -54,6 +61,19 @@
                 <ul class="treeview-menu">
                     <li><a href="{{ url('admin/cars') }}"><i class="fa fa-list"></i> List</a></li>
                     <li><a href="{{ url('admin/cars/create') }}"><i class="fa fa-plus-square"></i> Add New</a></li>
+                </ul>
+            </li>
+
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-file-text"></i> <span>Reservations</span>
+                    <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{{ url('admin/reservations') }}"><i class="fa fa-list"></i> List</a></li>
+                    <li><a href="{{ url('admin/reservations/create') }}"><i class="fa fa-plus-square"></i> Add New</a></li>
                 </ul>
             </li>
 

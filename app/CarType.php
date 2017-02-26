@@ -26,4 +26,10 @@ class CarType extends Model
         return $this->belongsToMany('App\CarExtra', 'car_type_extras',
             'car_type_id', 'car_extras_id');
     }
+
+    public function cars()
+    {
+        return $this->belongsToMany('App\RentalCar', 'rental_car_types',
+            'car_type_id','car_id');
+    }
 }

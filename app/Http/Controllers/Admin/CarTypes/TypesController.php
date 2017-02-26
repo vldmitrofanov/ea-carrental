@@ -92,6 +92,7 @@ class TypesController extends Controller
     public function edit($id)
     {
         $oCarType = CarType::where('id', $id)->firstOrFail();
+//        print_r($oCarType->cars()->get()->toArray());exit;
         $oExtras = CarExtra::orderBy('name')->pluck('name','id')->toArray();
         return view('admin.car_types.types.edit', compact('oCarType', 'oExtras'));
     }

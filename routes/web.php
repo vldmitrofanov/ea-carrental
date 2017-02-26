@@ -59,6 +59,29 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::get('{id}/delete', 'Admin\UsersController@destroy');
     });
 
+
+    Route::group(['prefix' => 'reservations'], function(){
+        Route::get('/', 'Admin\ReservationsController@index');
+        Route::get('/create', 'Admin\ReservationsController@create');
+        Route::post('store', 'Admin\ReservationsController@store');
+        Route::get('{id}/edit', 'Admin\ReservationsController@edit');
+        Route::patch('update/{id}', 'Admin\ReservationsController@update');
+        Route::post('load_car_prices', 'Admin\ReservationsController@loadCarPrices');
+    });
+
+    Route::group(['prefix' => 'settings'], function(){
+        Route::get('/', 'Admin\SettingsController@index');
+        Route::get('/create', 'Admin\SettingsController@create');
+        Route::post('store', 'Admin\SettingsController@store');
+        Route::get('{id}/edit', 'Admin\SettingsController@edit');
+        Route::patch('update/{id}', 'Admin\SettingsController@update');
+    });
+
+});
+
+Route::get('api/load_car_list', function(){
+    $models = \App\CarType::where('id',Request::get('car_type_id'))->first()->cars()->get();
+    return $models;
 });
 
 Route::get('/', function () {

@@ -18,6 +18,7 @@
         <link rel="stylesheet" href="{{ asset('administration/plugins/tooltip/protip.min.css') }}">
         <link rel="stylesheet" href="{{ asset('administration/plugins/datepicker/datepicker3.css') }}">
         <link rel="stylesheet" href="{{ asset('administration/plugins/timepicker/bootstrap-timepicker.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('administration/plugins/datetimepicker/jquery.datetimepicker.css') }}">
 
         @yield('stylesheet')
         <link rel="stylesheet" href="{{ asset('administration/dist/css/AdminLTE.min.css') }}">
@@ -57,6 +58,7 @@
     <script src="{{ asset('administration/plugins/tooltip/protip.min.js') }}"></script>
     <script src="{{ asset('administration/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('administration/plugins/timepicker/bootstrap-timepicker.min.js') }}"></script>
+    <script src="{{ asset('administration/plugins/datetimepicker/jquery.datetimepicker.full.min.js') }}"></script>
     <script src="{{ asset('administration/dist/js/app.min.js') }}"></script>
     @yield('javascript')
 
