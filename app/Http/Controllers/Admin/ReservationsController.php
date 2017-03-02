@@ -13,6 +13,14 @@ use App\Setting;
 
 class ReservationsController extends Controller
 {
+    protected $option_arr = array();
+    public function __construct()
+    {
+        $oSettings = Setting::get();
+        foreach ($oSettings as $oSetting){
+            $this->option_arr[$oSetting->key] = $oSetting->value;
+        }
+    }
     /**
      * Display a listing of the resource.
      *
@@ -141,14 +149,13 @@ class ReservationsController extends Controller
     public function getRealRentalDays($datetime_from, $datetime_to)
     {
         $o_new_day_per_day =0 ;
-        $oSetting = Setting::where('key', 'calculate_rental_fee')->first();
 
         $seconds = abs(strtotime($datetime_from) - strtotime($datetime_to));
         $rental_days = floor($seconds / 86400);
         $rental_hours = ceil($seconds / 3600);
         $extra_hours = intval($rental_hours - ($rental_days * 24));
 
-        if ($oSetting->value == 'perday')
+        if ($this->option_arr['calculate_rental_fee'] == 'perday')
         {
             if ($extra_hours > 0)
             {
@@ -167,10 +174,10 @@ class ReservationsController extends Controller
     }
 
 
-    public static function getPrices($datetime_from, $datetime_to, $oCarType, $option_arr)
+    public function getPrices($datetime_from, $datetime_to, $oCarType, $option_arr)
     {
         $o_new_day_per_day =0 ;
-        $oBookingPeriod = Setting::where('key', 'calculate_rental_fee')->first();
+//        $oBookingPeriod = Setting::where('key', 'calculate_rental_fee')->first();
 
         $date_from = date('Y-m-d',strtotime($datetime_from));
         $date_to = date('Y-m-d',strtotime($datetime_to));
@@ -194,16 +201,16 @@ class ReservationsController extends Controller
         $i = $begin_date;
         $j = 1;
 
-        if($oBookingPeriod->value == 'perday')
+        if($this->option_arr['calculate_rental_fee']  == 'perday')
         {
             if($extra_hours > 0)
             {
-                if($option_arrr['o_new_day_per_day'] == 0)
+                if($o_new_day_per_day == 0)
                 {
                     $rental_days++;
                     $day_added = 1;
                 }
-                if($option_arr['o_new_day_per_day'] > 0 && $extra_hours > $option_arr['o_new_day_per_day']){
+                if($o_new_day_per_day > 0 && $extra_hours > $option_arr['o_new_day_per_day']){
                     $rental_days++;
                     $day_added = 1;
                 }
@@ -232,7 +239,7 @@ class ReservationsController extends Controller
             }
             $price_per_day = $price;
 
-        } elseif($oBookingPeriod->value == 'perhour'){
+        } elseif($this->option_arr['calculate_rental_fee']  == 'perhour'){
 
             if($rental_hours > 0)
             {
@@ -258,7 +265,7 @@ class ReservationsController extends Controller
             }
             $price_per_hour = $price;
 
-        } elseif($oBookingPeriod->value == 'both'){
+        } elseif($this->option_arr['calculate_rental_fee']  == 'both'){
             while ($j <= $rental_days)
             {
                 $price_arr = $pjPriceModel->reset()
@@ -346,7 +353,7 @@ class ReservationsController extends Controller
 
     public function loadCarPrices(Request $request){
         $this->_checkAjaxRequest();
-
+//        print_r($this->option_arr);exit;
         $oSetting = Setting::where('key', 'currency')->first();
         $currency = ($oSetting)?$oSetting->value:'USD';
 
