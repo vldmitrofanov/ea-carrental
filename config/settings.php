@@ -50,6 +50,10 @@ return [
         'amount' => 'Amount',
         'percent' => 'Percent',
     ],
+    'service_tax_type' => [
+        'amount' => 'Amount',
+        'percent' => 'Percent',
+    ],
 
     'insurance_type' => [
         'amount' => 'Amount',

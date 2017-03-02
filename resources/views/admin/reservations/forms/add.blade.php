@@ -8,11 +8,12 @@
 
         <div id="details" class="tab-pane active">
             <div class="alert alert-info alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
                 <h4><i class="icon fa fa-info"></i> Rental details!</h4>
                 In the Rental Details box below you can add details about the reservation - start and end date/time, car type, pick-up and return locations. As soon as you select car type the price for the selected rental period will be automatically calculated in the Price box. Use the Extras box at the bottom to add additional extras to the reservation. Their price will also be included in the total rental price.
             </div>
             <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-8">
                 <div class="form-group">
                     <label for="date_from" class="col-sm-2 control-label">From</label>
                     <div class="col-sm-10">
@@ -56,9 +57,23 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="pickup_near_location" class="col-sm-2 control-label">Pick-up Location &nbsp;&nbsp;<img src="{{asset('images/help.png') }}" class="protip" data-pt-title="In case of different pick-up location, please mention." width="14"></label>
+                    <div class="col-sm-10">
+                        {!! Form::text('pickup_near_location', null, ['class' => 'form-control', 'id' => 'pickup_near_location', 'placeholder' => 'Near by Pick up Location']) !!}
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="return_location_id" class="col-sm-2 control-label">Return Location</label>
                     <div class="col-sm-10">
                         {!! Form::select('return_location_id', array(''=>'Please Select')+$oOfficeLocations,null,array('class'=>'form-control','id'=>'return_location_id')) !!}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="return_near_location" class="col-sm-2 control-label">Return Location &nbsp;&nbsp;<img src="{{asset('images/help.png') }}" class="protip" data-pt-title="In case of different return location, please mention." width="14"></label>
+                    <div class="col-sm-10">
+                        {!! Form::text('return_near_location', null, ['class' => 'form-control', 'id' => 'return_near_location', 'placeholder' => 'Near by Return Location']) !!}
                     </div>
                 </div>
 
@@ -69,7 +84,7 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <table class="table payment_detail">
                     <tbody>
                     <tr>
@@ -78,7 +93,7 @@
                     </tr>
                     <tr>
                         <th>Price per day</th>
-                        <td>$10.34</td>
+                        <td>0</td>
                     </tr>
                     <tr>
                         <th>Discount:</th>
@@ -86,35 +101,35 @@
                     </tr>
                     <tr>
                         <th>Price per hour:</th>
-                        <td>$5.80</td>
+                        <td>0</td>
                     </tr>
                     <tr>
                         <th>Car rental fee:</th>
-                        <td>$265.24</td>
+                        <td>0</td>
                     </tr>
                     <tr>
                         <th>Extras Price:</th>
-                        <td>$265.24</td>
+                        <td>0</td>
                     </tr>
                     <tr>
                         <th>Insurance:</th>
-                        <td>$265.24</td>
+                        <td>0</td>
                     </tr>
                     <tr>
                         <th>Sub-total:</th>
-                        <td>$265.24</td>
+                        <td>0</td>
                     </tr>
                     <tr>
                         <th>Tax:</th>
-                        <td>$265.24</td>
+                        <td>0</td>
                     </tr>
                     <tr>
                         <th class="text-red">Total Price:</th>
-                        <td>$265.24</td>
+                        <td>0</td>
                     </tr>
                     <tr>
                         <th>Required deposit:</th>
-                        <td>$265.24</td>
+                        <td>0</td>
                     </tr>
                     </tbody>
                 </table>
@@ -223,7 +238,7 @@
 
             <div class="form-group">
                 <div class="col-sm-12">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-primary">Submit</button>
                 </div>
             </div>
         </div>

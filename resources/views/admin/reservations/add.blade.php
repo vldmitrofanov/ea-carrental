@@ -19,6 +19,8 @@
                 <div class="col-md-12">
                         @include('admin.partials.errors.errors')
                     {!! Form::open(array('url' => 'admin/reservations/store', 'id' => 'car_reservation', 'method' => 'post', 'enctype'=>'multipart/form-data', 'class' => 'form-horizontal')) !!}
+                     <input type="hidden" name="days" id="days">
+                     <input type="hidden" name="hours" id="hours">
                         @include('admin.reservations.forms.add', ['submit_button'=>'Create'])
                     {!! Form::close() !!}
                 </div>
@@ -146,6 +148,33 @@
             });
         });
 
+        function calculatePrices(){
+                processing();
+            var formData = $('form#car_reservation').serializeArray();
+            formData.push({
+                name: "_method",
+                value: "POST"
+            });
+            $.post('/admin/reservations/calculate_difference', formData)
+                    .done(function(response){
+                        $('#days').val(response.days);
+                        $('#hours').val(response.hours);
+
+                        $("table.payment_detail> tbody tr:first").find('td').html(
+                                response.days+" Days and "+ response.hours+" Hours"
+                        );
+                        $.unblockUI();
+                    })
+                    .fail(function(response){
+                        $.unblockUI();
+                        $.each(response.responseJSON, function (key, value) {
+                            $.each(value, function (index, message) {
+                                displayMessageAlert(message, 'danger', 'warning-sign');
+                            });
+                        });
+                    });
+        }
+
         $( document ).ready(function() {
             $(document).on("change", "select#car_type_id", function(e) {
                 $('#car_id').empty();
@@ -185,10 +214,6 @@
                 });
                 $.post('/admin/reservations/load_car_prices', formData)
                 .done(function(response){
-                    $("table.payment_detail> tbody tr:first").find('td').html(
-                            moment($('#date_to').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_from').val(), "MM-DD-YYYY HH:mm"),'days')
-                            + ' Days and '+moment($('#date_to').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_from').val(), "MM-DD-YYYY HH:mm"),'hours')+' Hours'
-                    );
 //                    $.each(response, function(key, element) {
 //                        $('#car_id').append("<option value='" + element.id +"'>" + element.make +' '+element.model+' - '+element.registration_number + "</option>");
 //                    });
@@ -202,17 +227,21 @@
                         });
                     });
                 });
-            })
+            });
 
-
-            $('#date_from').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date() });
+            $('#date_from').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date(),
+                onChangeDateTime:function(dp,$input){
+                    calculatePrices();
+                }
+            });
             $('#date_to').datetimepicker({
                 format:'m/d/Y H:i', defaultDate:new Date(),
                 onChangeDateTime:function(dp,$input){
-                    $("table.payment_detail> tbody tr:first").find('td').html(
-                        moment($('#date_to').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_from').val(), "MM-DD-YYYY HH:mm"),'days')
-                        + ' Days and '+moment($('#date_to').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_from').val(), "MM-DD-YYYY HH:mm"),'hours')+' Hours'
-                    );
+//                    $("table.payment_detail> tbody tr:first").find('td').html(
+//                        moment($('#date_to').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_from').val(), "MM-DD-YYYY HH:mm"),'days')
+//                        + ' Days and '+moment($('#date_to').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_from').val(), "MM-DD-YYYY HH:mm"),'hours')+' Hours'
+//                    );
+                    calculatePrices();
                 }
             });
         });

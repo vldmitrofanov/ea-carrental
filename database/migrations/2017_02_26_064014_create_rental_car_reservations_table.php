@@ -22,6 +22,8 @@ class CreateRentalCarReservationsTable extends Migration
             $table->integer('car_id')->unsigned();
             $table->integer('pickup_location_id')->unsigned();
             $table->integer('return_location_id')->unsigned();
+            $table->string('pickup_near_location');
+            $table->string('return_near_location');
             $table->string('ip_address');
             $table->integer('user_id')->unsigned();
             $table->dateTime('pickup_date');

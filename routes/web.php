@@ -67,6 +67,17 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::get('{id}/edit', 'Admin\ReservationsController@edit');
         Route::patch('update/{id}', 'Admin\ReservationsController@update');
         Route::post('load_car_prices', 'Admin\ReservationsController@loadCarPrices');
+        Route::post('calculate_difference', function(){
+            $from = \Carbon\Carbon::parse(Request::get('date_from'));
+            $to = \Carbon\Carbon::parse(Request::get('date_to'));
+            $datetime1 = new \DateTime($to); // Today's Date/Time
+            $datetime2 = new \DateTime($from);
+            $interval = $datetime1->diff($datetime2);
+//        echo $interval->format('%D days %H hours');
+            $data['days'] = $interval->format('%D');
+            $data['hours'] = $interval->format('%H');
+            return $data;
+        });
     });
 
     Route::group(['prefix' => 'settings'], function(){
