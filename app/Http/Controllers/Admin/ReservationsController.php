@@ -516,7 +516,7 @@ class ReservationsController extends Controller
 
         $sub_total = $car_rental_fee + $extra_price + $insurance;
         $tax =  $this->option_arr['tax_payment'];
-        if($this->option_arr['tax_type'] == 1)
+        if($this->option_arr['tax_type'] == 'percent')
         {
             $tax = ($sub_total * $this->option_arr['tax_payment']) / 100;
             $tax_detail = $this->option_arr['tax_payment'] . '% of ' . $this->formatCurrencySign($sub_total, $this->option_arr['currency']);
