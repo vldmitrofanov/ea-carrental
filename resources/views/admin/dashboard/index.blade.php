@@ -22,6 +22,7 @@ Dashboard
     </section>
 
     <section class="content">
+        <?php /*
         <div class="row">
             <div class="col-lg-3 col-xs-6">
                 <div class="small-box bg-aqua">
@@ -440,8 +441,8 @@ Dashboard
 
             </section><!-- right col -->
         </div><!-- /.row (main row) -->
-
-    </section><!-- /.content -->
+        */ ?>
+    </section>
 </div><!-- /.content-wrapper -->
 
 @endsection
