@@ -15,6 +15,20 @@
             <div class="row">
             <div class="col-md-8">
                 <div class="form-group">
+                    <label for="status" class="col-sm-2 control-label">Status</label>
+                    <div class="col-sm-10">
+                        <select name="status" id="status" class="form-control">
+                            <option value="">-- Choose --</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="pending">Pending</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="collected">Collected</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="date_from" class="col-sm-2 control-label">From</label>
                     <div class="col-sm-10">
                         <div class="input-group">

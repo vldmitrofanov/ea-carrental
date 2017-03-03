@@ -21,6 +21,10 @@
                     {!! Form::open(array('url' => 'admin/reservations/store', 'id' => 'car_reservation', 'method' => 'post', 'enctype'=>'multipart/form-data', 'class' => 'form-horizontal')) !!}
                      <input type="hidden" name="days" id="days">
                      <input type="hidden" name="hours" id="hours">
+                     <input type="hidden" name="price_per_day" id="price_per_day">
+                     <input type="hidden" name="price_per_hour" id="price_per_hour">
+                     <input type="hidden" name="car_rental_fee" id="car_rental_fee">
+
                         @include('admin.reservations.forms.add', ['submit_button'=>'Create'])
                     {!! Form::close() !!}
                 </div>
@@ -214,9 +218,35 @@
                 });
                 $.post('/admin/reservations/load_car_prices', formData)
                 .done(function(response){
-//                    $.each(response, function(key, element) {
-//                        $('#car_id').append("<option value='" + element.id +"'>" + element.make +' '+element.model+' - '+element.registration_number + "</option>");
-//                    });
+                    var prices = response.data.prices;
+                    var currency = response.data.currency;
+                    var currencySign = response.data.currencySign;
+
+                    $("table.payment_detail> tbody tr:nth-child(2)").find('th').html('Price per day:<br/><small>'+prices.price_per_day_detail+'<small>');
+                    $("table.payment_detail> tbody tr:nth-child(2)").find('td').html(currencySign+' '+prices.price_per_day);
+
+
+                    $("table.payment_detail> tbody tr:nth-child(4)").find('th').html('Price per hour:<br/><small>'+prices.price_per_hour_detail+'<small>');
+                    $("table.payment_detail> tbody tr:nth-child(4)").find('td').html(currencySign+' '+prices.price_per_hour);
+
+
+                    $("table.payment_detail> tbody tr:nth-child(5)").find('th').html('Car rental fee:<br/><small>'+prices.car_rental_fee_detail+'<small>');
+                    $("table.payment_detail> tbody tr:nth-child(5)").find('td').html(currencySign+' '+prices.car_rental_fee);
+
+
+                    $("table.payment_detail> tbody tr:nth-child(6)").find('td').html(currencySign+' '+prices.extra_price);
+
+
+                    $("table.payment_detail> tbody tr:nth-child(7)").find('td').html(currencySign+' '+prices.insurance);
+
+                    $("table.payment_detail> tbody tr:nth-child(8)").find('td').html(currencySign+' '+prices.sub_total);
+
+                    $("table.payment_detail> tbody tr:nth-child(9)").find('th').html('Tax:<br/><small>'+prices.tax_detail+'<small>');
+                    $("table.payment_detail> tbody tr:nth-child(9)").find('td').html(currencySign+' '+prices.tax);
+
+                    $("table.payment_detail> tbody tr:nth-child(10)").find('td').html(currencySign+' '+prices.total_price);
+                    $("table.payment_detail> tbody tr:nth-child(11)").find('td').html(currencySign+' '+prices.required_deposit);
+
                     $.unblockUI();
                 })
                 .fail(function(response){
