@@ -32,7 +32,7 @@
                                     <th>Client Name</th>
                                     <th>Car</th>
                                     <th>Car Type</th>
-                                    <th>Pick-up/Return</th>
+                                    <th>Status</th>
                                     <th>Total</th>
                                     <th>&nbsp;</th>
                                 </tr>
@@ -40,8 +40,16 @@
                                     <tr>
                                         <td>{{ ++$index }}</td>
                                         <td>{{ $oReservation->user->name }} ({{ $oReservation->user->phone }})</td>
-                                        <td>{{ $oReservation->date_to }}</td>
-                                        <td>{{ $oReservation->created_at }}</td>
+                                        <td>
+                                            @foreach($oReservation->details as $oDetail)
+                                                {{ $oDetail->car->make  }} - {{ $oDetail->car->model  }}<br/>{{ $oDetail->car->registration_number}}<br/>
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            @foreach($oReservation->details as $oDetail)
+                                                {{ $oDetail->carType->name  }}
+                                            @endforeach
+                                        </td>
                                         <td>{{ $oReservation->status }}</td>
                                         <td>0</td>
                                         <td>

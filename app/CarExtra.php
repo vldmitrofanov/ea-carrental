@@ -10,6 +10,6 @@ class CarExtra extends Model
 
     public function carType()
     {
-        return $this->belongsToMany('App\CarType');
+        return $this->belongsTo('App\CarType');
     }
 }

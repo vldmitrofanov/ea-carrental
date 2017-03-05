@@ -11,29 +11,33 @@
         <section class="content-header">
             <h1>
                 Reservations
-                <small>Add New</small>
+                <small>Edit Information</small>
             </h1>
         </section>
         <section class="content">
             <div class="row">
                 <div class="col-md-12">
                     @include('admin.partials.errors.errors')
-                    {!! Form::open(array('url' => 'admin/reservations/store', 'id' => 'car_reservation', 'method' => 'post', 'enctype'=>'multipart/form-data', 'class' => 'form-horizontal')) !!}
-                     <input type="hidden" name="rental_days" id="rental_days">
-                     <input type="hidden" name="rental_hours" id="rental_hours">
-                     <input type="hidden" name="price_per_day" id="price_per_day">
-                     <input type="hidden" name="price_per_day_detail" id="price_per_day_detail">
-                     <input type="hidden" name="price_per_hour" id="price_per_hour">
-                     <input type="hidden" name="price_per_hour_detail" id="price_per_hour_detail">
-                     <input type="hidden" name="car_rental_fee" id="car_rental_fee">
-                     <input type="hidden" name="extra_price" id="extra_price">
-                     <input type="hidden" name="insurance" id="insurance">
-                     <input type="hidden" name="sub_total" id="sub_total">
-                     <input type="hidden" name="tax" id="tax">
-                     <input type="hidden" name="total_price" id="total_price">
-                     <input type="hidden" name="required_deposit" id="required_deposit">
+                    {!! Form::model($oReservation, array('url' =>array('admin/reservations/update', $oReservation->id), 'id' => 'car_reservation', 'method' => 'PATCH', 'enctype'=>'multipart/form-data', 'class' => 'form-horizontal')) !!}
+                     <input type="hidden" name="rental_days" id="rental_days" value="{{ $oReservation->details->first()->rental_days  }}">
+                     <input type="hidden" name="rental_hours" id="rental_hours" value="{{ $oReservation->details->first()->rental_hours  }}">
+                     <input type="hidden" name="price_per_day" id="price_per_day" value="{{ $oReservation->details->first()->price_per_day  }}">
+                     <input type="hidden" name="price_per_day_detail" id="price_per_day_detail" value="{{ $oReservation->details->first()->price_per_day_detail  }}">
+                     <input type="hidden" name="price_per_hour" id="price_per_hour" value="{{ $oReservation->details->first()->price_per_hour  }}">
+                     <input type="hidden" name="price_per_hour_detail" id="price_per_hour_detail" value="{{ $oReservation->details->first()->price_per_hour_detail  }}">
+                     <input type="hidden" name="car_rental_fee" id="car_rental_fee" value="{{ $oReservation->details->first()->car_rental_fee  }}">
+                     <input type="hidden" name="extra_price" id="extra_price" value="{{ $oReservation->details->first()->extra_price  }}">
+                     <input type="hidden" name="insurance" id="insurance" value="{{ $oReservation->details->first()->insurance }}">
+                     <input type="hidden" name="sub_total" id="sub_total" value="{{ $oReservation->details->first()->sub_total }}">
+                     <input type="hidden" name="tax" id="tax" value="{{ $oReservation->details->first()->tax }}">
+                     <input type="hidden" name="total_price" id="total_price" value="{{ $oReservation->details->first()->total_price }}">
+                     <input type="hidden" name="required_deposit" id="required_deposit" value="{{ $oReservation->details->first()->required_deposit }}">
+                     <input type="hidden" name="extra_hours_usage" id="extra_hours_usage" value="{{ $oReservation->details->first()->extra_hours_usage }}">
+                     <input type="hidden" name="id" id="id" value="{{ $oReservation->id}}">
+                     <input type="hidden" name="currency_sign" id="currency_sign" value="{{ $currencySign }}">
+                     <input type="hidden" name="payment_made" id="payment_made" value="{{ ($oReservation->payments->where('status','paid')->sum('amount'))?:0 }}">
 
-                        @include('admin.reservations.forms.add', ['submit_button'=>'Create'])
+                        @include('admin.reservations.forms.edit', ['submit_button'=>'Create'])
                     {!! Form::close() !!}
                 </div>
             </div>
@@ -47,12 +51,12 @@
             var formData = $('form#car_reservation').serializeArray();
             formData.push({
                 name: "_method",
-                value: "POST"
+                value: "patch"
             });
-            $.post('/admin/reservations/store', formData)
+            $.post($('form#car_reservation').attr('action'), formData)
             .done(function(response){
                 displayMessageAlert(response.message);
-                redirectPage('/admin/reservations')
+//                pageRefresh()
             })
             .fail(function(response){
                 $.unblockUI();
@@ -77,6 +81,36 @@
             });
             $.post('/admin/types/remove_customrate', formData)
             .done(function(response){
+                $.unblockUI();
+                displayMessageAlert('Custom Rate information removed.');
+            })
+            .fail(function(response){
+                $.unblockUI();
+                $.each(response.responseJSON, function (key, value) {
+                    $.each(value, function (index, message) {
+                        displayMessageAlert(message, 'danger', 'warning-sign');
+                    });
+                });
+            });
+
+            $('table.extra_rates tr#'+$(this).attr('data-id')).remove();
+        })
+        $(document).on("click", "a.remove-payment", function(e) {
+            processing();
+            var paymentId = $(this).attr('data-id');
+            var formData = $('form#car_reservation').serializeArray();
+            formData.push({
+                name: "_method",
+                value: "POST"
+            });
+            formData.push({
+                name: "payment_id",
+                value: paymentId
+            });
+            $.post('/admin/reservations/remove_payment', formData)
+            .done(function(response){
+                $('div.payment-made').html($('#currency_sign').val()+ ' ' +response.data.amountPaid)
+                $('table.payments').find('tr#'+paymentId).remove();
                 $.unblockUI();
                 displayMessageAlert('Custom Rate information removed.');
             })
@@ -198,6 +232,8 @@
                         $("table.payment_detail> tbody tr:first").find('td').html(
                                 response.days+" Days and "+ response.hours+" Hours"
                         );
+
+                        $('select#car_id').trigger('change');
                         $.unblockUI();
                     })
                     .fail(function(response){
@@ -211,6 +247,112 @@
         }
 
         $( document ).ready(function() {
+            $(document).on("click", "button.btn-add-payment", function(e) {
+                var formData = $('form#car_reservation').serializeArray();
+                formData.push({
+                    name: "_method",
+                    value: "POST"
+                });
+                $.post('/admin/reservations/add_payment', formData)
+                        .done(function(response){
+                            $("table.payments").find('tbody')
+                                    .append($('<tr id="'+(response.data.payment.id)+'">')
+                                            .append($('<td>')
+                                                    .append($('<select>')
+                                                            .attr('class', 'form-control')
+                                                            .attr('name', 'payment_method['+response.data.payment.id+']')
+                                                            .append($("<option></option>")
+                                                                    .attr("value", 'paypal')
+                                                                    .text('Paypal')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'authorize')
+                                                                    .text('Authorize.net')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'creditcard')
+                                                                    .text('Credit Card')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'bank')
+                                                                    .text('Bank')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'cash')
+                                                                    .attr("selected", 'selected')
+                                                                    .text('Cash')
+                                                            )
+                                                    )
+                                            )
+                                            .append($('<td>')
+                                                    .append($('<select>')
+                                                            .attr('class', 'form-control')
+                                                            .attr('name', 'payment_type['+response.data.payment.id+']')
+                                                            .append($("<option></option>")
+                                                                    .attr("value", 'online')
+                                                                    .text('Online booking')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'balance')
+                                                                    .attr("selected", 'selected')
+                                                                    .text('Payment')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'securitypaid')
+                                                                    .text('Security deposit paid')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'securityreturned')
+                                                                    .text('Security deposit returned')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'delay')
+                                                                    .text('Delay fee')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'extra')
+                                                                    .text('Extra mileage')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'additional')
+                                                                    .text('Additional charges')
+                                                            )
+                                                    )
+                                            )
+                                            .append($('<td>')
+                                                    .append($('<input>')
+                                                            .attr('class', 'form-control')
+                                                            .attr('name', 'payment_amount['+response.data.payment.id+']')
+                                                            .attr('value', '0')
+                                                    )
+                                            )
+                                            .append($('<td>')
+                                                    .append($('<select>')
+                                                            .attr('class', 'form-control')
+                                                            .attr('name', 'payment_status['+response.data.payment.id+']')
+                                                            .append($("<option></option>")
+                                                                    .attr("value", 'paid')
+                                                                    .text('Paid')
+                                                            ).append($("<option></option>")
+                                                                    .attr("value", 'notpaid')
+                                                                    .text('Not paid')
+                                                            )
+                                                    )
+                                            )
+
+                                            .append($('<td>')
+                                                    .append('<a href="javascript:;" class="remove-payment" data-id="'+(response.data.payment.id)+'" ><i class="fa fa-trash"></i></a>')
+                                            )
+                                    );
+                            alert(response.data.amountPaid);
+                            $('div.payment-made').html($('#currency_sign').val()+' '+response.data.amountPaid);
+
+                            $.unblockUI();
+                        })
+                        .fail(function(response){
+                            $.unblockUI();
+                            $.each(response.responseJSON, function (key, value) {
+                                $.each(value, function (index, message) {
+                                    displayMessageAlert(message, 'danger', 'warning-sign');
+                                });
+                            });
+                        });
+            });
+
+            $(document).on("click", "a.set-mileage", function(e) {
+                $('#pickup_mileage').val($(this).attr('data-mileage'));
+            });
+
             $(document).on("click", "a.remove-extra", function(e) {
                 $("table.extras-table > tbody").find('tr#'+$(this).attr('data-id')).remove();
                 $('select#car_id').trigger('change');
@@ -382,6 +524,9 @@
                     $('#total_price').val(prices.total_price);
                     $('#required_deposit').val(prices.required_deposit);
 
+                    $('div.lbl-total-price').html(currencySign+' '+prices.total_price)
+                    $('div.payment-due').html(currencySign+' '+ (prices.total_price-$('#payment_made').val()))
+
                     $("table.payment_detail> tbody tr:nth-child(2)").find('th').html('Price per day:<br/><small>'+prices.price_per_day_detail+'<small>');
                     $("table.payment_detail> tbody tr:nth-child(2)").find('td').html(currencySign+' '+prices.price_per_day);
 
@@ -419,6 +564,7 @@
                 });
             });
 
+            $('#pickup_date').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date()});
             $('#date_from').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date(),
                 onChangeDateTime:function(dp,$input){
                     calculatePrices();
@@ -432,6 +578,20 @@
 //                        + ' Days and '+moment($('#date_to').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_from').val(), "MM-DD-YYYY HH:mm"),'hours')+' Hours'
 //                    );
                     calculatePrices();
+                }
+            });
+
+            $('#return_date').datetimepicker({
+                format:'m/d/Y H:i', defaultDate:new Date(),
+                onChangeDateTime:function(dp,$input){
+                    var hours = moment($('#return_date').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_to').val(), "MM-DD-YYYY HH:mm"),'hours');
+                    if(hours>0) {
+                        $('#extra_hours_usage').val(hours);
+                        $('div.extra-hours-usage').html(hours + ' Hours');
+                    }else{
+                        $('#extra_hours_usage').val(0);
+                        $('div.extra-hours-usage').html('No');
+                    }
                 }
             });
         });

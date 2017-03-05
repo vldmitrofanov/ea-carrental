@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\CarReservationDetail;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -9,8 +10,15 @@ use App\RentalCarReservation;
 use App\OfficeLocation;
 use App\CarType;
 use App\CarTypePrice;
+use App\CarExtra;
 use App\Country;
 use App\Setting;
+use App\RentalCar;
+use App\CarReservation;
+use App\CarReservationExtra;
+use App\User;
+use App\CarReservationPayment;
+use App\Http\Requests\ReservationRequest;
 
 class ReservationsController extends Controller
 {
@@ -29,7 +37,7 @@ class ReservationsController extends Controller
      */
     public function index()
     {
-        $oReservations = RentalCarReservation::paginate(15);
+        $oReservations = CarReservation::paginate(15);
         return view('admin.reservations.index', compact('oReservations'));
     }
 
@@ -52,24 +60,99 @@ class ReservationsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(ReservationRequest $request)
     {
-        $oUser = new User;
-        $oUser->name = $request->input('name');
-        $oUser->username = $request->input('username');
-        $oUser->email = $request->input('email');
-        $oUser->phone = $request->input('phone');
-        $oUser->password = bcrypt($request->input('password'));
-        $oUser->status = (boolean)$request->input('status');
+        $this->_checkAjaxRequest();
 
-        if($oUser->save()){
-            $oUser->roles()->attach($request->input('role_id'));
+        $oCar = RentalCar::where('id',$request->input('car_id'))->first();
+        if(!$oCar){
+            return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
         }
 
-        \Session::flash('flash_message', 'User Information saved successfully.');
-        \Session::flash('flash_type', 'alert-success');
+        $oCarType = CarType::where('id',$request->input('car_type_id'))->first();
+        if(!$oCarType){
+            return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
+        }
 
-        return \Redirect::to('admin/users');
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        $result = \DB::transaction(function () use ($request, $oCar, $oCarType) {
+            try{
+                $oUser = User::where('email', $request->input('email'))->first();
+                if(!$oUser){
+                    $oUser = new User;
+                    $oUser->email = $request->input('email');
+                    $oUser->username = strstr($request->input('email'), '@', true);
+                    $oUser->name = $request->input('name');
+                    $oUser->phone = $request->input('phone');
+                    $oUser->title = $request->input('title');
+                    $oUser->company_name = $request->input('company_name');
+                    $oUser->address = $request->input('address');
+                    $oUser->state = $request->input('state');
+                    $oUser->city = $request->input('city');
+                    $oUser->zip = $request->input('zip');
+                    $oUser->country_id = $request->input('country_id');
+                    $oUser->password = bcrypt('elecon123');
+                    $oUser->other_info = '';
+                    $oUser->save();
+                }
+                $oCarReservation = new CarReservation;
+                $oCarReservation->reservation_number = time() . mt_rand(100000, 999999);
+                $oCarReservation->ip_address = $request->ip();
+                $oCarReservation->user_id = $oUser->id;
+                $oCarReservation->processed_on = Carbon::now();
+                $oCarReservation->status = $request->input('status');
+                $oCarReservation->cc_type = $request->input('cc_type');
+                $oCarReservation->cc_num = $request->input('cc_number');
+                $oCarReservation->cc_code = $request->input('cc_code');
+                $oCarReservation->cc_exp = $request->input('cc_expiration');
+                if($oCarReservation->save()){
+                    $oCarReservationDetail = new CarReservationDetail;
+                    $oCarReservationDetail->reservation_id = $oCarReservation->id;
+                    $oCarReservationDetail->car_type_id = $oCarType->id;
+                    $oCarReservationDetail->car_id = $oCar->id;
+                    $oCarReservationDetail->pickup_date = Carbon::parse($request->input('date_from'));
+                    $oCarReservationDetail->date_from = Carbon::parse($request->input('date_from'));
+                    $oCarReservationDetail->date_to = Carbon::parse($request->input('date_to'));
+                    $oCarReservationDetail->pickup_location_id = $request->input('pickup_location_id');
+                    $oCarReservationDetail->pickup_near_location = ($request->input('pickup_near_location'))?:'';
+                    $oCarReservationDetail->return_location_id = $request->input('return_location_id');
+                    $oCarReservationDetail->return_near_location = ($request->input('return_near_location'))?:'';
+                    $oCarReservationDetail->rental_days = $request->input('rental_days');
+                    $oCarReservationDetail->rental_hours = $request->input('rental_hours');
+                    $oCarReservationDetail->price_per_day = $request->input('price_per_day');
+                    $oCarReservationDetail->price_per_day_detail = $request->input('price_per_day_detail');
+                    $oCarReservationDetail->price_per_hour = $request->input('price_per_hour');
+                    $oCarReservationDetail->price_per_hour_detail = $request->input('price_per_hour_detail');
+                    $oCarReservationDetail->car_rental_fee = $request->input('car_rental_fee');
+                    $oCarReservationDetail->extra_price = $request->input('extra_price');
+                    $oCarReservationDetail->insurance = $request->input('insurance');
+                    $oCarReservationDetail->sub_total = $request->input('sub_total');
+                    $oCarReservationDetail->tax = $request->input('tax');
+                    $oCarReservationDetail->total_price = $request->input('total_price');
+                    $oCarReservationDetail->required_deposit = $request->input('required_deposit');
+                    $oCarReservationDetail->save();
+
+                    foreach ($request->input('extra_id') as $key=>$val) {
+                        $oExtra = CarExtra::where('id', $val)->first();
+                        $oCarReservationExtra = new CarReservationExtra;
+                        $oCarReservationExtra->reservation_id = $oCarReservation->id;
+                        $oCarReservationExtra->extra_id = $oExtra->id;
+                        $oCarReservationExtra->quantity = $request->input('extra_cnt')[$key];
+                        $oCarReservationExtra->price = $oExtra->price;
+                        $oCarReservationExtra->extended_notes = '';
+                        $oCarReservationExtra->save();
+                    }
+                    return $this->_successJsonResponse(['message'=>'Reservation information saved.', 'data' => $oCarReservation]);
+                }else{
+                    return $this->_failedJsonResponse([['Failed to save <strong>Reservation Information</strong>.']]);
+                }
+
+            }catch (\Exception $e) {
+                return $this->_failedJsonResponse([[$e->getMessage()]]);
+            }
+        });
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        return $result;
     }
 
     /**
@@ -91,9 +174,50 @@ class ReservationsController extends Controller
      */
     public function edit($id)
     {
-        $oUser = User::where('id', $id)->firstOrFail();
-        $oRoles = Role::orderBy('name', 'ASC')->get();
-        return view('admin.users.edit', compact('oRoles', 'oUser'));
+        $oReservation = CarReservation::where('id', $id)->firstOrFail();
+        $oOfficeLocations = OfficeLocation::pluck('name', 'id')->toArray();
+        $oCarTypes = CarType::orderBy('name', 'ASC')->pluck('name', 'id')->toArray();
+        $oCountries = Country::pluck('name', 'id')->toArray();
+        $oCars = CarType::where('id',$oReservation->details->first()->car_type_id)->first()->cars()->get();
+        $oExtras = CarType::where('id',$oReservation->details->first()->car_type_id)->first()->extras()->get();
+        $settingsArr = $this->option_arr;
+        $currencySign = $this->getCurrencySign($this->option_arr['currency']);
+//        print_r($oExtras);exit;
+        return view('admin.reservations.edit', compact('oOfficeLocations', 'oCarTypes', 'oCountries', 'oReservation', 'oCars', 'currencySign', 'settingsArr', 'oExtras'));
+    }
+
+    public function addPayment(Request $request){
+        $this->_checkAjaxRequest();
+
+        $oCarReservation = CarReservation::where('id',$request->input('id'))->first();
+        if(!$oCarReservation){
+            return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
+        }
+
+        $oCarReservationPayment = new CarReservationPayment;
+        $oCarReservationPayment->reservation_id = $oCarReservation->id;
+        $oCarReservationPayment->payment_type = '';
+        $oCarReservationPayment->save();
+        $data['payment'] = $oCarReservationPayment;
+        $data['amountPaid'] = $oCarReservation->payments->where('status','paid')->sum('amount');
+        return $this->_successJsonResponse(['message'=>'Reservation Payment information saved.', 'data' => $data]);
+    }
+
+    public function removePayment(Request $request){
+        $this->_checkAjaxRequest();
+
+        $oCarReservation = CarReservation::where('id',$request->input('id'))->first();
+        if(!$oCarReservation){
+            return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
+        }
+
+        $oCarReservationPayment = CarReservationPayment::where('id', $request->input('payment_id'))->first();
+        if(!$oCarReservationPayment){
+            return $this->_failedJsonResponse([['Reservation Payment is not valid or has been removed.']]);
+        }
+        $oCarReservationPayment->delete();
+        $data['amountPaid'] = $oCarReservation->payments->where('status','paid')->sum('amount');
+        return $this->_successJsonResponse(['message'=>'Reservation Payment information saved.', 'data' => $data]);
     }
 
     /**
@@ -103,26 +227,115 @@ class ReservationsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserRequest $request, $id)
+    public function update(ReservationRequest $request, $id)
     {
-        $oUser = User::findOrFail($id);
-        $oUser->name = $request->input('name');
-        $oUser->username = $request->input('username');
-        $oUser->email = $request->input('email');
-        $oUser->phone = $request->input('phone');
-        if($request->input('password')!='') {
-            $oUser->password = bcrypt($request->input('password'));
+        $oCar = RentalCar::where('id',$request->input('car_id'))->first();
+        if(!$oCar){
+            return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
         }
-        $oUser->status = (boolean)$request->input('status');
-        $oUser->save();
-        $oUser->detachRoles();
 
-        $oUser->roles()->attach($request->input('role_id'));
+        $oCarType = CarType::where('id',$request->input('car_type_id'))->first();
+        if(!$oCarType){
+            return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
+        }
 
-        \Session::flash('flash_message', 'User Information saved successfully.');
-        \Session::flash('flash_type', 'alert-success');
+        $oCarReservation = CarReservation::where('id',$request->input('id'))->first();
+        if(!$oCarReservation){
+            return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
+        }
 
-        return \Redirect::to('admin/users');
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        $result = \DB::transaction(function () use ($request, $oCar, $oCarType, $oCarReservation) {
+            try{
+                $oUser = User::where('id', $oCarReservation->user_id)->first();
+                if(!$oUser){
+                    return $this->_failedJsonResponse([['User Information is not valid or has been removed.']]);
+                }
+                $oUser->email = $request->input('email');
+                $oUser->name = $request->input('name');
+                $oUser->phone = $request->input('phone');
+                $oUser->title = $request->input('title');
+                $oUser->company_name = $request->input('company_name');
+                $oUser->address = $request->input('address');
+                $oUser->state = $request->input('state');
+                $oUser->city = $request->input('city');
+                $oUser->zip = $request->input('zip');
+                $oUser->country_id = $request->input('country_id');
+                $oUser->save();
+//updating the reservation infor
+                $oCarReservation->status = $request->input('status');
+                $oCarReservation->cc_type = $request->input('cc_type');
+                $oCarReservation->cc_num = $request->input('cc_number');
+                $oCarReservation->cc_code = $request->input('cc_code');
+                $oCarReservation->cc_exp = ($request->input('cc_expiration'))?:'';
+                $oCarReservation->save();
+
+//updating the reservation detail
+                $oCarReservationDetail = $oCarReservation->details->first();
+                $oCarReservationDetail->car_type_id = $oCarType->id;
+                $oCarReservationDetail->car_id = $oCar->id;
+                $oCarReservationDetail->return_date = Carbon::parse($request->input('return_date'));
+                $oCarReservationDetail->pickup_date = Carbon::parse($request->input('pickup_date'));
+                $oCarReservationDetail->date_from = Carbon::parse($request->input('date_from'));
+                $oCarReservationDetail->date_to = Carbon::parse($request->input('date_to'));
+                $oCarReservationDetail->pickup_location_id = $request->input('pickup_location_id');
+                $oCarReservationDetail->pickup_near_location = ($request->input('pickup_near_location'))?:'';
+                $oCarReservationDetail->return_location_id = $request->input('return_location_id');
+                $oCarReservationDetail->return_near_location = ($request->input('return_near_location'))?:'';
+                $oCarReservationDetail->rental_days = $request->input('rental_days');
+                $oCarReservationDetail->rental_hours = $request->input('rental_hours');
+                $oCarReservationDetail->price_per_day = $request->input('price_per_day');
+                $oCarReservationDetail->price_per_day_detail = $request->input('price_per_day_detail');
+                $oCarReservationDetail->price_per_hour = $request->input('price_per_hour');
+                $oCarReservationDetail->price_per_hour_detail = $request->input('price_per_hour_detail');
+                $oCarReservationDetail->car_rental_fee = $request->input('car_rental_fee');
+                $oCarReservationDetail->extra_price = $request->input('extra_price');
+                $oCarReservationDetail->insurance = $request->input('insurance');
+                $oCarReservationDetail->sub_total = $request->input('sub_total');
+                $oCarReservationDetail->tax = $request->input('tax');
+                $oCarReservationDetail->total_price = $request->input('total_price');
+                $oCarReservationDetail->required_deposit = $request->input('required_deposit');
+                $oCarReservationDetail->pickup_mileage = ($request->input('pickup_mileage'))?:0;
+                $oCarReservationDetail->return_mileage = ($request->input('return_mileage'))?:0;
+                $oCarReservationDetail->save();
+
+//updating the extras ifo
+                foreach ($request->input('extra_id') as $key=>$val) {
+                    $oExtra = CarExtra::where('id', $val)->first();
+                    $oCarReservationExtra = CarReservationExtra::where('id', $key)->first();
+                    if(!$oCarReservationExtra) {
+                        $oCarReservationExtra = new CarReservationExtra;
+                        $oCarReservationExtra->reservation_id = $oCarReservation->id;
+                    }
+                    $oCarReservationExtra->extra_id = $oExtra->id;
+                    $oCarReservationExtra->quantity = $request->input('extra_cnt')[$key];
+                    $oCarReservationExtra->price = $oExtra->price;
+                    $oCarReservationExtra->extended_notes = '';
+                    $oCarReservationExtra->save();
+                }
+
+//updating the payment info
+                foreach ($request->input('payment_method') as $key=>$val) {
+                    $oPayment = CarReservationPayment::where('id', $key)->first();
+                    $oPayment->payment_method = $val;
+                    $oPayment->payment_type = $request->input('payment_type')[$key];
+                    $oPayment->amount = $request->input('payment_amount')[$key];
+                    $oPayment->status = $request->input('payment_status')[$key];
+                    $oPayment->save();
+                }
+
+                if($request->input('return_mileage')>0) {
+                    $oCar->current_mileage = $request->input('return_mileage');
+                    $oCar->save();
+                }
+
+                return $this->_successJsonResponse(['message'=>'Reservation information saved.']);
+            }catch (\Exception $e) {
+                return $this->_failedJsonResponse([[$e->getMessage()]]);
+            }
+        });
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        return $result;
     }
 
     /**
@@ -470,8 +683,33 @@ class ReservationsController extends Controller
         $e_arr = array();
         $extra_arr = array();
         $extra_qty_arr = array();
+        if($request->input('extra_id')){
+            foreach ($request->input('extra_id') as $key => $extra_id){
+                if((int) $extra_id){
+                    $e_arr[] = $extra_id;
+                    $extra_qty_arr[$extra_id] = $request->input('extra_cnt')[$key];
+                }
+
+            }
+        }
+
+        if(count($e_arr) > 0){
+            $extra_arr = CarExtra::whereIn('id', $e_arr)->get();
+        }
 
         $real_rental_days = $this->getRealRentalDays(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')));
+        foreach ($extra_arr as $key => $val){
+            switch ($val->per)
+            {
+                case 'day':
+                    $extra_price +=  $val->price * $real_rental_days * $extra_qty_arr[$val->id];
+                    break;
+                case 'booking':
+                    $extra_price +=  $val->price * $extra_qty_arr[$val->id];
+                    break;
+            }
+        }
+
 
         $price_arr = $this->getPrices(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarType);
         if($price_arr['price'] == 0)

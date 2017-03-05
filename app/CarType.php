@@ -24,7 +24,7 @@ class CarType extends Model
     public function extras()
     {
         return $this->belongsToMany('App\CarExtra', 'car_type_extras',
-            'car_type_id', 'car_extras_id');
+            'car_type_id', 'car_extras_id'); //->withPivot('name', 'price', 'per', 'type')->wherePivot('status', 1);
     }
 
     public function cars()

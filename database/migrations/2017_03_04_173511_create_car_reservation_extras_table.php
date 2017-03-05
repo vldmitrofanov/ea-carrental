@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRentalCarReservationExtrasTable extends Migration
+class CreateCarReservationExtrasTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,6 +13,7 @@ class CreateRentalCarReservationExtrasTable extends Migration
      */
     public function up()
     {
+//        Schema::drop('rental_car_reservation_extras');
         Schema::create('rental_car_reservation_extras', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('reservation_id')->unsigned();

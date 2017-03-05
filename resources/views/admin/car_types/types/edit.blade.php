@@ -30,6 +30,8 @@
 
 @section('javascript')
     <script type="text/javascript" >
+
+
         $(document).on("click", "a.remove-extra", function(e) {
             processing();
             var formData = $('form#car_type').serializeArray();

@@ -13,7 +13,7 @@
                 In the Rental Details box below you can add details about the reservation - start and end date/time, car type, pick-up and return locations. As soon as you select car type the price for the selected rental period will be automatically calculated in the Price box. Use the Extras box at the bottom to add additional extras to the reservation. Their price will also be included in the total rental price.
             </div>
             <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-8 reservation-fields">
                 <div class="form-group">
                     <label for="status" class="col-sm-2 control-label">Status</label>
                     <div class="col-sm-10">
@@ -92,8 +92,15 @@
                 </div>
 
                 <div class="form-group">
+                <table class="table extras-table">
+                    <tbody></tbody>
+                </table>
+                </div>
+
+                <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-primary add-extra"> <i class="fa fa-plus"></i> Add Extra</button>
+                        <button type="button" class="btn btn-success save-reservation">Submit</button>
                     </div>
                 </div>
             </div>
@@ -252,7 +259,7 @@
 
             <div class="form-group">
                 <div class="col-sm-12">
-                    <button type="button" class="btn btn-primary">Submit</button>
+                    <button type="button" class="btn btn-success save-reservation">Submit</button>
                 </div>
             </div>
         </div>
