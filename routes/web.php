@@ -59,6 +59,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::get('{id}/delete', 'Admin\UsersController@destroy');
     });
 
+    Route::group(['prefix' => 'clients'], function(){
+        Route::get('/', 'Admin\ClientsController@index');
+        Route::get('/create', 'Admin\ClientsController@create');
+        Route::post('store', 'Admin\ClientsController@store');
+        Route::get('{id}/edit', 'Admin\ClientsController@edit');
+        Route::patch('update/{id}', 'Admin\ClientsController@update');
+        Route::get('{id}/delete', 'Admin\ClientsController@destroy');
+    });
+
 
     Route::group(['prefix' => 'reservations'], function(){
         Route::get('/', 'Admin\ReservationsController@index');
@@ -70,6 +79,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::post('add_payment', 'Admin\ReservationsController@addPayment');
         Route::post('remove_payment', 'Admin\ReservationsController@removePayment');
         Route::post('upload', 'Admin\ReservationsController@uploadFile');
+        Route::get('{id}/invoice', 'Admin\ReservationsController@invoicePDF');
         Route::post('calculate_difference', function(){
             $from = \Carbon\Carbon::parse(Request::get('date_from'));
             $to = \Carbon\Carbon::parse(Request::get('date_to'));

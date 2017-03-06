@@ -1,17 +1,17 @@
 @extends('admin.partials.layouts.master')
 @section('title')
-    Users Management
+    Clients Management
 @endsection
 
 @section('content')
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
-                Users
+                Clients
                 <small>Management</small>
             </h1>
             <ol class="breadcrumb">
-                <li><a class="btn bg-navy" href="{{url('admin/users/create')}}"><i class="fa fa-plus"></i> Add User</a></li>
+                <li><a class="btn bg-navy" href="{{url('admin/clients/create')}}"><i class="fa fa-plus"></i> Add Client</a></li>
             </ol>
         </section>
 
@@ -29,21 +29,23 @@
                             <table class="table table-hover">
                                 <tr>
                                     <th>No</th>
+                                    <th>User Name</th>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Registration date/time</th>
-                                    <th>Status</th>
+                                    <th>Phone</th>
+                                    <th>Last Rental</th>
                                     <th>&nbsp;</th>
                                 </tr>
                                 @foreach($oUsers as $index =>$oUser)
                                     <tr>
                                         <td>{{ ++$index }}</td>
+                                        <td>{{ $oUser->username }}</td>
                                         <td>{{ $oUser->name }}</td>
                                         <td>{{ $oUser->email }}</td>
-                                        <td>{{ $oUser->created_at }}</td>
-                                        <td>{{ ($oUser->status)?'Active':'Inactive' }}</td>
+                                        <td>{{ $oUser->phone }}</td>
+                                        <td></td>
                                         <td>
-                                            <a href="{{ url('admin/users/'.$oUser->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
+                                            <a href="{{ url('admin/clients/'.$oUser->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
                                             <?php /*<a href="{{ url('admin/users/'.$oUser->id.'/delete') }}"><i class="fa fa-trash"></i></a>*/?>
                                         </td>
                                     </tr>

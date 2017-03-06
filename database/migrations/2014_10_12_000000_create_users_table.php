@@ -21,6 +21,9 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('phone')->default('');
             $table->boolean('status')->default(1);
+            $table->string('driver_licence')->default('');
+            $table->string('passport_id')->default('');
+            $table->string('rental_form')->default('');
             $table->rememberToken();
             $table->timestamps();
         });

@@ -19,6 +19,7 @@ use App\CarReservationExtra;
 use App\User;
 use App\CarReservationPayment;
 use App\Http\Requests\ReservationRequest;
+use \PDF;
 
 class ReservationsController extends Controller
 {
@@ -963,7 +964,6 @@ class ReservationsController extends Controller
         $datetime1 = new \DateTime($to); // Today's Date/Time
         $datetime2 = new \DateTime($from);
         $interval = $datetime1->diff($datetime2);
-//        echo $interval->format('%D days %H hours');
         $data['days'] = $interval->format('%D');
         $data['hours'] = $interval->format('%H');
         return $data;
@@ -993,5 +993,23 @@ class ReservationsController extends Controller
 //            $oUser->save();
         }
         return $this->_successJsonResponse(['message'=>'File is Uploaded.', 'data'=>$data]);
+    }
+
+    public function invoicePDF($id){
+
+        $oReservation = CarReservation::where('id',$id)->first();
+        if(!$oReservation){
+            return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
+        }
+
+        $currency = $this->getCurrencySign($this->option_arr['currency']);
+        return view('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
+//        $html = view('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
+//        PDF::AddPage();
+//        PDF::writeHTML($html, true, 0, true, true);
+//        PDF::lastPage();
+//        PDF::Output('example_006.pdf', 'I');
+//        $pdf = PDF::loadView('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
+//        return $pdf->download($oReservation->reservation_number.'.pdf');
     }
 }

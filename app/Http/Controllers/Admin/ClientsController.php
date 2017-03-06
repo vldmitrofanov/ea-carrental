@@ -6,9 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use App\Role;
-use App\Http\Requests\UserRequest;
+use App\Country;
+use App\Http\Requests\ClientRequest;
 
-class UsersController extends Controller
+class ClientsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,10 +18,9 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $oRoles = Role::whereIn('name', ['admin','editor'])->pluck('id', 'name')->toArray();
-//        $oUsers = User::paginate(15);
-        $oUsers = User::whereHas('roles', function($q){$q->whereIn('name', ['admin','editor']);})->paginate(15);
-        return view('admin.users.index', compact('oRoles', 'oUsers'));
+        $oRoles = Role::whereIn('name', ['customer'])->pluck('id', 'name')->toArray();
+        $oUsers = User::whereHas('roles', function($q){$q->whereIn('name', ['customer']);})->paginate(15);
+        return view('admin.clients.index', compact('oRoles', 'oUsers'));
     }
 
     /**
@@ -31,8 +31,9 @@ class UsersController extends Controller
     public function create()
     {
         $oUser = null;
-        $oRoles = Role::whereIn('name', ['admin','editor'])->orderBy('name', 'ASC')->get();
-        return view('admin.users.add', compact('oRoles', 'oUser'));
+        $oRoles = Role::whereIn('name', ['customer'])->orderBy('name', 'ASC')->get();
+        $oCountries = Country::pluck('name', 'id')->toArray();
+        return view('admin.clients.add', compact('oRoles', 'oUser', 'oCountries'));
     }
 
     /**
@@ -41,31 +42,32 @@ class UsersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(ClientRequest $request)
     {
         $oUser = new User;
+        $oUser->title = $request->input('title');
         $oUser->name = $request->input('name');
         $oUser->username = $request->input('username');
         $oUser->email = $request->input('email');
         $oUser->phone = $request->input('phone');
-        $oUser->password = bcrypt($request->input('password'));
-        $oUser->status = (boolean)$request->input('status');
-
         $oUser->company_name = ($request->input('company_name'))?:'';
         $oUser->address = ($request->input('address'))?:'';
         $oUser->state = ($request->input('state'))?:'';
         $oUser->city = ($request->input('city'))?:'';
         $oUser->zip = ($request->input('zip'))?:'';
-        $oUser->country_id = ($request->input('country_id'))?:'0';
+        $oUser->country_id = ($request->input('country_id'))?:'';
+        $oUser->password = bcrypt($request->input('password'));
+        $oUser->status = (boolean)$request->input('status');
         $oUser->other_info = '';
+
         if($oUser->save()){
             $oUser->roles()->attach($request->input('role_id'));
         }
 
-        \Session::flash('flash_message', 'User Information saved successfully.');
+        \Session::flash('flash_message', 'Client Information saved successfully.');
         \Session::flash('flash_type', 'alert-success');
 
-        return \Redirect::to('admin/users');
+        return \Redirect::to('admin/clients');
     }
 
     /**
@@ -87,9 +89,10 @@ class UsersController extends Controller
      */
     public function edit($id)
     {
-        $oUser = User::whereHas('roles', function($q){$q->whereIn('name', ['admin', 'editor']);})->where('id', $id)->firstOrFail();
+        $oUser = User::whereHas('roles', function($q){$q->whereIn('name', ['customer']);})->where('id', $id)->firstOrFail();
         $oRoles = Role::orderBy('name', 'ASC')->get();
-        return view('admin.users.edit', compact('oRoles', 'oUser'));
+        $oCountries = Country::pluck('name', 'id')->toArray();
+        return view('admin.clients.edit', compact('oRoles', 'oUser', 'oCountries'));
     }
 
     /**
@@ -99,33 +102,34 @@ class UsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UserRequest $request, $id)
+    public function update(ClientRequest $request, $id)
     {
         $oUser = User::findOrFail($id);
+        $oUser->title = $request->input('title');
         $oUser->name = $request->input('name');
         $oUser->username = $request->input('username');
         $oUser->email = $request->input('email');
         $oUser->phone = $request->input('phone');
-        if($request->input('password')!='') {
-            $oUser->password = bcrypt($request->input('password'));
-        }
-        $oUser->status = (boolean)$request->input('status');
         $oUser->company_name = ($request->input('company_name'))?:'';
         $oUser->address = ($request->input('address'))?:'';
         $oUser->state = ($request->input('state'))?:'';
         $oUser->city = ($request->input('city'))?:'';
         $oUser->zip = ($request->input('zip'))?:'';
         $oUser->country_id = ($request->input('country_id'))?:'0';
+        if($request->input('password')!='') {
+            $oUser->password = bcrypt($request->input('password'));
+        }
+        $oUser->status = (boolean)$request->input('status');
         $oUser->other_info = '';
         $oUser->save();
         $oUser->detachRoles();
 
         $oUser->roles()->attach($request->input('role_id'));
 
-        \Session::flash('flash_message', 'User Information saved successfully.');
+        \Session::flash('flash_message', 'Client Information saved successfully.');
         \Session::flash('flash_type', 'alert-success');
 
-        return \Redirect::to('admin/users');
+        return \Redirect::to('admin/clients');
     }
 
     /**

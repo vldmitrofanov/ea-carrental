@@ -86,6 +86,27 @@
 
         });
 
+        $(document).on("click", "button.btn-pdf", function(e) {
+            var formData = $('form#car_reservation').serializeArray();
+            formData.push({
+                name: "_method",
+                value: "post"
+            });
+            $.post('/admin/reservations/invoice_pdf', formData)
+            .done(function(response){
+                displayMessageAlert(response.message);
+                pageRefresh()
+            })
+            .fail(function(response){
+                $.unblockUI();
+                $.each(response.responseJSON, function (key, value) {
+                    $.each(value, function (index, message) {
+                        displayMessageAlert(message, 'danger', 'warning-sign');
+                    });
+                });
+            });
+        });
+
         $(document).on("click", "button.save-reservation", function(e) {
             var formData = $('form#car_reservation').serializeArray();
             formData.push({
@@ -95,7 +116,7 @@
             $.post($('form#car_reservation').attr('action'), formData)
             .done(function(response){
                 displayMessageAlert(response.message);
-//                pageRefresh()
+                pageRefresh()
             })
             .fail(function(response){
                 $.unblockUI();
@@ -166,7 +187,6 @@
         })
 
         $(document).on("change", "text#date_to", function(e) {
-            alert('in')
             var formData = $('form#car_type').serializeArray();
             formData.push({
                 name: "_method",
@@ -373,7 +393,6 @@
                                                     .append('<a href="javascript:;" class="remove-payment" data-id="'+(response.data.payment.id)+'" ><i class="fa fa-trash"></i></a>')
                                             )
                                     );
-                            alert(response.data.amountPaid);
                             $('div.payment-made').html($('#currency_sign').val()+' '+response.data.amountPaid);
 
                             $.unblockUI();

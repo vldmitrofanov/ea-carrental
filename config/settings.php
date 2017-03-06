@@ -1,6 +1,17 @@
 <?php
 
 return [
+    'company' => [
+        'name' => 'Embassy Alliance Travel Sdn. Bhd.',
+        'address' => 'Suite C-12-1, Wisma Goshen, Plaza Pantai, Jalan 4/83A, Off Jalan Pantai Bharu',
+        'city' => 'Kuala Lumpur',
+        'state' => '',
+        'zip' => '59200',
+        'country' => 'Malaysia',
+        'phone' => '+(60) 322 874 722',
+        'fax' => '+(60) 322 874 722',
+        'email' => ''
+    ],
 
     'transmission' => [
         'Manual' => 'M',
