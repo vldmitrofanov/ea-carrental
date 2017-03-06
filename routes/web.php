@@ -69,6 +69,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::post('load_car_prices', 'Admin\ReservationsController@loadCarPrices');
         Route::post('add_payment', 'Admin\ReservationsController@addPayment');
         Route::post('remove_payment', 'Admin\ReservationsController@removePayment');
+        Route::post('upload', 'Admin\ReservationsController@uploadFile');
         Route::post('calculate_difference', function(){
             $from = \Carbon\Carbon::parse(Request::get('date_from'));
             $to = \Carbon\Carbon::parse(Request::get('date_to'));

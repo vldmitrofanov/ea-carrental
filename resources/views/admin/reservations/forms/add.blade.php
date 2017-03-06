@@ -158,8 +158,7 @@
 
             </div>
         </div>
-
-
+        
         <div class="tab-pane" id="customer">
             <div class="alert alert-info alert-dismissible">
                 <h4><i class="icon fa fa-info"></i> Customer Details!</h4>
@@ -253,6 +252,31 @@
                 <label for="cc_code" class="col-sm-2 control-label">Credit card code</label>
                 <div class="col-sm-10">
                     {!! Form::text('cc_code', null, ['class' => 'form-control', 'id' => 'cc_code', 'placeholder' => 'Credit card code']) !!}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="passport">ID/IC/Passport</label>
+                <div class="col-sm-10">
+                    <div id="filename"></div>
+                    <div id="progress"></div>
+                    <div id="progressBar"></div>
+                    
+                    <input type="file" class="form-control" style="border:none;" name="passport">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="licence">Driver Licence</label>
+                <div class="col-sm-10">
+                <input type="file" class="form-control" style="border:none;" name="licence">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label"for="rental_form">Rental_form</label>
+                <div class="col-sm-10">
+                <input type="file" class="form-control" style="border:none;" name="rental_form">
                 </div>
             </div>
 

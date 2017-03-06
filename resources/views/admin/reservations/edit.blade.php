@@ -36,6 +36,9 @@
                      <input type="hidden" name="id" id="id" value="{{ $oReservation->id}}">
                      <input type="hidden" name="currency_sign" id="currency_sign" value="{{ $currencySign }}">
                      <input type="hidden" name="payment_made" id="payment_made" value="{{ ($oReservation->payments->where('status','paid')->sum('amount'))?:0 }}">
+                     <input type="hidden" name="passport" id="passport" value="{{ $oReservation->user->passport_id}}">
+                     <input type="hidden" name="licence" id="licence" value="{{ $oReservation->user->driver_licence}}">
+                     <input type="hidden" name="rental_form" id="rental_form" value="{{ $oReservation->user->rental_form}}">
 
                         @include('admin.reservations.forms.edit', ['submit_button'=>'Create'])
                     {!! Form::close() !!}
@@ -46,7 +49,43 @@
 @endsection
 
 @section('javascript')
+<script src="{{ asset('js/su.min.js') }}"></script>
     <script type="text/javascript" >
+        $(document).ready(function(){
+            $('input[type=file]').change(function(){
+                $(this).simpleUpload("/admin/reservations/upload", {
+                    allowedExts: ["jpg", "jpeg", "jpe", "jif", "jfif", "jfi", "png", "gif"],
+                    data : {
+                                user: {{ $oReservation->user_id }},
+                                _token : $('input[name="_token"]').val(),
+                                type: "post"
+                            },
+                    start: function(file){
+                            $('#filename').html(file.name);
+                            $('#progress').html("");
+                            $('#progressBar').width(0);
+                    },
+
+                    progress: function(progress){
+                            $('#progress').html("Progress: " + Math.round(progress) + "%");
+                            $('#progressBar').width(progress + "%");
+                    },
+
+                    success: function(data){
+                            $('#progress').html("Success!<br>Data: " + data.message);
+                            $('#'+data.data.type).val(data.data.file);
+                    },
+
+                    error: function(error){
+                            $('#progress').html("Failure!<br>" + error.name + ": " + error.message);
+                    }
+
+                });
+
+            });
+
+        });
+
         $(document).on("click", "button.save-reservation", function(e) {
             var formData = $('form#car_reservation').serializeArray();
             formData.push({

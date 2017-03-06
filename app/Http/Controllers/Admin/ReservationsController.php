@@ -91,10 +91,27 @@ class ReservationsController extends Controller
                     $oUser->city = $request->input('city');
                     $oUser->zip = $request->input('zip');
                     $oUser->country_id = $request->input('country_id');
+                    $oUser->passport_id = $request->input('passport');
+                    $oUser->driver_licence = $request->input('licence');
+                    $oUser->rental_form = $request->input('rental_form');
                     $oUser->password = bcrypt('elecon123');
                     $oUser->other_info = '';
                     $oUser->save();
                 }
+                
+                if ($request->file('passport')) {
+                    $oUser->passport_id = $request->file('passport')->store('public/users');
+                    $oUser->save();
+                }
+                if ($request->file('licence')) {
+                    $oUser->driver_licence = $request->file('licence')->store('public/users');
+                    $oUser->save();
+                }
+                if ($request->file('rental_form')) {
+                    $oUser->rental_form = $request->file('rental_form')->store('public/users');
+                    $oUser->save();
+                }
+
                 $oCarReservation = new CarReservation;
                 $oCarReservation->reservation_number = time() . mt_rand(100000, 999999);
                 $oCarReservation->ip_address = $request->ip();
@@ -120,9 +137,9 @@ class ReservationsController extends Controller
                     $oCarReservationDetail->rental_days = $request->input('rental_days');
                     $oCarReservationDetail->rental_hours = $request->input('rental_hours');
                     $oCarReservationDetail->price_per_day = $request->input('price_per_day');
-                    $oCarReservationDetail->price_per_day_detail = $request->input('price_per_day_detail');
+                    $oCarReservationDetail->price_per_day_detail = ($request->input('price_per_day_detail'))?:'';
                     $oCarReservationDetail->price_per_hour = $request->input('price_per_hour');
-                    $oCarReservationDetail->price_per_hour_detail = $request->input('price_per_hour_detail');
+                    $oCarReservationDetail->price_per_hour_detail = ($request->input('price_per_hour_detail'))?:'';
                     $oCarReservationDetail->car_rental_fee = $request->input('car_rental_fee');
                     $oCarReservationDetail->extra_price = $request->input('extra_price');
                     $oCarReservationDetail->insurance = $request->input('insurance');
@@ -131,16 +148,18 @@ class ReservationsController extends Controller
                     $oCarReservationDetail->total_price = $request->input('total_price');
                     $oCarReservationDetail->required_deposit = $request->input('required_deposit');
                     $oCarReservationDetail->save();
-
-                    foreach ($request->input('extra_id') as $key=>$val) {
-                        $oExtra = CarExtra::where('id', $val)->first();
-                        $oCarReservationExtra = new CarReservationExtra;
-                        $oCarReservationExtra->reservation_id = $oCarReservation->id;
-                        $oCarReservationExtra->extra_id = $oExtra->id;
-                        $oCarReservationExtra->quantity = $request->input('extra_cnt')[$key];
-                        $oCarReservationExtra->price = $oExtra->price;
-                        $oCarReservationExtra->extended_notes = '';
-                        $oCarReservationExtra->save();
+                    
+                    if($request->input('extra_id')){
+                        foreach ($request->input('extra_id') as $key=>$val) {
+                            $oExtra = CarExtra::where('id', $val)->first();
+                            $oCarReservationExtra = new CarReservationExtra;
+                            $oCarReservationExtra->reservation_id = $oCarReservation->id;
+                            $oCarReservationExtra->extra_id = $oExtra->id;
+                            $oCarReservationExtra->quantity = $request->input('extra_cnt')[$key];
+                            $oCarReservationExtra->price = $oExtra->price;
+                            $oCarReservationExtra->extended_notes = '';
+                            $oCarReservationExtra->save();
+                        }
                     }
                     return $this->_successJsonResponse(['message'=>'Reservation information saved.', 'data' => $oCarReservation]);
                 }else{
@@ -261,7 +280,24 @@ class ReservationsController extends Controller
                 $oUser->city = $request->input('city');
                 $oUser->zip = $request->input('zip');
                 $oUser->country_id = $request->input('country_id');
+                $oUser->passport_id = $request->input('passport');
+                $oUser->driver_licence = $request->input('licence');
+                $oUser->rental_form = $request->input('rental_form');
+                    
                 $oUser->save();
+                
+                if ($request->file('passport')) {
+                    $oUser->passport_id = $request->file('passport')->store('public/users');
+                    $oUser->save();
+                }
+                if ($request->file('licence')) {
+                    $oUser->driver_licence = $request->file('licence')->store('public/users');
+                    $oUser->save();
+                }
+                if ($request->file('rental_form')) {
+                    $oUser->rental_form = $request->file('rental_form')->store('public/users');
+                    $oUser->save();
+                }
 //updating the reservation infor
                 $oCarReservation->status = $request->input('status');
                 $oCarReservation->cc_type = $request->input('cc_type');
@@ -285,9 +321,9 @@ class ReservationsController extends Controller
                 $oCarReservationDetail->rental_days = $request->input('rental_days');
                 $oCarReservationDetail->rental_hours = $request->input('rental_hours');
                 $oCarReservationDetail->price_per_day = $request->input('price_per_day');
-                $oCarReservationDetail->price_per_day_detail = $request->input('price_per_day_detail');
+                $oCarReservationDetail->price_per_day_detail = ($request->input('price_per_day_detail'))?:'';
                 $oCarReservationDetail->price_per_hour = $request->input('price_per_hour');
-                $oCarReservationDetail->price_per_hour_detail = $request->input('price_per_hour_detail');
+                $oCarReservationDetail->price_per_hour_detail = ($request->input('price_per_hour_detail'))?:'';
                 $oCarReservationDetail->car_rental_fee = $request->input('car_rental_fee');
                 $oCarReservationDetail->extra_price = $request->input('extra_price');
                 $oCarReservationDetail->insurance = $request->input('insurance');
@@ -300,21 +336,24 @@ class ReservationsController extends Controller
                 $oCarReservationDetail->save();
 
 //updating the extras ifo
-                foreach ($request->input('extra_id') as $key=>$val) {
-                    $oExtra = CarExtra::where('id', $val)->first();
-                    $oCarReservationExtra = CarReservationExtra::where('id', $key)->first();
-                    if(!$oCarReservationExtra) {
-                        $oCarReservationExtra = new CarReservationExtra;
-                        $oCarReservationExtra->reservation_id = $oCarReservation->id;
+                if($request->input('extra_id')){
+                    foreach ($request->input('extra_id') as $key=>$val) {
+                        $oExtra = CarExtra::where('id', $val)->first();
+                        $oCarReservationExtra = CarReservationExtra::where('id', $key)->first();
+                        if(!$oCarReservationExtra) {
+                            $oCarReservationExtra = new CarReservationExtra;
+                            $oCarReservationExtra->reservation_id = $oCarReservation->id;
+                        }
+                        $oCarReservationExtra->extra_id = $oExtra->id;
+                        $oCarReservationExtra->quantity = $request->input('extra_cnt')[$key];
+                        $oCarReservationExtra->price = $oExtra->price;
+                        $oCarReservationExtra->extended_notes = '';
+                        $oCarReservationExtra->save();
                     }
-                    $oCarReservationExtra->extra_id = $oExtra->id;
-                    $oCarReservationExtra->quantity = $request->input('extra_cnt')[$key];
-                    $oCarReservationExtra->price = $oExtra->price;
-                    $oCarReservationExtra->extended_notes = '';
-                    $oCarReservationExtra->save();
                 }
 
 //updating the payment info
+                if($request->input('payment_method')){
                 foreach ($request->input('payment_method') as $key=>$val) {
                     $oPayment = CarReservationPayment::where('id', $key)->first();
                     $oPayment->payment_method = $val;
@@ -322,6 +361,7 @@ class ReservationsController extends Controller
                     $oPayment->amount = $request->input('payment_amount')[$key];
                     $oPayment->status = $request->input('payment_status')[$key];
                     $oPayment->save();
+                }
                 }
 
                 if($request->input('return_mileage')>0) {
@@ -928,5 +968,30 @@ class ReservationsController extends Controller
         $data['hours'] = $interval->format('%H');
         return $data;
     }
-
+    
+    public function uploadFile(Request $request){
+//        $oUser = User::where('id', $request->input('user'))->first();
+//        if(!$oUser){
+//            return $this->_failedJsonResponse([['User record is not valid.']]);
+//        }
+        if ($request->file('passport')) {
+//            $oUser->passport_id = $request->file('passport')->store('public/users');
+            $data['file'] = $request->file('passport')->store('public/users');
+            $data['type'] = 'passport';
+//            $oUser->save();
+        }
+        if ($request->file('licence')) {
+//            $oUser->driver_licence = $request->file('licence')->store('public/users');
+            $data['file'] = $request->file('licence')->store('public/users');
+            $data['type'] = 'licence';
+//            $oUser->save();
+        }
+        if ($request->file('rental_form')) {
+//            $oUser->rental_form = $request->file('rental_form')->store('public/users');
+            $data['file'] = $request->file('rental_form')->store('public/users');
+            $data['type'] = 'rental_form';
+//            $oUser->save();
+        }
+        return $this->_successJsonResponse(['message'=>'File is Uploaded.', 'data'=>$data]);
+    }
 }

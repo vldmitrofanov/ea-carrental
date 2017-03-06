@@ -290,7 +290,42 @@
                     {!! Form::text('cc_code', $oReservation->cc_code, ['class' => 'form-control', 'id' => 'cc_code', 'placeholder' => 'Credit card code']) !!}
                 </div>
             </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="passport">ID/IC/Passport</label>
+                <div class="col-sm-10">
+                    <div id="filename"></div>
+                    <div id="progress"></div>
+                    <div id="progressBar"></div>
+                    
+                <input type="file" class="form-control" style="border:none;" name="passport">
+                @if($oReservation->user->passport())
+                <p class="help-block"><a target="_blank" href="{{$oReservation->user->passport()}}">Download ID/IC/Passport</a></p>
+                @endif
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="licence">Driver Licence</label>
+                <div class="col-sm-10">
+                <input type="file" class="form-control" style="border:none;" name="licence">
+                
+                @if($oReservation->user->licence())
+                    <p class="help-block"><a target="_blank" href="{{$oReservation->user->licence()}}">Download Driver Licence</a></p>
+                @endif
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="rental_form">Rental Form</label>
+                <div class="col-sm-10">
+                <input type="file" class="form-control" style="border:none;" name="rental_form">
 
+                @if($oReservation->user->rentalForm())
+                    <p class="help-block"><a target="_blank" href="{{$oReservation->user->rentalForm()}}">Download Rental Form</a></p>
+                @endif
+                </div>
+            </div>
 
             <div class="form-group">
                 <div class="col-sm-12">

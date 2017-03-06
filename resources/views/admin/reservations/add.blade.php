@@ -32,6 +32,9 @@
                      <input type="hidden" name="tax" id="tax">
                      <input type="hidden" name="total_price" id="total_price">
                      <input type="hidden" name="required_deposit" id="required_deposit">
+                     <input type="hidden" name="passport" id="passport" value="">
+                     <input type="hidden" name="licence" id="licence" value="">
+                     <input type="hidden" name="rental_form" id="rental_form" value="">
 
                         @include('admin.reservations.forms.add', ['submit_button'=>'Create'])
                     {!! Form::close() !!}
@@ -42,7 +45,42 @@
 @endsection
 
 @section('javascript')
+    <script src="{{ asset('js/su.min.js') }}"></script>
     <script type="text/javascript" >
+        $(document).ready(function(){
+            $('input[type=file]').change(function(){
+                $(this).simpleUpload("/admin/reservations/upload", {
+                    allowedExts: ["jpg", "jpeg", "png", "gif"],
+                    data : {
+                        _token : $('input[name="_token"]').val(),
+                        type: "post"
+                    },
+                    start: function(file){
+                        $('#filename').html(file.name);
+                        $('#progress').html("");
+                        $('#progressBar').width(0);
+                    },
+
+                    progress: function(progress){
+                        $('#progress').html("Progress: " + Math.round(progress) + "%");
+                        $('#progressBar').width(progress + "%");
+                    },
+
+                    success: function(data){
+                        $('#progress').html("Success!<br>Data: " + data.message);
+                        $('#'+data.data.type).val(data.data.file);
+                    },
+
+                    error: function(error){
+                        $('#progress').html("Failure!<br>" + error.name + ": " + error.message);
+                    }
+
+                });
+
+            });
+
+        });
+        
         $(document).on("click", "button.save-reservation", function(e) {
             var formData = $('form#car_reservation').serializeArray();
             formData.push({
