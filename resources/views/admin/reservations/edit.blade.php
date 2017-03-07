@@ -619,6 +619,9 @@
                             displayMessageAlert(message, 'danger', 'warning-sign');
                         });
                     });
+                                        
+                    $('input#date_from').val('');
+                    $('input#date_to').val('');
                 });
             });
 

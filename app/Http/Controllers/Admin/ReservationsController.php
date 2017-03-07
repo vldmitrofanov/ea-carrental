@@ -202,7 +202,6 @@ class ReservationsController extends Controller
         $oExtras = CarType::where('id',$oReservation->details->first()->car_type_id)->first()->extras()->get();
         $settingsArr = $this->option_arr;
         $currencySign = $this->getCurrencySign($this->option_arr['currency']);
-//        print_r($oExtras);exit;
         return view('admin.reservations.edit', compact('oOfficeLocations', 'oCarTypes', 'oCountries', 'oReservation', 'oCars', 'currencySign', 'settingsArr', 'oExtras'));
     }
 
@@ -685,7 +684,6 @@ class ReservationsController extends Controller
     public function loadCarPrices(Request $request){
         $this->_checkAjaxRequest();
         $o_new_day_per_day =0 ;
-//        print_r($this->option_arr);exit;
         $oSetting = Setting::where('key', 'currency')->first();
         $currency = ($oSetting)?$oSetting->value:'USD';
 
@@ -695,7 +693,16 @@ class ReservationsController extends Controller
         if(!$oCarType){
             return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
         }
-
+        
+        $carAvailable = $this->checkCarAvailability($request);
+        if($carAvailable['code']==100){
+            return $this->_failedJsonResponse([['Reservation date range is not valid.']]);
+        }else if($carAvailable['code']==300){
+            return $this->_failedJsonResponse([['Car Type and Car is not valid.']]);
+        }else if($carAvailable['code']==150){
+            return $this->_failedJsonResponse([['Car is <strong>not available</strong> during selected time period. Please select another Car and/or change time period.']]);
+        }
+                
         $oPrices = $oCarType->prices()
             ->where('car_type_prices.date_from','>=',Carbon::parse($request->input('date_from'))->format('Y-m-d'))
             ->where('car_type_prices.date_to','<=',Carbon::parse($request->input('date_to'))->format('Y-m-d'))
@@ -1011,5 +1018,59 @@ class ReservationsController extends Controller
 //        PDF::Output('example_006.pdf', 'I');
 //        $pdf = PDF::loadView('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
 //        return $pdf->download($oReservation->reservation_number.'.pdf');
+    }
+    
+    public function checkCarAvailability(Request $request){
+            $response = array('code' => 100);
+
+            $date_from =Carbon::parse($request->input('date_from'));
+            $date_to =Carbon::parse($request->input('date_to'));
+
+            $date_from_ts = strtotime($date_from);
+            $date_to_ts = strtotime($date_to);
+
+            if($date_to_ts <= $date_from_ts){
+                $response = array('code' => 100);
+            }else{
+                if ((int) $request->input('car_type_id') > 0 && (int) $request->input('car_id') > 0 ){
+                    $min_hour = $this->option_arr['minimum_booking_length'];
+                    if($this->option_arr['calculate_rental_fee'] == 'perday'){
+                        $min_hour = $this->option_arr['minimum_booking_length'] * 24;
+                    }
+                    
+                    if( round($date_to_ts - $date_from_ts)/3600 < $min_hour){
+                        $response['code'] = 100;
+                        return $response;
+                    }
+
+                    $current_datetime = date('Y-m-d H:i:s', time() - ($this->option_arr['booking_pending'] * 3600));
+//                    $oBooking = CarReservation::with('details')->where('car_reservation_details.car_type_id', $request->input('car_type_id'))
+                    if (($request->input('id')) && (int) $request->input('id')){
+                        $id = $request->input('id');
+                    }else{
+                        $id = 0;
+                    }
+                    $oBooking = CarReservation::Join('car_reservation_details', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
+                                ->where('car_reservation_details.car_type_id', $request->input('car_type_id'))
+                                ->where('car_reservation_details.car_id', $request->input('car_id'))
+                                ->where('rental_car_reservations.id','<>', $id)
+                                ->whereRaw("(`status` = 'confirmed' OR (`status` = 'pending' AND rental_car_reservations.created_at >= '$current_datetime'))")
+                                ->whereRaw(sprintf("(((`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`date_from` < '%1\$s' AND `date_to` > '%2\$s') OR (`date_from` > '%1\$s' AND `date_to` < '%2\$s'))",$date_from, $date_to))
+                                ->distinct('rental_car_reservations.id')
+//                                ->toSql();
+                                ->count('rental_car_reservations.id');
+                    
+                    $booking_cnt = $oBooking;//$pjBookingModel->findCount()->getData();
+                    if ($booking_cnt == 0){
+                        $response['code'] = 200;
+                    }else{
+                        $response['code'] = 150;
+                    }
+                }else{
+                    $response['code'] = 300;
+                }
+            }
+            
+            return $response;
     }
 }

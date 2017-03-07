@@ -22,6 +22,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::post('location_customtime', 'Admin\OfficeLocationController@locationCustomTime');
         Route::post('remove_customtime', 'Admin\OfficeLocationController@removeLocationCustomTime');
         Route::post('load_customtime', 'Admin\OfficeLocationController@loadLocationCustomTime');
+        Route::post('find_location', 'Admin\OfficeLocationController@findOfficeLocation');
     });
 
     Route::group(['prefix' => 'types'], function(){

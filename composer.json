@@ -11,7 +11,8 @@
         "laravelcollective/html":"^5.4",
         "zizaco/entrust": "5.2.x-dev",
         "barryvdh/laravel-dompdf": "0.7.*",
-        "elibyy/tcpdf-laravel": "5.4.*"
+        "elibyy/tcpdf-laravel": "5.4.*",
+        "guzzlehttp/guzzle": "~5.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

@@ -48,25 +48,34 @@
         {!! Form::label('zip', 'Zip') !!}
         {!! Form::text('zip', null, ['class' => 'form-control', 'id' => 'zip', 'placeholder' => 'Zip']) !!}
     </div>
-    <div class="form-group">
-        <button type="button" class="btn btn-info">Find on Map</button>
-    </div>
-    <div class="form-group">
-        {!! Form::label('lat', 'Latitude') !!}
-        {!! Form::text('lat', null, ['class' => 'form-control', 'id' => 'lat', 'placeholder' => 'Latitude']) !!}
-    </div>
-    <div class="form-group">
-        {!! Form::label('lng', 'Longitude') !!}
-        {!! Form::text('lng', null, ['class' => 'form-control', 'id' => 'lng', 'placeholder' => 'Longitude']) !!}
-    </div>
+    
+    <div class="row">
+        <div class="col-md-6">  
+            <div class="form-group">
+                <button type="button" class="btn btn-info btn-map"><i class="fa fa-map-o"></i> Find on Map</button>
+            </div>
+            <div class="form-group">
+                {!! Form::label('lat', 'Latitude') !!}
+                {!! Form::text('lat', null, ['class' => 'form-control', 'id' => 'lat', 'placeholder' => 'Latitude']) !!}
+            </div>
+            <div class="form-group">
+                {!! Form::label('lng', 'Longitude') !!}
+                {!! Form::text('lng', null, ['class' => 'form-control', 'id' => 'lng', 'placeholder' => 'Longitude']) !!}
+            </div>
 
-    <div class="form-group">
-        <label for="exampleInputFile">Image</label>
-        <input name="thumb_image" type="file">
+            <div class="form-group">
+                <label for="exampleInputFile">Image</label>
+                <input name="thumb_image" type="file">
+            </div>
+        </div>
+        <div class="col-md-6">   
+            <div class="box box-solid bg-light-blue-gradient">
+            <div class="box-body">
+              <div style="height: 300px; width: 100%;" id="world-map"></div>
+            </div>
+          </div>
+        </div>
     </div>
-
-
-
 </div>
 
 <div class="box-footer">

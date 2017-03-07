@@ -35,7 +35,7 @@ class ReservationRequest extends FormRequest
                 return [
                     'status' => 'required',
                     'date_from' => 'required',
-                    'date_to' => 'required',
+                    'date_to' => 'required|after:date_from',
                     'car_type_id' => 'required',
                     'car_id' => 'required',
                     'pickup_location_id' => 'required',
@@ -55,7 +55,7 @@ class ReservationRequest extends FormRequest
                 return [
                     'status' => 'required',
                     'date_from' => 'required',
-                    'date_to' => 'required',
+                    'date_to' => 'required|after:date_from',
                     'car_type_id' => 'required',
                     'car_id' => 'required',
                     'pickup_location_id' => 'required',

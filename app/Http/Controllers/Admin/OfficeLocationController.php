@@ -10,6 +10,8 @@ use App\Country;
 use App\OfficeLocationWorkTime;
 use App\Http\Requests\OfficeLocationRequest;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class OfficeLocationController extends Controller
 {
@@ -252,5 +254,36 @@ class OfficeLocationController extends Controller
         }
         $data['time'] = $oCustomTime;
         return $this->_successJsonResponse(['message'=>'Office Location Custom Time information removed.', 'data' =>$data]);
+    }
+    
+    public function findOfficeLocation(Request $request){
+        $this->_checkAjaxRequest();
+        
+        $address = array();
+        $address[] = @$request->input('zip');
+        $address[] = @$request->input('address');
+        $address[] = @$request->input('city');
+        $address[] = @$request->input('state');
+
+        foreach ($address as $key => $value){
+            $tmp = preg_replace('/\s+/', '+', $value);
+            $address[$key] = $tmp;
+        }
+        $_address = join(",+", $address);
+        $googleFile = "https://maps.googleapis.com/maps/api/geocode/json?address=$_address&sensor=false";
+        $client = new Client();
+        $res  = $client->get($googleFile);
+        if($res->json()){
+            $result = $res->json()['results'][0]['geometry']['location'];
+            $data['lat'] = $result['lat'];
+            $data['lng'] = $result['lng'];
+            $data['zip'] = $request->input('zip');
+        }else{
+            $data['lat'] = NULL;
+            $data['lng'] = NULL;
+            $data['zip'] = NULL;
+        }
+        
+         return $this->_successJsonResponse(['message'=>'Location information loaded.', 'data' =>$data]);
     }
 }

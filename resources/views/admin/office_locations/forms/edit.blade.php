@@ -81,37 +81,48 @@
                     {!! Form::text('zip', null, ['class' => 'form-control', 'id' => 'zip', 'placeholder' => 'Zip']) !!}
                 </div>
             </div>
-            <div class="form-group">
-                <label for="" class="col-sm-2 control-label"></label>
-                <div class="col-sm-10">
-                    <button type="button" class="btn btn-info">Find on Map</button>
+            <div class="row">
+            <div class="col-md-4 col-md-offset-2">
+                <div class="form-group">
+                    <label for="" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <button type="button" class="btn btn-info btn-map"><i class="fa fa-map-o"></i> Find on Map</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lat" class="col-sm-2 control-label">Latitude</label>
+                    <div class="col-sm-10">
+                        {!! Form::text('lat', null, ['class' => 'form-control', 'id' => 'lat', 'placeholder' => 'Latitude']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lng" class="col-sm-2 control-label">Longitude</label>
+                    <div class="col-sm-10">
+                        {!! Form::text('lng', null, ['class' => 'form-control', 'id' => 'lng', 'placeholder' => 'Longitude']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputFile" class="col-sm-2 control-label">Image</label>
+                    <div class="col-sm-10">
+                    <input name="type_image" type="file">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="lat" class="col-sm-2 control-label">Latitude</label>
-                <div class="col-sm-10">
-                    {!! Form::text('lat', null, ['class' => 'form-control', 'id' => 'lat', 'placeholder' => 'Latitude']) !!}
+            <div class="col-md-6">   
+                <div class="box box-solid bg-light-blue-gradient">
+                <div class="box-body">
+                  <div style="height: 300px; width: 100%;" id="world-map"></div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="lng" class="col-sm-2 control-label">Longitude</label>
-                <div class="col-sm-10">
-                    {!! Form::text('lng', null, ['class' => 'form-control', 'id' => 'lng', 'placeholder' => 'Longitude']) !!}
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="exampleInputFile" class="col-sm-2 control-label">Image</label>
-                <div class="col-sm-10">
-                <input name="type_image" type="file">
-                </div>
+              </div>
             </div>
 
-            <div class="form-group">
-                <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-            </div>
-
+        </div>
         </div>
 
         <div class="tab-pane" id="default_working_time">

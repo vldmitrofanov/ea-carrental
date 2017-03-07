@@ -84,11 +84,11 @@
             <div class="row">
                 <div class="col-xs-6">
                     <p class="lead">Amount Due: &nbsp;{{ $currency }} {{ $oReservation->details()->get()->sum('total_price') }}</p>
-
+                    <?php /*
                     <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
                         Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles, weebly ning heekya handango imeem plugg
                         dopplr jibjab, movity jajah plickers sifteo edmodo ifttt zimbra.
-                    </p>
+                    </p> */ ?>
                 </div>
 
                 <div class="col-xs-6">
