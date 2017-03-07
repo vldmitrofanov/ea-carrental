@@ -18,9 +18,8 @@ class CreateDiscountVouchersTable extends Migration
             $table->string('voucher_code')->default('');
             $table->decimal('amount', 10, 2)->default(0);
             $table->enum('amount_type', ['amount', 'percent'])->default('amount');
-            $table->dateTime('valid_from')->nullable();
-            $table->dateTime('valid_to')->nullable();            
             $table->enum('discount_type', ['all', 'selected'])->default('all');
+            $table->boolean('status')->default(true);
             $table->timestamps();
 
         });
