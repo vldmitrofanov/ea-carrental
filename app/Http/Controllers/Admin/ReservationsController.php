@@ -38,7 +38,7 @@ class ReservationsController extends Controller
      */
     public function index()
     {
-        $oReservations = CarReservation::paginate(15);
+        $oReservations = CarReservation::orderBy('id', 'desc')->paginate(15);
         return view('admin.reservations.index', compact('oReservations'));
     }
 

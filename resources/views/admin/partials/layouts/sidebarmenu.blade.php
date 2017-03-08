@@ -28,9 +28,7 @@
             <li class="treeview">
                 <a href="#">
                     <i class="fa fa-bank"></i> <span>Office Locations</span>
-                    <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
+                    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="{{ url('admin/locations') }}"><i class="fa fa-list"></i> List</a></li>
@@ -40,10 +38,18 @@
 
             <li class="treeview">
                 <a href="#">
+                    <i class="fa fa-money"></i> <span>Discount</span>
+                    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{{ url('admin/discounts/vouchers') }}"><i class="fa fa-percent"></i> Vouchers</a></li>
+                </ul>
+            </li>
+
+            <li class="treeview">
+                <a href="#">
                     <i class="fa fa-book"></i> <span>Types and Rates</span>
-                    <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
+                    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="{{ url('admin/types') }}"><i class="fa fa-book"></i> Types</a></li>

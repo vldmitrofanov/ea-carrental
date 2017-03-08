@@ -25,6 +25,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::post('find_location', 'Admin\OfficeLocationController@findOfficeLocation');
     });
 
+    Route::group(['prefix' => 'discounts'], function(){
+        Route::group(['prefix' => 'vouchers'], function(){
+            Route::get('/', 'Admin\Discounts\VouchersController@index');
+            Route::get('/create', 'Admin\Discounts\VouchersController@create');
+            Route::post('store', 'Admin\Discounts\VouchersController@store');
+            Route::get('{id}/edit', 'Admin\Discounts\VouchersController@edit');
+            Route::patch('update/{id}', 'Admin\Discounts\VouchersController@update');
+        });
+    });
+
     Route::group(['prefix' => 'types'], function(){
         Route::get('/', 'Admin\CarTypes\TypesController@index');
         Route::get('/create', 'Admin\CarTypes\TypesController@create');

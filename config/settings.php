@@ -92,5 +92,9 @@ return [
         '0' => 'No',
         '1' => 'Yes',
     ],
-
+    
+    'discount_type' => [
+        'amount' => 'Amount',
+        'percent' => 'Percent',
+    ],
 ];
