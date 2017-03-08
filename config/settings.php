@@ -97,4 +97,11 @@ return [
         'amount' => 'Amount',
         'percent' => 'Percent',
     ],
+
+    'recurrence_types' => [
+        'none' => 'None',
+        'daily' => 'Daily',
+        'weekly' => 'Weekly',
+        'monthly' => 'Monthly',
+    ],
 ];

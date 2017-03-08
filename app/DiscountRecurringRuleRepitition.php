@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class DiscountRecurringRuleRepitition extends Model
 {
@@ -14,4 +15,14 @@ class DiscountRecurringRuleRepitition extends Model
         'start_repeat',
         'end_repeat',
     ];
+
+    public function getStartRepeatAttribute($value)
+    {
+        return Carbon::parse($value)->format('m/d/Y H:i');
+    }
+
+    public function getEndRepeatAttribute($value)
+    {
+        return Carbon::parse($value)->format('m/d/Y H:i');
+    }
 }

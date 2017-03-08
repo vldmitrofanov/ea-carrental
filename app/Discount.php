@@ -15,6 +15,12 @@ class Discount extends Model
     ];
     
     public function recurring(){
-        return $this->hasOne('\App\DiscountRecurringRule', 'id', 'voucher_id');
+        return $this->hasOne('\App\DiscountRecurringRule', 'voucher_id', 'id');
+    }
+
+    public function cars()
+    {
+        return $this->belongsToMany('App\RentalCar', 'discount_voucher_cars',
+            'voucher_id', 'car_id'); //->withPivot('name', 'price', 'per', 'type')->wherePivot('status', 1);
     }
 }

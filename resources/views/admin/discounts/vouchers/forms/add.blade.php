@@ -38,7 +38,7 @@
 
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="button" class="btn btn-success save-reservation">Submit</button>
+                    <button type="button" class="btn btn-success save-voucher">Submit</button>
                 </div>
             </div>
         </div>
@@ -66,8 +66,83 @@
                     </div>
                 </div>
             </div>
-            
-            
+
+            <div class="form-group">
+                <label for="frequency" class="col-sm-2 control-label">Recurrence</label>
+                <div class="col-sm-10">
+                    {!! Form::select('frequency', config('settings.recurrence_types'),null,array('class'=>'form-control', 'id'=>'frequency')) !!}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <table class="table recur-table">
+                    <tbody>
+                        <tr class="hidden" id="daily_recur">
+                            <td>
+                                <div class="form-group"><label class="col-sm-2 control-label">Repeating Every</label>
+                                    <div class="col-sm-4"><select style="display: inline;width: 30%;" class="form-control"
+                                                                  name="daily_recurrence"
+                                                                  id="daily_recurrence">
+                                            @for($i=1;$i<=14;$i++)
+                                            <option value="{{ $i }}">{{$i}}</option>
+                                            @endfor
+                                        </select>&nbsp;&nbsp;Days</div>
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hidden" id="weekly_recur">
+                            <td>
+                                <div class="form-group"><label class="col-sm-2 control-label">Repeating Every</label>
+                                    <div class="col-sm-4"><select style="display: inline;width: 30%;" class="form-control"
+                                                                  name="weekly_recurrence"
+                                                                  id="weekly_recurrence">
+                                            @for($i=1;$i<=4;$i++)
+                                                <option value="{{ $i }}">{{$i}}</option>
+                                            @endfor
+                                        </select>&nbsp;&nbsp;Week</div>
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hidden" id="monthly_recur">
+                            <td>
+                                <div class="form-group"><label class="col-sm-2 control-label">Repeating Every</label>
+                                    <div class="col-sm-4"><select style="display: inline;width: 30%;" class="form-control"
+                                                                  name="monthly_recurrence"
+                                                                  id="monthly_recurrence">
+                                            @for($i=1;$i<=12;$i++)
+                                                <option value="{{ $i }}">{{$i}}</option>
+                                            @endfor
+                                        </select>&nbsp;&nbsp;Month</div>
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="hidden" id="end_recur">
+                            <td>
+                                <div class="form-group"><label class="col-sm-2 control-label">Recurrence Counter</label>
+                                    <div class="col-sm-4">
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-clock-o"></i>
+                                            </div>
+                                            {!! Form::text('recurrence_end', null, ['class' => 'form-control', 'id' => 'recurrence_end', 'placeholder' => 'Recurrence end']) !!}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="button" class="btn btn-success save-voucher">Submit</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

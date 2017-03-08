@@ -131,7 +131,6 @@
         })
 
         $(document).on("change", "text#date_to", function(e) {
-            alert('in')
             var formData = $('form#car_type').serializeArray();
             formData.push({
                 name: "_method",

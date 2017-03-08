@@ -29,28 +29,24 @@
                             <table class="table table-hover">
                                 <tr>
                                     <th>No</th>
-                                    <th>Client Name</th>
-                                    <th>Car</th>
-                                    <th>Car Type</th>
+                                    <th>Code</th>
+                                    <th>Discount</th>
+                                    <th>Dates</th>
                                     <th>Status</th>
-                                    <th>Total</th>
                                     <th>&nbsp;</th>
                                 </tr>
                                 @foreach($oDiscounts as $index =>$oDiscount)
                                     <tr>
                                         <td>{{ ++$index }}</td>
-                                        <td>{{ $oDiscount->user->code }})</td>
+                                        <td>{{ $oDiscount->voucher_code }}</td>
+                                        <td>{{ $oDiscount->amount }} {{ $oDiscount->amount_type }}</td>
                                         <td>
-                                            
+                                            {{ $oDiscount->recurring->repititions()->orderBy('start_repeat', 'ASC')->first()->start_repeat  }} - {{ $oDiscount->recurring->repititions()->orderBy('end_repeat', 'DESC')->first()->end_repeat  }}
                                         </td>
-                                        <td>
-                                            
-                                        </td>
-                                        <td>{{ $oDiscount->status }}</td>
-                                        <td>0</td>
+                                        <td>{{ ($oDiscount->status)?'Active':'In-active' }}</td>
                                         <td>
                                             <a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
-                                            <a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i></a>
+                                            <?php /*<a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i></a>*/?>
                                         </td>
                                     </tr>
                                 @endforeach

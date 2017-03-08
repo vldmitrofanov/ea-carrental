@@ -19,8 +19,9 @@
             <div class="row">
                 <div class="col-md-12">
                     @include('admin.partials.errors.errors')
-                    {!! Form::open(array('url' => 'admin/discounts/vouchers/store', 'id'=>'vouchers', 'method' => 'post', 'enctype'=>'multipart/form-data', 'class' => 'form-horizontal')) !!}
-                    @include('admin.discounts.vouchers.forms.add', ['submit_button'=>'Create'])
+                    {!! Form::model($oDiscount, array('url' =>array('admin/discounts/vouchers/update', $oDiscount->id), 'id' => 'vouchers', 'method' => 'PATCH', 'enctype'=>'multipart/form-data', 'class' => 'form-horizontal')) !!}
+                    <input type="hidden" name="voucher" id="voucher" value="{{ $oDiscount->id}}">
+                    @include('admin.discounts.vouchers.forms.edit', ['submit_button'=>'Submit'])
                 </div>
             </div>
         </section>
@@ -62,10 +63,6 @@
 
         $(document).on("click", "button.save-voucher", function(e) {
             var formData = $('form#vouchers').serializeArray();
-            formData.push({
-                name: "_method",
-                value: "POST"
-            });
             $.post($('form#vouchers').attr('action'), formData)
                     .done(function(response){
                         displayMessageAlert(response.message);
@@ -81,6 +78,7 @@
                     });
         });
 
+        $('#frequency').trigger('change');
     });
     
     
