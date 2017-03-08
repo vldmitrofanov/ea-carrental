@@ -90,6 +90,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::post('add_payment', 'Admin\ReservationsController@addPayment');
         Route::post('remove_payment', 'Admin\ReservationsController@removePayment');
         Route::post('upload', 'Admin\ReservationsController@uploadFile');
+        Route::post('validate_voucher', 'Admin\ReservationsController@validateVoucher');
         Route::get('{id}/invoice', 'Admin\ReservationsController@invoicePDF');
         Route::post('calculate_difference', function(){
             $from = \Carbon\Carbon::parse(Request::get('date_from'));

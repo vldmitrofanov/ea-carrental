@@ -64,6 +64,14 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="discount_code" class="col-sm-2 control-label">Discount &nbsp;&nbsp;<img src="{{asset('images/help.png') }}" class="protip" data-pt-title="In case of Discount Voucher, please mention the Discount Voucher Code." width="14"></label>
+                    <div class="col-sm-10">
+                        {!! Form::text('discount_code', null, ['class' => 'form-control', 'id' => 'discount_code', 'placeholder' => 'Discount Code', 'style' => 'width:180px;display:inline;']) !!}
+                        <button type="button" class="btn btn-info validate-code">Validate Code</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="pickup_location_id" class="col-sm-2 control-label">Pick-up Location</label>
                     <div class="col-sm-10">
                         {!! Form::select('pickup_location_id', array(''=>'Please Select')+$oOfficeLocations,null,array('class'=>'form-control','id'=>'pickup_location_id')) !!}

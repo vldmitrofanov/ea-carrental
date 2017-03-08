@@ -35,6 +35,8 @@
                      <input type="hidden" name="passport" id="passport" value="">
                      <input type="hidden" name="licence" id="licence" value="">
                      <input type="hidden" name="rental_form" id="rental_form" value="">
+                     <input type="hidden" name="discount" id="discount" value="">
+                     <input type="hidden" name="discount_detail" id="discount_detail" value="">
 
                         @include('admin.reservations.forms.add', ['submit_button'=>'Create'])
                     {!! Form::close() !!}
@@ -48,6 +50,30 @@
     <script src="{{ asset('js/su.min.js') }}"></script>
     <script type="text/javascript" >
         $(document).ready(function(){
+
+            $(document).on("click", "button.validate-code", function(e) {
+                processing();
+                var formData = $('form#car_reservation').serializeArray();
+                formData.push({
+                    name: "_method",
+                    value: "POST"
+                });
+                $.post('/admin/reservations/validate_voucher', formData)
+                        .done(function(response){
+                            $.unblockUI();
+                            displayMessageAlert(response.message);
+                        })
+                        .fail(function(response){
+                            $('#discount_code').val('');
+                            $.unblockUI();
+                            $.each(response.responseJSON, function (key, value) {
+                                $.each(value, function (index, message) {
+                                    displayMessageAlert(message, 'danger', 'warning-sign');
+                                });
+                            });
+                        });
+            });
+
             $('input[type=file]').change(function(){
                 $(this).simpleUpload("/admin/reservations/upload", {
                     allowedExts: ["jpg", "jpeg", "png", "gif"],
@@ -418,9 +444,14 @@
                     $('#tax').val(prices.tax);
                     $('#total_price').val(prices.total_price);
                     $('#required_deposit').val(prices.required_deposit);
+                    $('#discount').val(prices.discount);
+                    $('#discount_detail').val(prices.discount_detail);
 
                     $("table.payment_detail> tbody tr:nth-child(2)").find('th').html('Price per day:<br/><small>'+prices.price_per_day_detail+'<small>');
                     $("table.payment_detail> tbody tr:nth-child(2)").find('td').html(currencySign+' '+prices.price_per_day);
+
+                    $("table.payment_detail> tbody tr:nth-child(3)").find('th').html('Discount:<br/><small>'+prices.discount_detail+'<small>');
+                    $("table.payment_detail> tbody tr:nth-child(3)").find('td').html(currencySign+' '+prices.discount);
 
 
                     $("table.payment_detail> tbody tr:nth-child(4)").find('th').html('Price per hour:<br/><small>'+prices.price_per_hour_detail+'<small>');

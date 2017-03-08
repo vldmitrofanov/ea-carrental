@@ -157,8 +157,8 @@
                         <td>{{$currencySign}} {{ $oReservation->details->first()->price_per_day }}</td>
                     </tr>
                     <tr>
-                        <th>Discount:</th>
-                        <td>0</td>
+                        <th>Discount:<br/>{{ $oReservation->details->first()->discount_detail }}</th>
+                        <td>{{$currencySign}} {{ $oReservation->details->first()->discount }}</td>
                     </tr>
                     <tr>
                         <th>Price per hour:<br/>{{ $oReservation->details->first()->price_per_hour_detail }}</th>

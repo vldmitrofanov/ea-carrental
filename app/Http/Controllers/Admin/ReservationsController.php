@@ -17,6 +17,7 @@ use App\RentalCar;
 use App\CarReservation;
 use App\CarReservationExtra;
 use App\User;
+use App\Discount;
 use App\CarReservationPayment;
 use App\Http\Requests\ReservationRequest;
 use \PDF;
@@ -148,6 +149,9 @@ class ReservationsController extends Controller
                     $oCarReservationDetail->tax = $request->input('tax');
                     $oCarReservationDetail->total_price = $request->input('total_price');
                     $oCarReservationDetail->required_deposit = $request->input('required_deposit');
+                    $oCarReservationDetail->discount_code = $request->input('discount_code');
+                    $oCarReservationDetail->discount = ($request->input('discount'))?:0;
+                    $oCarReservationDetail->discount_detail = ($request->input('discount_detail'))?:'';
                     $oCarReservationDetail->save();
                     
                     if($request->input('extra_id')){
@@ -726,6 +730,8 @@ class ReservationsController extends Controller
         $insurance_detail = '';
         $tax_detail = '';
         $required_deposit_detail = '';
+        $discount = 0;
+        $discount_detail = '';
 
         $car_rental_fee_arr = array();
         $e_arr = array();
@@ -820,14 +826,38 @@ class ReservationsController extends Controller
                 $required_deposit_detail = '';
                 break;
         }
+
+        $discount_info = false;
+        if($request->input('discount_code')){
+            $discount_info = $this->getDiscountInfo($request);
+        }
+
+        if(is_array($discount_info)){
+            switch ($discount_info['amount_type']){
+                case 'percent':
+                    $discount = ($total_price * $discount_info['amount']) / 100;
+                    $discount_detail = $discount_info['amount'] . '% of '. $this->formatCurrencySign($total_price, $this->option_arr['currency']);
+                    break;
+                case 'amount':
+                    $discount = $discount_info['amount'];
+                    $discount_detail = '';
+                    break;
+            }
+        }
+
+        $total_price = $total_price - $discount;
+
         $total_amount_due = $total_price;
         if($request->input('status') == 'confirmed'){
             $total_amount_due = $total_price - $required_deposit;
         }
+
+
         $price_per_day = number_format($price_per_day, 2, '.', '');
         $price_per_hour = number_format($price_per_hour, 2, '.', '');
         $car_rental_fee = number_format($car_rental_fee, 2, '.', '');
         $extra_price = number_format($extra_price, 2, '.', '');
+        $discount = number_format($discount, 2, '.', '');
         $insurance = number_format($insurance, 2, '.', '');
         $sub_total = number_format($sub_total, 2, '.', '');
         $tax = number_format($tax, 2, '.', '');
@@ -840,6 +870,7 @@ class ReservationsController extends Controller
         $price_per_hour_label = $this->formatCurrencySign($price_per_hour, $this->option_arr['currency']);
         $car_rental_fee_label = $this->formatCurrencySign($car_rental_fee, $this->option_arr['currency']);
         $extra_price_label = $this->formatCurrencySign($extra_price, $this->option_arr['currency']);
+        $discount_label = $this->formatCurrencySign($discount, $this->option_arr['currency']);
         $insurance_label = $this->formatCurrencySign($insurance, $this->option_arr['currency']);
         $sub_total_label = $this->formatCurrencySign($sub_total, $this->option_arr['currency']);
         $tax_label = $this->formatCurrencySign($tax, $this->option_arr['currency']);
@@ -868,12 +899,12 @@ class ReservationsController extends Controller
 
         $data['prices'] = compact('rental_time', 'rental_days', 'hours',
             'price_per_day', 'price_per_hour', 'price_per_day_detail', 'price_per_hour_detail',
-            'car_rental_fee', 'extra_price', 'insurance', 'sub_total', 'tax',
+            'car_rental_fee', 'extra_price', 'discount', 'insurance', 'sub_total', 'tax',
             'total_price', 'required_deposit', 'total_amount_due',
             'price_per_day_label', 'price_per_hour_label', 'car_rental_fee_label',
             'extra_price_label', 'insurance_label', 'sub_total_label', 'tax_label',
-            'total_price_label', 'required_deposit_label', 'total_amount_due_label',
-            'car_rental_fee_detail', 'insurance_detail', 'tax_detail', 'required_deposit_detail');
+            'total_price_label', 'required_deposit_label', 'total_amount_due_label', 'discount_label',
+            'car_rental_fee_detail', 'insurance_detail', 'discount_detail', 'tax_detail', 'required_deposit_detail');
 
         $oCar = $oCarType->cars()->where('rental_cars.id', $request->input('car_id'))->first();
 
@@ -1072,5 +1103,79 @@ class ReservationsController extends Controller
             }
             
             return $response;
+    }
+
+    public function getDiscountInfo(Request $request){
+        if($request->input('discount_code')==''){
+            return false;
+        }
+
+        if($request->input('date_from')=='' || $request->input('date_to')==''){
+            return false;
+        }
+        $oDiscount = Discount::where('voucher_code', $request->input('discount_code'))->first();
+        if(!$oDiscount){
+            return false;
+        }
+
+        if($oDiscount->discount_type=='selected' && $request->input('car_id')==''){
+            return false;
+        }
+
+        if($oDiscount->discount_type=='selected') {
+            $oDiscountCar = $oDiscount->cars()->where('car_id', $request->input('car_id'))->first();
+            if(!$oDiscountCar){
+                return false;
+            }
+        }
+
+        $oInfo = $oDiscount->recurring->repititions()
+                    ->where('start_repeat', '<=', Carbon::parse($request->input('date_from')))
+                    ->where('end_repeat', '>=', Carbon::parse($request->input('date_to')))
+                    ->first();
+        if(!$oInfo){
+            return false;
+        }
+
+        return ['amount' => $oDiscount->amount, 'amount_type' => $oDiscount->amount_type];
+
+    }
+    public function validateVoucher(Request $request){
+        $this->_checkAjaxRequest();
+
+        if($request->input('discount_code')==''){
+            return $this->_failedJsonResponse([['Please mention Discount Voucher Code.']]);
+        }
+
+        if($request->input('date_from')=='' || $request->input('date_to')==''){
+            return $this->_failedJsonResponse([['Please define Reservation Dates.']]);
+        }
+        $oDiscount = Discount::where('voucher_code', $request->input('discount_code'))->first();
+        if(!$oDiscount){
+            return $this->_failedJsonResponse([['Discount Voucher Code is not valid.']]);
+        }
+
+        if($oDiscount->discount_type=='selected' && $request->input('car_id')==''){
+            return $this->_failedJsonResponse([['Please select Car First.']]);
+        }
+
+        if($oDiscount->discount_type=='selected') {
+            $oDiscountCar = $oDiscount->cars()->where('car_id', $request->input('car_id'))->first();
+            if(!$oDiscountCar){
+                return $this->_failedJsonResponse([['Discount Voucher is not valid for selected Car.']]);
+            }
+        }
+
+        $oInfo = $oDiscount->recurring->repititions()
+                    ->where('start_repeat', '<=', Carbon::parse($request->input('date_from')))
+                    ->where('end_repeat', '>=', Carbon::parse($request->input('date_to')))
+                    ->first();
+        if(!$oInfo){
+            return $this->_failedJsonResponse([['Discount Voucher is not valid for selected Duration.']]);
+        }
+
+        $data['voucher'] = $oDiscount;
+        return $this->_successJsonResponse(['message'=>'Discount Voucher Code is valid.', 'data' => $data]);
+
     }
 }

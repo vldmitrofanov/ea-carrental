@@ -38,6 +38,9 @@ class CreateCarReservationDetailsTable extends Migration
             $table->string('price_per_day_detail')->default('');
             $table->decimal('price_per_hour',10,2)->default(0);
             $table->string('price_per_hour_detail')->default('');
+            $table->string('discount_code')->default('');
+            $table->string('discount_detail')->default('');
+            $table->decimal('discount',10,2)->default(0);
             $table->decimal('car_rental_fee',10,2)->default(0);
             $table->decimal('extra_price',10,2)->default(0);
             $table->decimal('insurance',10,2)->default(0);
