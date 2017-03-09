@@ -31,6 +31,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('/create', 'Admin\Discounts\VouchersController@create');
             Route::post('store', 'Admin\Discounts\VouchersController@store');
             Route::get('{id}/edit', 'Admin\Discounts\VouchersController@edit');
+            Route::get('{id}/show', 'Admin\Discounts\VouchersController@show');
             Route::patch('update/{id}', 'Admin\Discounts\VouchersController@update');
         });
     });

@@ -23,7 +23,16 @@
                     <div class="box">
                         <div class="box-header">
                             <h3 class="box-title">Showing {!! $oRentalCars->currentPage() !!} of {!! $oRentalCars->lastPage() !!} </h3>
-
+                            <div class="box-tools">
+                                <div class="input-group" style="width: 200px;">
+                                    <select name="ctype" id="ctype" class="form-control">
+                                        <option value="">Select Car Type</option>
+                                        @foreach($oCarTypes as $oCarType)
+                                        <option value="{{ $oCarType->id }}" {{ ($q==$oCarType->id ) ? 'selected' : '' }}>{{ $oCarType->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="box-body table-responsive no-padding">
                             <table class="table table-hover">
@@ -32,7 +41,7 @@
                                     <th>Registration No</th>
                                     <th>Make & Model</th>
                                     <th>Default Location</th>
-                                    <th>Car Type</th>
+                                    <th>Status</th>
                                     <th>&nbsp;</th>
                                 </tr>
                                 @foreach($oRentalCars as $index =>$oRentalCar)
@@ -62,3 +71,12 @@
     </div>
 @endsection
 
+@section('javascript')
+    <script>
+        $(function () {
+            $( "#ctype" ).change(function(){
+                window.location = ($(this).val()!='')?"?q="+$(this).val():'/admin/cars';
+            });
+        });
+    </script>
+@endsection

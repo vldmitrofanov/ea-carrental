@@ -1,13 +1,13 @@
 @extends('admin.partials.layouts.master')
 @section('title')
-    Vouchers Management
+    Discount Vouchers Management
 @endsection
 
 @section('content')
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
-                Vouchers
+                Discount Vouchers
                 <small>Management</small>
             </h1>
             <ol class="breadcrumb">
@@ -45,6 +45,7 @@
                                         </td>
                                         <td>{{ ($oDiscount->status)?'Active':'In-active' }}</td>
                                         <td>
+                                            <a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/show') }}"><i class="fa fa-eye"></i></a>&nbsp;&nbsp;
                                             <a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
                                             <?php /*<a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i></a>*/?>
                                         </td>

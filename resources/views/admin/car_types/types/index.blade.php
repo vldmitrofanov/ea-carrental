@@ -51,7 +51,7 @@
                                             <span style="margin-right: 5px;" class="attribute attribute-doors pull-left">{{ $oCarType->total_doors }}</span>&nbsp;
                                             <span class="attribute attribute-transmission pull-left">{{ config('settings.transmission')[$oCarType->transmission] }}</span>
                                         </td>
-                                        <td>0</td>
+                                        <td><a href="{{ url('admin/cars?q='.$oCarType->id) }}">{{ $oCarType->cars->count() }}</a></td>
                                         <td>{{ ($oCarType->status)?'Active':'Inactive' }}</td>
                                         <td><a href="{{ url('admin/types/'.$oCarType->id.'/edit') }}"><i class="fa fa-edit"></i></a></td>
                                     </tr>

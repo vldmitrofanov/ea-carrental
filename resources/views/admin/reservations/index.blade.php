@@ -53,6 +53,7 @@
                                         <td>{{ $oReservation->status }}</td>
                                         <td>0</td>
                                         <td>
+                                            <a target="_blank" href="{{ url('admin/reservations/'.$oReservation->id.'/invoice') }}"><i class="fa fa-file-pdf-o"></i></a>&nbsp;&nbsp;
                                             <a href="{{ url('admin/reservations/'.$oReservation->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
                                             <a href="{{ url('admin/reservations/'.$oReservation->id.'/delete') }}"><i class="fa fa-trash"></i></a>
                                         </td>

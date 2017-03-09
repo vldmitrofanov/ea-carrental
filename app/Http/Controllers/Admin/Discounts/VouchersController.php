@@ -160,7 +160,8 @@ class VouchersController extends Controller
      */
     public function show($id)
     {
-        //
+        $oDiscount = Discount::where('id', $id)->firstOrFail();
+        return view('admin.discounts.vouchers.show', compact('oDiscount'));
     }
 
     /**

@@ -16,11 +16,19 @@ class RentalCarsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $oRentalCars = RentalCar::paginate(15);
-        $oCarTypes = CarType::pluck('id', 'name')->toArray();
-        return view('admin.rental_cars.index', compact('oRentalCars', 'oCarTypes'));
+        if(!empty($request->input('q'))) {
+//            $oSchedules = Schedule::orderby('start_at','asc')->where('tournament_id',$request->input('q'))->paginate(15);
+            $oRentalCars = RentalCar::Join('rental_car_types', 'rental_cars.id', '=', 'rental_car_types.car_id')
+                            ->where('rental_car_types.car_type_id', $request->input('q'))
+                            ->paginate(15);
+        }else{
+            $oRentalCars = RentalCar::paginate(15);
+        }
+        
+        $oCarTypes = CarType::get();
+        return view('admin.rental_cars.index', compact('oRentalCars', 'oCarTypes'))->with('q', $request->input('q'));
     }
 
     /**

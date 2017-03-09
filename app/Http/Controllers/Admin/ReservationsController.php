@@ -1041,12 +1041,13 @@ class ReservationsController extends Controller
         }
 
         $currency = $this->getCurrencySign($this->option_arr['currency']);
-        return view('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
-//        $html = view('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
-//        PDF::AddPage();
-//        PDF::writeHTML($html, true, 0, true, true);
-//        PDF::lastPage();
-//        PDF::Output('example_006.pdf', 'I');
+//        return view('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
+        $html = \View::make('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
+        $content = $html->render();
+        PDF::AddPage();
+        PDF::writeHTML($content, true, 0, true, true);
+        PDF::lastPage();
+        PDF::Output('example_006.pdf', 'I');
 //        $pdf = PDF::loadView('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
 //        return $pdf->download($oReservation->reservation_number.'.pdf');
     }
