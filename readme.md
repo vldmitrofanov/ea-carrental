@@ -35,6 +35,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 Please follow the steps below to configure the Embassy Alliance rental car application built on Laravel 5.4:
 ### Server Requirement
 Your server must meet the following requirements
+
 1. PHP >= 5.6.4
 2. OpenSSL PHP Extension
 3. PDO PHP Extension
