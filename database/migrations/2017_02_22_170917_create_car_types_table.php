@@ -20,7 +20,7 @@ class CreateCarTypesTable extends Migration
             $table->decimal('price_per_day', 10, 2)->default(0);
             $table->decimal('price_per_hour', 10, 2)->default(0);
             $table->integer('limit_mileage')->default(0);
-            $table->decimal('extra mileage', 10, 2)->default(0);
+            $table->decimal('extra_mileage', 10, 2)->default(0);
             $table->integer('total_passengers')->default(0);
             $table->integer('total_bags')->default(0);
             $table->integer('total_doors')->default(0);
