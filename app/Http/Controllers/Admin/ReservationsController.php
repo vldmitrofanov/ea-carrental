@@ -1041,15 +1041,18 @@ class ReservationsController extends Controller
         }
 
         $currency = $this->getCurrencySign($this->option_arr['currency']);
-        return view('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
+//        return view('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
 //        $html = \View::make('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
 //        $content = $html->render();
-//        PDF::AddPage();
+//        PDF::AddPage('p', 'A4');
+//        PDF::SetFont('dejavusans', '', 10);
+//        PDF::SetAutoPageBreak(TRUE, 0);
+//        PDF::SetMargins(0, 0, 0);
 //        PDF::writeHTML($content, true, 0, true, true);
 //        PDF::lastPage();
 //        PDF::Output('example_006.pdf', 'I');
-//        $pdf = PDF::loadView('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
-//        return $pdf->download($oReservation->reservation_number.'.pdf');
+        $pdf = PDF::loadView('admin.reservations.invoice.invoice', compact('oReservation', 'currency'));
+        return $pdf->download($oReservation->reservation_number.'.pdf');
     }
     
     public function checkCarAvailability(Request $request){

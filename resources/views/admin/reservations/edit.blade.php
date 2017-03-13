@@ -54,7 +54,7 @@
         $(document).ready(function(){
             $('input[type=file]').change(function(){
                 $(this).simpleUpload("/admin/reservations/upload", {
-                    allowedExts: ["jpg", "jpeg", "jpe", "jif", "jfif", "jfi", "png", "gif"],
+                    allowedExts: ["jpg", "jpeg", "png", "gif"],
                     data : {
                                 user: {{ $oReservation->user_id }},
                                 _token : $('input[name="_token"]').val(),
