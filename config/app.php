@@ -178,8 +178,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         Zizaco\Entrust\EntrustServiceProvider::class,
-//        Barryvdh\DomPDF\ServiceProvider::class,
-        Elibyy\TCPDF\ServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
+//        Elibyy\TCPDF\ServiceProvider::class,
 
     ],
 
@@ -233,8 +233,8 @@ return [
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
-//        'PDF' => Barryvdh\DomPDF\Facade::class,
-        'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
+//        'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
     ],
 
 ];

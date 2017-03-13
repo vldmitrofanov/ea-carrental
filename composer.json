@@ -10,8 +10,7 @@
         "laravel/tinker": "~1.0",
         "laravelcollective/html":"^5.4",
         "zizaco/entrust": "5.2.x-dev",
-        "barryvdh/laravel-dompdf": "0.7.*",
-        "elibyy/tcpdf-laravel": "5.4.*",
+        "barryvdh/laravel-dompdf": "^0.8.0",
         "guzzlehttp/guzzle": "~5.0"
     },
     "require-dev": {
