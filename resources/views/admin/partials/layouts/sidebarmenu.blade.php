@@ -43,6 +43,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="{{ url('admin/discounts/vouchers') }}"><i class="fa fa-percent"></i> Vouchers</a></li>
+                    <li><a href="{{ url('admin/discounts/volume') }}"><i class="fa fa-percent"></i> Volume Discount</a></li>
                 </ul>
             </li>
 

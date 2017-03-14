@@ -34,6 +34,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('{id}/show', 'Admin\Discounts\VouchersController@show');
             Route::patch('update/{id}', 'Admin\Discounts\VouchersController@update');
         });
+
+        Route::group(['prefix' => 'volume'], function(){
+            Route::get('/', 'Admin\Discounts\VolumeController@index');
+            Route::get('/create', 'Admin\Discounts\VolumeController@create');
+            Route::post('store', 'Admin\Discounts\VolumeController@store');
+            Route::get('{id}/edit', 'Admin\Discounts\VolumeController@edit');
+            Route::get('{id}/show', 'Admin\Discounts\VolumeController@show');
+            Route::patch('update/{id}', 'Admin\Discounts\VolumeController@update');
+        });
     });
 
     Route::group(['prefix' => 'types'], function(){
