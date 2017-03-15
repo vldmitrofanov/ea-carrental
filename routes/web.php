@@ -43,6 +43,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('{id}/show', 'Admin\Discounts\VolumeController@show');
             Route::patch('update/{id}', 'Admin\Discounts\VolumeController@update');
         });
+
+        Route::group(['prefix' => 'freebies'], function(){
+            Route::get('/', 'Admin\Discounts\FreebiesController@index');
+            Route::get('/create', 'Admin\Discounts\FreebiesController@create');
+            Route::post('store', 'Admin\Discounts\FreebiesController@store');
+            Route::get('{id}/edit', 'Admin\Discounts\FreebiesController@edit');
+            Route::get('{id}/show', 'Admin\Discounts\FreebiesController@show');
+            Route::patch('update/{id}', 'Admin\Discounts\FreebiesController@update');
+        });
     });
 
     Route::group(['prefix' => 'types'], function(){
