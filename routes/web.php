@@ -123,6 +123,19 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::patch('update/{id}', 'Admin\SettingsController@update');
     });
 
+    Route::group(['prefix' => 'notifications'], function(){
+        Route::get('/', 'Admin\NotificationsController@index');
+        Route::get('/create', 'Admin\NotificationsController@create');
+        Route::post('store', 'Admin\NotificationsController@store');
+        Route::get('{id}/edit', 'Admin\NotificationsController@edit');
+        Route::patch('update/{id}', 'Admin\NotificationsController@update');
+    });
+
+});
+
+Route::get('api/email_tags', function(){
+    $data['tags'] = config('settings.email_tags');
+    return $data;
 });
 
 Route::get('api/load_car_list', function(){

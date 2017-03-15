@@ -18,11 +18,15 @@
               </a>
             </li>
 
-            <li data-breadcrumb="{{ url('admin/settings') }}" class="treeview">
-              <a href="{{ url('admin/settings') }}">
-                <i class="fa fa-cogs"></i>
-                <span>Settings</span>
-              </a>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-cogs"></i> <span>Settings</span>
+                    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{{ url('admin/settings') }}"><i class="fa fa-cog"></i><span>Settings</span></a></li>
+                    <li><a href="{{ url('admin/notifications') }}"><i class="fa fa-envelope"></i> Email Notifications</a></li>
+                </ul>
             </li>
 
             <li class="treeview">

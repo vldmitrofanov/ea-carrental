@@ -21,6 +21,7 @@ use App\Discount;
 use App\CarReservationPayment;
 use App\Http\Requests\ReservationRequest;
 use \PDF;
+use \SendPulse;
 
 class ReservationsController extends Controller
 {
@@ -39,6 +40,32 @@ class ReservationsController extends Controller
      */
     public function index()
     {
+        $email = array(
+        'html' => '<p>Hello!</p>',
+        'text' => 'text',
+        'subject' => 'Mail subject',
+        'from' => array(
+            'name' => 'suzanne',
+            'email' => 'suzanne@embassyalliance.com'
+        ),
+        'to' => array(
+            array(
+                'name' => 'Idrees',
+                'email' => 'medriis@gmail.com'
+            )
+        ),
+//        'bcc' => array(
+//            array(
+//                'name' => 'Manager',
+//                'email' => 'manager@domain.com'
+//            )
+//        ),
+//        'attachments' => array(
+//            'file.txt' => file_get_contents(PATH_TO_ATTACH_FILE)
+//        )
+    );
+//    print_r(SendPulse::smtpSendMail($email));
+    
         $oReservations = CarReservation::orderBy('id', 'desc')->paginate(15);
         return view('admin.reservations.index', compact('oReservations'));
     }
