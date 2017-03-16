@@ -51,6 +51,7 @@ class CreateCarReservationDetailsTable extends Migration
             $table->dateTime('actual_dropoff_datetime')->nullable();
             $table->integer('dropoff_mileage')->default(0);
             $table->integer('security_deposit')->default(0);
+            $table->string('google_event_id')->default('');
             $table->timestamps();
 
             $table->foreign('reservation_id')->references('id')->on('rental_car_reservations')->onDelete('cascade');

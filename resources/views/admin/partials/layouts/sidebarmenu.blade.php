@@ -115,6 +115,13 @@
                 </ul>
             </li>
 
+            <li data-breadcrumb="{{ url('admin/dashboard') }}" class="treeview">
+                <a href="{{ url('admin/fleetavailability') }}">
+                    <i class="fa fa-automobile"></i>
+                    <span>Fleet Availability</span>
+                </a>
+            </li>
+
 
             
         </ul>

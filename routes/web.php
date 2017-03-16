@@ -11,6 +11,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         return view('admin.errors.404');
     });
     Route::get('dashboard', 'Admin\DashboardController@index');
+    Route::get('fleetavailability', 'Admin\FleetAvailabilityController@index');
 
     Route::group(['prefix' => 'locations'], function(){
         Route::get('/', 'Admin\OfficeLocationController@index');

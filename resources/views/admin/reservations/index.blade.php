@@ -21,7 +21,6 @@
 
         <section class="content">
             <div class="row">
-                <iframe src="https://calendar.google.com/calendar/embed?src=koc4n7b6sp3u5dsqs6ss1ksk7s%40group.calendar.google.com&ctz=Asia/Karachi" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
                 @include('admin.partials.errors.errors')
                 <div class="col-xs-12">
                     <div class="box">
