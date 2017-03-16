@@ -22,6 +22,8 @@ use App\CarReservationPayment;
 use App\Http\Requests\ReservationRequest;
 use \PDF;
 use \SendPulse;
+use Spatie\GoogleCalendar\Event;
+
 
 class ReservationsController extends Controller
 {
@@ -40,6 +42,14 @@ class ReservationsController extends Controller
      */
     public function index()
     {
+//        $event = new Event;
+//
+//        $event->name = 'A new event';
+//        $event->startDateTime = Carbon::now();
+//        $event->endDateTime = Carbon::now()->addHour();
+//
+//        $event->save();
+//        exit;
         $email = array(
         'html' => '<p>Hello!</p>',
         'text' => 'text',

@@ -1,9 +1,12 @@
+<?php header('X-Frame-Options: GOFORIT'); ?>
 @extends('admin.partials.layouts.master')
 @section('title')
     Car Reservations Management
 @endsection
 
 @section('content')
+
+
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
@@ -18,6 +21,7 @@
 
         <section class="content">
             <div class="row">
+                <iframe src="https://calendar.google.com/calendar/embed?src=koc4n7b6sp3u5dsqs6ss1ksk7s%40group.calendar.google.com&ctz=Asia/Karachi" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
                 @include('admin.partials.errors.errors')
                 <div class="col-xs-12">
                     <div class="box">

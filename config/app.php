@@ -181,6 +181,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
 //        Elibyy\TCPDF\ServiceProvider::class,
         SendPulse\SendPulseLaravel\SendPulseLaravelServiceProvider::class,
+        Spatie\GoogleCalendar\GoogleCalendarServiceProvider::class,
 
     ],
 
@@ -237,6 +238,7 @@ return [
         'PDF' => Barryvdh\DomPDF\Facade::class,
 //        'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
         'SendPulse' => 'SendPulse\SendPulseLaravel\SendPulseFacade',
+        'GoogleCalendar' => 'Spatie\GoogleCalendar\GoogleCalendarFacade',
     ],
 
 ];
