@@ -55,6 +55,36 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         });
     });
 
+
+    Route::group(['prefix' => 'fleet'], function(){
+        Route::group(['prefix' => 'types'], function(){
+            Route::get('/', 'Admin\FleetManagement\TypesController@index');
+            Route::get('/create', 'Admin\FleetManagement\TypesController@create');
+            Route::post('store', 'Admin\FleetManagement\TypesController@store');
+            Route::get('{id}/edit', 'Admin\FleetManagement\TypesController@edit');
+            Route::patch('update/{id}', 'Admin\FleetManagement\TypesController@update');
+        });
+
+        Route::group(['prefix' => 'models'], function(){
+            Route::get('/', 'Admin\FleetManagement\CarModelsController@index');
+            Route::get('/create', 'Admin\FleetManagement\CarModelsController@create');
+            Route::post('store', 'Admin\FleetManagement\CarModelsController@store');
+            Route::get('{id}/edit', 'Admin\FleetManagement\CarModelsController@edit');
+            Route::patch('update/{id}', 'Admin\FleetManagement\CarModelsController@update');
+            Route::post('add_customrate', 'Admin\FleetManagement\CarModelsController@addCarTypeCustomRate');
+            Route::post('remove_customrate', 'Admin\FleetManagement\CarModelsController@removeCarTypeCustomRate');
+        });
+
+        Route::group(['prefix' => 'cars'], function(){
+            Route::get('/', 'Admin\FleetManagement\CarsController@index');
+            Route::get('/create', 'Admin\FleetManagement\CarsController@create');
+            Route::post('store', 'Admin\FleetManagement\CarsController@store');
+            Route::get('{id}/edit', 'Admin\FleetManagement\CarsController@edit');
+            Route::patch('update/{id}', 'Admin\FleetManagement\CarsController@update');
+        });
+
+    });
+
     Route::group(['prefix' => 'types'], function(){
         Route::get('/', 'Admin\CarTypes\TypesController@index');
         Route::get('/create', 'Admin\CarTypes\TypesController@create');
@@ -141,6 +171,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::patch('update/{id}', 'Admin\NotificationsController@update');
     });
 
+});
+
+Route::get('api/load_car_models_list', function(){
+    $data['data']['cars'] = \App\CarModel::where('type_id',Request::get('car_type_id'))->get();
+    return $data;
 });
 
 Route::get('api/email_tags', function(){

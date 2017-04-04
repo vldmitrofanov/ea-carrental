@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDiscountVoucherCarsTable extends Migration
+class CreateDiscountVoucherCarModelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateDiscountVoucherCarsTable extends Migration
      */
     public function up()
     {
-        Schema::create('discount_voucher_cars', function (Blueprint $table) {
+        Schema::create('discount_voucher_car_models_types', function (Blueprint $table) {
             $table->integer('voucher_id')->unsigned();
-            $table->integer('car_id')->unsigned();
+            $table->integer('model_id')->unsigned();
 
             $table->foreign('voucher_id')->references('id')->on('discount_vouchers')->onDelete('cascade');
-            $table->foreign('car_id')->references('id')->on('rental_cars')->onDelete('cascade');
+            $table->foreign('model_id')->references('id')->on('car_models')->onDelete('cascade');
 
         });
     }
@@ -30,6 +30,6 @@ class CreateDiscountVoucherCarsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('discount_voucher_cars');
+        Schema::drop('discount_voucher_car_models_types');
     }
 }

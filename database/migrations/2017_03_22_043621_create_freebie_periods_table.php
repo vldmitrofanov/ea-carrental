@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFreebiesCarsTable extends Migration
+class CreateFreebiePeriodsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateFreebiesCarsTable extends Migration
      */
     public function up()
     {
-        Schema::create('discount_freebies_cars', function (Blueprint $table) {
+        Schema::create('discount_freebie_periods', function (Blueprint $table) {
             $table->integer('discount_freebies_id')->unsigned();
-            $table->integer('car_id')->unsigned();
-
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
+            $table->timestamps();
             $table->foreign('discount_freebies_id')->references('id')->on('discount_freebies')->onDelete('cascade');
-            $table->foreign('car_id')->references('id')->on('rental_cars')->onDelete('cascade');
 
         });
     }
@@ -30,6 +30,6 @@ class CreateFreebiesCarsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('discount_freebies_cars');
+        Schema::drop('discount_freebie_periods');
     }
 }

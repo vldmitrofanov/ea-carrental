@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCarTypePricesTable extends Migration
+class CreateCarModelPricesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateCarTypePricesTable extends Migration
      */
     public function up()
     {
-        Schema::create('car_type_prices', function (Blueprint $table) {
+        Schema::create('car_model_prices', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('type_id')->unsigned();
+            $table->integer('model_id')->unsigned();
             $table->date('date_from')->nullable();
             $table->date('date_to')->nullable();
             $table->smallInteger('from')->default(0);
@@ -24,7 +24,7 @@ class CreateCarTypePricesTable extends Migration
             $table->enum('price_per', ['hour', 'day']);
             $table->timestamps();
 
-            $table->foreign('type_id')->references('id')->on('car_types')
+            $table->foreign('model_id')->references('id')->on('car_models')
                     ->onDelete('cascade');
         });
     }
@@ -36,6 +36,6 @@ class CreateCarTypePricesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('car_type_prices');
+        Schema::drop('car_model_prices');
     }
 }

@@ -35,8 +35,6 @@ class DiscountFreebieRequest extends FormRequest
                 return [
                     'name' => 'required',
                     'booking_duration' => 'required|numeric',
-                    'start_date' => 'required',
-                    'end_date' => 'required|date',
                     'description' => 'required',
                 ];
             }
@@ -46,8 +44,6 @@ class DiscountFreebieRequest extends FormRequest
                 return [
                     'name' => 'required',
                     'booking_duration' => 'required|numeric',
-                    'start_date' => 'required',
-                    'end_date' => 'required|date',
                     'description' => 'required',
 
                 ];

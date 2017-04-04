@@ -17,7 +17,7 @@
         </section>
         <section class="content">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-9">
                     @include('admin.partials.errors.errors')
                     {!! Form::open(array('url' => 'admin/discounts/vouchers/store', 'id'=>'vouchers', 'method' => 'post', 'enctype'=>'multipart/form-data', 'class' => 'form-horizontal')) !!}
                     @include('admin.discounts.vouchers.forms.add', ['submit_button'=>'Create'])
@@ -28,13 +28,14 @@
 @endsection
 
 @section('javascript')
-<script src="{{ asset('administration/plugins/select2/select2.full.min.js')}}"></script>
-
 <script type="text/javascript" >
     $(document).ready(function(){
-        $(".select2").select2();
-        
-        $('#date_from').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date()});
+        var items = new Array();
+        @foreach($oTypes as $oType)
+                items['{{$oType->id}}'] = '{{ ($oType->vehicleSize)?$oType->vehicleSize->code_letter:'-'  }}{{ ($oType->vehicleDoors)?$oType->vehicleDoors->code_letter:'-'  }}{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->code_letter:'-'  }}';
+        @endforeach
+
+$('#date_from').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date()});
         $('#date_to').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date()});
         $('#recurrence_end').datetimepicker({format:'m/d/Y', defaultDate:new Date(),timepicker:false});
 
@@ -67,22 +68,99 @@
                 value: "POST"
             });
             $.post($('form#vouchers').attr('action'), formData)
-                    .done(function(response){
-                        displayMessageAlert(response.message);
-                        redirectPage('/admin/discounts/vouchers')
-                    })
-                    .fail(function(response){
-                        $.unblockUI();
-                        $.each(response.responseJSON, function (key, value) {
-                            $.each(value, function (index, message) {
-                                displayMessageAlert(message, 'danger', 'warning-sign');
-                            });
-                        });
+            .done(function(response){
+                displayMessageAlert(response.message);
+                redirectPage('/admin/discounts/vouchers')
+            })
+            .fail(function(response){
+                $.unblockUI();
+                $.each(response.responseJSON, function (key, value) {
+                    $.each(value, function (index, message) {
+                        displayMessageAlert(message, 'danger', 'warning-sign');
                     });
+                });
+            });
         });
 
+        $(document).on("click", "button.btn-addtype", function(e) {
+            var id = $.now();
+
+            $("table.products-table").find('tbody')
+            .append($('<tr id="'+id+'">')
+                .append($('<td>')
+                    .append($('<div>')
+                        .attr('class', 'form-group')
+                        .append($('<div>')
+                            .attr('class', 'col-sm-4 col-sm-offset-2')
+                            .append($('<select>')
+                                .attr('class', 'form-control')
+                                .attr('name', 'types['+id+']')
+                                .attr('id', 'types_'+id+'')
+                                .attr('data-index', id)
+                                .attr('onchange', 'loadModels(this)')
+                                .append($("<option></option>")
+                                        .attr("value",'')
+                                        .text('Type')
+                                )
+                            )
+                        )
+                        .append($('<div>')
+                            .attr('class', 'col-sm-4')
+                            .append($('<select>')
+                                .attr('class', 'form-control')
+                                .attr('name', 'models['+id+']')
+                                .attr('id', 'models_'+id+'')
+                                .attr('data-index', id)
+                                .append($("<option></option>")
+                                        .attr("value", '')
+                                        .text('Make & Model')
+                                )
+                            )
+                        )
+                        .append($('<div>')
+                            .attr('class', 'col-sm-2')
+                            .append('<a href="javascript:;" class="remove-type"  data-id="'+id+'"><i class="fa fa-trash" style="padding-top: 8px;"></i></a>')
+                        )
+                    )
+                )
+            );
+//            add options
+            $.each(items, function(key, element) {
+                if(typeof element != 'undefined')
+                    $('#types_'+id).append("<option value="+ key+">" + element + "</option>");
+            });
+
+        });
+
+        $(document).on("click", "a.remove-type", function(e) {
+            $('table.products-table tr#'+$(this).attr('data-id')).remove();
+        })
+
     });
-    
-    
+    function loadModels(obj){
+        var indexVal = $(obj).attr('data-index');
+        $('#models_'+indexVal).empty();
+        $('#models_'+indexVal).append("<option>Select Make & Model</option>");
+        if($(obj).val()==''){
+            return;
+        }
+        processing();
+        $.get('/api/load_car_models_list', { car_type_id: $(obj).val() })
+        .done(function(response){
+            var cars = response.data.cars;
+            $.each(cars, function(key, element) {
+                $('#models_'+indexVal).append("<option value='" + element.id +"'>" + element.make +' - '+element.model+ "</option>");
+            });
+            $.unblockUI();
+        })
+        .fail(function(response){
+            $.unblockUI();
+            $.each(response.responseJSON, function (key, value) {
+                $.each(value, function (index, message) {
+                    displayMessageAlert(message, 'danger', 'warning-sign');
+                });
+            });
+        });
+    }
 </script>
 @endsection

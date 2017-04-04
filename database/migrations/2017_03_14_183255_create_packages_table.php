@@ -20,8 +20,8 @@ class CreatePackagesTable extends Migration
             $table->enum('discount_type', ['amount', 'percent'])->default('amount');
             $table->integer('booking_duration')->default(0);
             $table->enum('booking_duration_type', ['days', 'weeks', 'month'])->default('days');
-            $table->dateTime('start_date')->nullable();
-            $table->dateTime('end_date')->nullable();
+//            $table->dateTime('start_date')->nullable();
+//            $table->dateTime('end_date')->nullable();
 
             $table->enum('discount_package_type', ['all', 'selected'])->default('all');
             $table->boolean('status')->default(true);

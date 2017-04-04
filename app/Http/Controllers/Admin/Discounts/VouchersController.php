@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Discount;
 use App\DiscountRecurringRule;
 use App\DiscountRecurringRuleRepitition;
-use App\CarType;
+use App\Types;
 use App\Http\Requests\DiscountVoucherRequest;
 
 class VouchersController extends Controller
@@ -31,8 +31,8 @@ class VouchersController extends Controller
      */
     public function create()
     {
-        $oCarTypes = CarType::orderBy('name', 'DESC')->get();
-        return view('admin.discounts.vouchers.add', compact('oCarTypes'));
+        $oTypes = Types::get();
+        return view('admin.discounts.vouchers.add', compact('oTypes'));
     }
 
     /**
@@ -55,14 +55,14 @@ class VouchersController extends Controller
                 $oDiscount->voucher_code = $request->input('voucher_code');
                 $oDiscount->amount = $request->input('amount');
                 $oDiscount->amount_type = $request->input('amount_type');
-                if($request->input('products')){
+                if($request->input('models')){
                     $oDiscount->discount_type = 'selected';
                 }
                 if($oDiscount->save()){
-                    if(is_array($request->input('products'))) {
-                        $oDiscount->cars()->sync($request->input('products'));
+                    if(is_array($request->input('models'))) {
+                        $oDiscount->carModels()->sync($request->input('models'));
                     }else{
-                        $oDiscount->cars()->sync([]);
+                        $oDiscount->carModels()->sync([]);
                     }
 
                     $oRecurringRule = new DiscountRecurringRule;
@@ -173,8 +173,8 @@ class VouchersController extends Controller
     public function edit($id)
     {
         $oDiscount = Discount::where('id', $id)->firstOrFail();
-        $oCarTypes = CarType::orderBy('name', 'DESC')->get();
-        return view('admin.discounts.vouchers.edit', compact('oCarTypes', 'oDiscount'));
+        $oTypes = Types::get();
+        return view('admin.discounts.vouchers.edit', compact('oTypes', 'oDiscount'));
     }
 
     /**
@@ -202,17 +202,17 @@ class VouchersController extends Controller
                 $oDiscount->voucher_code = $request->input('voucher_code');
                 $oDiscount->amount = $request->input('amount');
                 $oDiscount->amount_type = $request->input('amount_type');
-                if($request->input('products')){
+                if($request->input('models')){
                     $oDiscount->discount_type = 'selected';
                 }else{
                     $oDiscount->discount_type = 'all';
                 }
                 $oDiscount->save();
 
-                if(is_array($request->input('products'))) {
-                    $oDiscount->cars()->sync($request->input('products'));
+                if(is_array($request->input('models'))) {
+                    $oDiscount->carModels()->sync($request->input('models'));
                 }else{
-                    $oDiscount->cars()->sync([]);
+                    $oDiscount->carModels()->sync([]);
                 }
 
                 $oRecurringRule = $oDiscount->recurring;

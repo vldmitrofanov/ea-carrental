@@ -23,4 +23,10 @@ class Discount extends Model
         return $this->belongsToMany('App\RentalCar', 'discount_voucher_cars',
             'voucher_id', 'car_id'); //->withPivot('name', 'price', 'per', 'type')->wherePivot('status', 1);
     }
+
+    public function carModels()
+    {
+        return $this->belongsToMany('App\CarModel', 'discount_voucher_car_models_types',
+            'voucher_id', 'model_id'); //->withPivot('name', 'price', 'per', 'type')->wherePivot('status', 1);
+    }
 }

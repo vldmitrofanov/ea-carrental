@@ -31,7 +31,6 @@ Car Type Extras Management
                                 <th>No</th>
                                 <th>Name</th>
                                 <th>Price</th>
-                                <th>Status</th>
                                 <th>&nbsp;</th>
                             </tr>
                             @foreach($oCarExtras as $index =>$oCarExtra)
@@ -39,7 +38,6 @@ Car Type Extras Management
                                 <td>{{ ++$index }}</td>
                                 <td>{{ $oCarExtra->name }}</td>
                                 <td>{{ $oCarExtra->price }}</td>
-                                <td>{{ ($oCarExtra->status)?'Active':'Inactive' }}</td>
                                 <td><a href="{{ url('admin/extras/'.$oCarExtra->id.'/edit') }}"><i class="fa fa-edit"></i></a></td>
                             </tr>
                             @endforeach

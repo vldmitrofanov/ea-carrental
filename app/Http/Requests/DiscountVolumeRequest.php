@@ -36,8 +36,6 @@ class DiscountVolumeRequest extends FormRequest
                     'name' => 'required',
                     'discount_amount' => 'required',
                     'booking_duration' => 'required|numeric',
-                    'start_date' => 'required',
-                    'end_date' => 'required|date',
                     'description' => 'required',
                 ];
             }
@@ -48,8 +46,6 @@ class DiscountVolumeRequest extends FormRequest
                     'name' => 'required',
                     'discount_amount' => 'required',
                     'booking_duration' => 'required|numeric',
-                    'start_date' => 'required',
-                    'end_date' => 'required|date',
                     'description' => 'required',
 
                 ];

@@ -33,8 +33,8 @@ class RentalCarRequest extends FormRequest
             case 'POST':
             {
                 return [
-                    'make' => 'required',
-                    'model' => 'required',
+                    'type_id' => 'required',
+                    'model_id' => 'required',
                     'registration_number' => 'required',
                     'location_id' => 'required'
                 ];
@@ -43,8 +43,8 @@ class RentalCarRequest extends FormRequest
             case 'PATCH':
             {
                 return [
-                    'make' => 'required',
-                    'model' => 'required',
+                    'type_id' => 'required',
+                    'model_id' => 'required',
                     'registration_number' => 'required',
                     'location_id' => 'required'
                 ];
@@ -53,12 +53,13 @@ class RentalCarRequest extends FormRequest
         }
     }
 
-//    public function messages()
-//    {
-//        return [
-//            'name.required' => 'Office Location name is required.',
-//            'name.unique' => 'Office Location name is already defined.',
-//            'country_id.required' => 'Please select Country.',
-//        ];
-//    }
+    public function messages()
+    {
+        return [
+            'type_id.required' => 'Please select Type.',
+            'model_id.required' => 'Please select Make & Model.',
+            'registration_number.required' => 'Please provide Registration Number.',
+            'location_id.required' => 'Please select Location.',
+        ];
+    }
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePackageCarsTable extends Migration
+class CreatePakagePeriodsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreatePackageCarsTable extends Migration
      */
     public function up()
     {
-        Schema::create('discount_package_cars', function (Blueprint $table) {
+        Schema::create('discount_package_periods', function (Blueprint $table) {
             $table->integer('discount_package_id')->unsigned();
-            $table->integer('car_id')->unsigned();
-
+            $table->dateTime('start_date')->nullable();
+            $table->dateTime('end_date')->nullable();
+            $table->timestamps();
             $table->foreign('discount_package_id')->references('id')->on('discount_packages')->onDelete('cascade');
-            $table->foreign('car_id')->references('id')->on('rental_cars')->onDelete('cascade');
 
         });
     }
@@ -30,6 +30,6 @@ class CreatePackageCarsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('discount_package_cars');
+        Schema::drop('discount_package_periods');
     }
 }

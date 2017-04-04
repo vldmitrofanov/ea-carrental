@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Admin\FleetManagement;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\RentalCar;
-use App\CarType;
+use App\Types;
 use App\OfficeLocation;
 use App\Http\Requests\RentalCarRequest;
 
-class RentalCarsController extends Controller
+class CarsController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,16 +19,14 @@ class RentalCarsController extends Controller
     public function index(Request $request)
     {
         if(!empty($request->input('q'))) {
-//            $oSchedules = Schedule::orderby('start_at','asc')->where('tournament_id',$request->input('q'))->paginate(15);
-            $oRentalCars = RentalCar::Join('rental_car_types', 'rental_cars.id', '=', 'rental_car_types.car_id')
-                            ->where('rental_car_types.car_type_id', $request->input('q'))
+            $oRentalCars = RentalCar::where('rental_car_types.car_type_id', $request->input('q'))
                             ->paginate(15);
         }else{
             $oRentalCars = RentalCar::paginate(15);
         }
-        
-        $oCarTypes = CarType::get();
-        return view('admin.rental_cars.index', compact('oRentalCars', 'oCarTypes'))->with('q', $request->input('q'));
+
+        $oTypes = Types::get();
+        return view('admin.fleet_management.cars.index', compact('oRentalCars', 'oTypes'))->with('q', $request->input('q'));
     }
 
     /**
@@ -39,9 +37,9 @@ class RentalCarsController extends Controller
     public function create()
     {
         $oRentalCar = null;
-        $oCarTypes = CarType::pluck('name', 'id')->toArray();
+        $oTypes = Types::get();
         $oOfficeLocations = OfficeLocation::pluck('name', 'id')->toArray();
-        return view('admin.rental_cars.add', compact('oRentalCar', 'oCarTypes', 'oOfficeLocations'));
+        return view('admin.fleet_management.cars.add', compact('oRentalCar', 'oTypes', 'oOfficeLocations'));
     }
 
     /**
@@ -53,23 +51,17 @@ class RentalCarsController extends Controller
     public function store(RentalCarRequest $request)
     {
         $oRentalCar = new RentalCar;
-        $oRentalCar->make = $request->input('make');
-        $oRentalCar->model = $request->input('model');
+        $oRentalCar->model_id = $request->input('model_id');
+        $oRentalCar->type_id = $request->input('type_id');
         $oRentalCar->registration_number = $request->input('registration_number');
         $oRentalCar->current_mileage = $request->input('current_mileage');
         $oRentalCar->location_id = $request->input('location_id');
-        if($oRentalCar->save()){
-            if(is_array($request->input('car_types'))) {
-                $oRentalCar->types()->sync($request->input('car_types'));
-            }else{
-                $oRentalCar->types()->sync([]);
-            }
-        }
+        $oRentalCar->save();
 
         \Session::flash('flash_message', 'Car Information saved successfully.');
         \Session::flash('flash_type', 'alert-success');
 
-        return \Redirect::to('admin/cars');
+        return \Redirect::to('admin/fleet/cars');
     }
 
     /**
@@ -92,9 +84,9 @@ class RentalCarsController extends Controller
     public function edit($id)
     {
         $oRentalCar = RentalCar::where('id', $id)->firstOrFail();
-        $oCarTypes = CarType::pluck('name', 'id')->toArray();
+        $oTypes = Types::get();
         $oOfficeLocations = OfficeLocation::pluck('name', 'id')->toArray();
-        return view('admin.rental_cars.edit', compact('oRentalCar', 'oCarTypes', 'oOfficeLocations'));
+        return view('admin.fleet_management.cars.edit', compact('oRentalCar', 'oTypes', 'oOfficeLocations'));
     }
 
     /**
@@ -107,23 +99,17 @@ class RentalCarsController extends Controller
     public function update(RentalCarRequest $request, $id)
     {
         $oRentalCar = RentalCar::findOrFail($id);
-        $oRentalCar->make = $request->input('make');
-        $oRentalCar->model = $request->input('model');
+        $oRentalCar->model_id = $request->input('model_id');
+        $oRentalCar->type_id = $request->input('type_id');
         $oRentalCar->registration_number = $request->input('registration_number');
         $oRentalCar->current_mileage = $request->input('current_mileage');
         $oRentalCar->location_id = $request->input('location_id');
         $oRentalCar->save();
 
-        if(is_array($request->input('car_types'))) {
-            $oRentalCar->types()->sync($request->input('car_types'));
-        }else{
-            $oRentalCar->types()->sync([]);
-        }
-
         \Session::flash('flash_message', 'Rental Car Information saved successfully.');
         \Session::flash('flash_type', 'alert-success');
 
-        return \Redirect::to('admin/cars');
+        return \Redirect::to('admin/fleet/cars');
     }
 
     /**
@@ -146,5 +132,4 @@ class RentalCarsController extends Controller
         \Session::flash('flash_type', 'alert-success');
         return \Redirect::to('admin/cars');
     }
-
 }

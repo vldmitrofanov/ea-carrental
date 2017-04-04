@@ -13,7 +13,7 @@
     </section>
     <section class="content">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <div class="box box-primary">
                     @include('admin.partials.errors.errors')
                     <div class="alert alert-info alert-dismissible">

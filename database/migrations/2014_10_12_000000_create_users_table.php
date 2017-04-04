@@ -15,6 +15,8 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
+            $table->enum('title', ['Mr', 'Mrs', 'Ms', 'Dr', 'Prof', 'Rev', 'Other']);
+
             $table->string('name');
             $table->string('username')->unique();
             $table->string('email')->unique();
@@ -24,6 +26,14 @@ class CreateUsersTable extends Migration
             $table->string('driver_licence')->default('');
             $table->string('passport_id')->default('');
             $table->string('rental_form')->default('');
+            $table->string('company_name')->default('');
+            $table->string('address')->default('');
+            $table->string('state')->default('');
+            $table->string('city')->default('');
+            $table->string('zip')->default('');
+            $table->integer('country_id')->unsigned()->default(0);
+            $table->text('other_info');
+
             $table->rememberToken();
             $table->timestamps();
         });

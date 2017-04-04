@@ -5,9 +5,10 @@ namespace App\Http\Controllers\Admin\Discounts;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
-use App\CarType;
+use App\Types;
 use App\DiscountFreebies;
 use App\Http\Requests\DiscountFreebieRequest;
+use App\DiscountFreebiesPeriod;
 
 class FreebiesController extends Controller
 {
@@ -29,8 +30,8 @@ class FreebiesController extends Controller
      */
     public function create()
     {
-        $oCarTypes = CarType::orderBy('name', 'DESC')->get();
-        return view('admin.discounts.freebies.add', compact('oCarTypes'));
+        $oTypes = Types::get();
+        return view('admin.discounts.freebies.add', compact('oTypes'));
     }
 
     /**
@@ -50,17 +51,26 @@ class FreebiesController extends Controller
                 $oDiscount->booking_duration = $request->input('booking_duration');
                 $oDiscount->booking_duration_type = $request->input('booking_duration_type');
                 $oDiscount->description = $request->input('description');
-                $oDiscount->start_date = Carbon::parse($request->input('start_date'));
-                $oDiscount->end_date = Carbon::parse($request->input('end_date'));
-                if($request->input('products')){
-                    $oDiscount->discount_package_type = 'selected';
-                }
+//                $oDiscount->start_date = Carbon::parse($request->input('start_date'));
+//                $oDiscount->end_date = Carbon::parse($request->input('end_date'));
+
                 if($oDiscount->save()){
-                    if(is_array($request->input('products'))) {
-                        $oDiscount->cars()->sync($request->input('products'));
+                    if(is_array($request->input('models'))) {
+                        $oDiscount->carModels()->sync($request->input('models'));
                     }else{
-                        $oDiscount->cars()->sync([]);
+                        $oDiscount->carModels()->sync([]);
                     }
+
+                    if(is_array($request->input('start_date'))) {
+                        foreach ($request->input('start_date') as $key=>$val){
+                            $oPeriod = new DiscountFreebiesPeriod;
+                            $oPeriod->discount_freebies_id = $oDiscount->id;
+                            $oPeriod->start_date = Carbon::parse($val);
+                            $oPeriod->end_date = Carbon::parse($request->input('end_date')[$key]);
+                            $oPeriod->save();
+                        }
+                    }
+
                     return $this->_successJsonResponse(['message'=>'Freebie Discount information saved.']);
                 }else{
                     return $this->_failedJsonResponse([['Failed to save Freebie Discount Information.']]);
@@ -93,8 +103,8 @@ class FreebiesController extends Controller
     public function edit($id)
     {
         $oDiscount = DiscountFreebies::where('id', $id)->firstOrFail();
-        $oCarTypes = CarType::orderBy('name', 'DESC')->get();
-        return view('admin.discounts.freebies.edit', compact('oCarTypes', 'oDiscount'));
+        $oTypes = Types::get();
+        return view('admin.discounts.freebies.edit', compact('oTypes', 'oDiscount'));
     }
 
     /**
@@ -119,20 +129,26 @@ class FreebiesController extends Controller
                 $oDiscount->booking_duration = $request->input('booking_duration');
                 $oDiscount->booking_duration_type = $request->input('booking_duration_type');
                 $oDiscount->description = $request->input('description');
-                $oDiscount->start_date = Carbon::parse($request->input('start_date'));
-                $oDiscount->end_date = Carbon::parse($request->input('end_date'));
-                if($request->input('products')){
-                    $oDiscount->discount_package_type = 'selected';
-                }else{
-                    $oDiscount->discount_package_type = 'all';
-                }
                 $oDiscount->save();
 
-                if(is_array($request->input('products'))) {
-                    $oDiscount->cars()->sync($request->input('products'));
+                if(is_array($request->input('models'))) {
+                    $oDiscount->carModels()->sync($request->input('models'));
                 }else{
-                    $oDiscount->cars()->sync([]);
+                    $oDiscount->carModels()->sync([]);
                 }
+
+                $oDiscount->periods()->delete();
+
+                if(is_array($request->input('start_date'))) {
+                    foreach ($request->input('start_date') as $key=>$val){
+                        $oPeriod = new DiscountFreebiesPeriod;
+                        $oPeriod->discount_freebies_id = $oDiscount->id;
+                        $oPeriod->start_date = Carbon::parse($val);
+                        $oPeriod->end_date = Carbon::parse($request->input('end_date')[$key]);
+                        $oPeriod->save();
+                    }
+                }
+
                 return $this->_successJsonResponse(['message'=>'Freebie Discount information saved.']);
 
             }catch (\Exception $e) {

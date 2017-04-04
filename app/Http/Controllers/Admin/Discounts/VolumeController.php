@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\DiscountVolume;
-use App\CarType;
+use App\Types;
 use App\Http\Requests\DiscountVolumeRequest;
+use App\DiscountPackagePeriod;
 
 class VolumeController extends Controller
 {
@@ -29,8 +30,8 @@ class VolumeController extends Controller
      */
     public function create()
     {
-        $oCarTypes = CarType::orderBy('name', 'DESC')->get();
-        return view('admin.discounts.volumes.add', compact('oCarTypes'));
+        $oTypes = Types::get();
+        return view('admin.discounts.volumes.add', compact('oTypes'));
     }
 
     /**
@@ -52,17 +53,27 @@ class VolumeController extends Controller
                 $oDiscount->booking_duration = $request->input('booking_duration');
                 $oDiscount->booking_duration_type = $request->input('booking_duration_type');
                 $oDiscount->description = $request->input('description');
-                $oDiscount->start_date = Carbon::parse($request->input('start_date'));
-                $oDiscount->end_date = Carbon::parse($request->input('end_date'));
-                if($request->input('products')){
+
+                if($request->input('models')){
                     $oDiscount->discount_package_type = 'selected';
                 }
                 if($oDiscount->save()){
-                    if(is_array($request->input('products'))) {
-                        $oDiscount->cars()->sync($request->input('products'));
+                    if(is_array($request->input('models'))) {
+                        $oDiscount->carModels()->sync($request->input('models'));
                     }else{
-                        $oDiscount->cars()->sync([]);
+                        $oDiscount->carModels()->sync([]);
                     }
+
+                    if(is_array($request->input('start_date'))) {
+                        foreach ($request->input('start_date') as $key=>$val){
+                            $oPeriod = new DiscountPackagePeriod;
+                            $oPeriod->discount_package_id = $oDiscount->id;
+                            $oPeriod->start_date = Carbon::parse($val);
+                            $oPeriod->end_date = Carbon::parse($request->input('end_date')[$key]);
+                            $oPeriod->save();
+                        }
+                    }
+
                     return $this->_successJsonResponse(['message'=>'Volume based Discount information saved.']);
                 }else{
                     return $this->_failedJsonResponse([['Failed to save Volume based Discount Information.']]);
@@ -95,8 +106,8 @@ class VolumeController extends Controller
     public function edit($id)
     {
         $oDiscount = DiscountVolume::where('id', $id)->firstOrFail();
-        $oCarTypes = CarType::orderBy('name', 'DESC')->get();
-        return view('admin.discounts.volumes.edit', compact('oCarTypes', 'oDiscount'));
+        $oTypes = Types::get();
+        return view('admin.discounts.volumes.edit', compact('oTypes', 'oDiscount'));
     }
 
     /**
@@ -123,20 +134,31 @@ class VolumeController extends Controller
                 $oDiscount->booking_duration = $request->input('booking_duration');
                 $oDiscount->booking_duration_type = $request->input('booking_duration_type');
                 $oDiscount->description = $request->input('description');
-                $oDiscount->start_date = Carbon::parse($request->input('start_date'));
-                $oDiscount->end_date = Carbon::parse($request->input('end_date'));
-                if($request->input('products')){
+                if($request->input('models')){
                     $oDiscount->discount_package_type = 'selected';
                 }else{
                     $oDiscount->discount_package_type = 'all';
                 }
                 $oDiscount->save();
 
-                if(is_array($request->input('products'))) {
-                    $oDiscount->cars()->sync($request->input('products'));
+                if(is_array($request->input('models'))) {
+                    $oDiscount->carModels()->sync($request->input('models'));
                 }else{
-                    $oDiscount->cars()->sync([]);
+                    $oDiscount->carModels()->sync([]);
                 }
+
+                $oDiscount->periods()->delete();
+
+                if(is_array($request->input('start_date'))) {
+                    foreach ($request->input('start_date') as $key=>$val){
+                        $oPeriod = new DiscountPackagePeriod;
+                        $oPeriod->discount_package_id = $oDiscount->id;
+                        $oPeriod->start_date = Carbon::parse($val);
+                        $oPeriod->end_date = Carbon::parse($request->input('end_date')[$key]);
+                        $oPeriod->save();
+                    }
+                }
+
                 return $this->_successJsonResponse(['message'=>'Volume based Discount information saved.']);
 
             }catch (\Exception $e) {
