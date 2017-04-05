@@ -23,10 +23,10 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('phone')->default('');
             $table->boolean('status')->default(1);
-            $table->string('driver_licence')->default('');
-            $table->string('passport_id')->default('');
-            $table->string('rental_form')->default('');
-            $table->string('company_name')->default('');
+            $table->string('driver_licence')->nullable();
+            $table->string('passport_id')->nullable();
+            $table->string('rental_form')->nullable();
+            $table->string('company_name')->nullable();
             $table->string('address')->default('');
             $table->string('state')->default('');
             $table->string('city')->default('');

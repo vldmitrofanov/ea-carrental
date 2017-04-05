@@ -55,17 +55,30 @@
                 </div>
                 <div class="form-group">
                     <label for="car_type_id" class="col-sm-2 control-label">Car Type</label>
-                    <div class="col-sm-10">
-                        {!! Form::select('car_type_id', array(''=>'Please Select')+$oCarTypes,$oReservation->details->first()->carType->id,array('class'=>'form-control','id'=>'car_type_id')) !!}
-                    </div>
+                    <div class="col-sm-4">
+                        <select style="display: inline;"  class="form-control" name="car_type_id" id="car_type_id" data-index="0">
+                            <option value="">Please Select Type</option>
+                            @foreach($oTypes as $oType)
+                                <option {{  ($oReservation->details->first()->car_type_id == $oType->id)?'selected':'' }} value="{{ $oType->id }}">{{ ($oType->vehicleSize)?$oType->vehicleSize->code_letter:'-'  }}{{ ($oType->vehicleDoors)?$oType->vehicleDoors->code_letter:'-'  }}{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->code_letter:'-'  }}</option>
+                            @endforeach
+                        </select>&nbsp</div>
+
+                    <div class="col-sm-4"><select style="display: inline;" class="form-control" name="models" id="models" data-index="0">
+                            <option value="">Make & Model</option>
+                            @foreach($oCarModels as $oCarModel)
+                                <option {{  ($oReservation->details->first()->car_model_id == $oCarModel->id)?'selected':'' }} value="{{ $oCarModel->id }}">{{ $oCarModel->make }} - {{ $oCarModel->model }}</option>
+                            @endforeach
+                        </select>&nbsp</div>
+
                 </div>
+
                 <div class="form-group">
                     <label for="car_id" class="col-sm-2 control-label">Car</label>
                     <div class="col-sm-10">
                         <select class="form-control" id="car_id" name="car_id">
                             <option value="">Please Select</option>
                             @foreach($oCars as $oCar)
-                                <option value="{{ $oCar->id  }}" {{ ($oReservation->details->first()->car_id==$oCar->id)?'selected':''  }} >{{ $oCar->make  }} {{ $oCar->model }} - {{  $oCar->registration_number }}</option>
+                                <option value="{{ $oCar->id  }}" {{ ($oReservation->details->first()->car_id==$oCar->id)?'selected':''  }} >{{  $oCar->registration_number }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -361,7 +374,7 @@
                     <select class="form-control" id="collected_car_id" name="collected_car_id">
                         <option value="">Please Select</option>
                         @foreach($oCars as $oCar)
-                            <option value="{{ $oCar->id  }}" {{ ($oReservation->details->first()->car_id==$oCar->id)?'selected':''  }} >{{ $oCar->make  }} {{ $oCar->model }} - {{  $oCar->registration_number }}</option>
+                            <option value="{{ $oCar->id  }}" {{ ($oReservation->details->first()->car_id==$oCar->id)?'selected':''  }} >{{  $oCar->registration_number }}</option>
                         @endforeach
                     </select>
                 </div>

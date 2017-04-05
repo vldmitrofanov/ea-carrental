@@ -40,7 +40,7 @@
                      <input type="hidden" name="licence" id="licence" value="{{ $oReservation->user->driver_licence}}">
                      <input type="hidden" name="rental_form" id="rental_form" value="{{ $oReservation->user->rental_form}}">
 
-                        @include('admin.reservations.forms.edit', ['submit_button'=>'Create'])
+                    @include('admin.reservations.forms.edit', ['submit_button'=>'Update'])
                     {!! Form::close() !!}
                 </div>
             </div>
@@ -84,6 +84,78 @@
 
             });
 
+            $(document).on("change", "select#car_type_id", function(e) {
+                $('#models').empty();
+                $('#models').append("<option>Select Make & Model</option>");
+                if($(this).val()==''){
+                    return;
+                }
+                processing();
+                $.get('/api/load_car_models_list', { car_type_id: $(this).val() })
+                        .done(function(response){
+                            var cars = response.data.cars;
+                            $.each(cars, function(key, element) {
+                                $('#models').append("<option value='" + element.id +"'>" + element.make +' - '+element.model+ "</option>");
+                            });
+                            $.unblockUI();
+                        })
+                        .fail(function(response){
+                            $.unblockUI();
+                            $.each(response.responseJSON, function (key, value) {
+                                $.each(value, function (index, message) {
+                                    displayMessageAlert(message, 'danger', 'warning-sign');
+                                });
+                            });
+                        });
+            });
+
+            $(document).on("change", "select#models", function(e) {
+                $('#car_id').empty();
+                $('#car_id').append("<option>Select Car</option>");
+                if($(this).val()==''){
+                    return;
+                }
+                processing();
+                $.get('/api/load_model_cars_list', { model_id: $(this).val() })
+                        .done(function(response){
+                            var cars = response.data.cars;
+                            $.each(cars, function(key, element) {
+                                $('#car_id').append("<option value='" + element.id +"'>" + element.registration_number +"</option>");
+                            });
+                            $.unblockUI();
+                        })
+                        .fail(function(response){
+                            $.unblockUI();
+                            $.each(response.responseJSON, function (key, value) {
+                                $.each(value, function (index, message) {
+                                    displayMessageAlert(message, 'danger', 'warning-sign');
+                                });
+                            });
+                        });
+            });
+
+            $(document).on("click", "button.validate-code", function(e) {
+                processing();
+                var formData = $('form#car_reservation').serializeArray();
+                formData.push({
+                    name: "_method",
+                    value: "POST"
+                });
+                $.post('/admin/reservations/validate_voucher', formData)
+                        .done(function(response){
+                            $.unblockUI();
+                            displayMessageAlert(response.message);
+                        })
+                        .fail(function(response){
+                            $('#discount_code').val('');
+                            $.unblockUI();
+                            $.each(response.responseJSON, function (key, value) {
+                                $.each(value, function (index, message) {
+                                    displayMessageAlert(message, 'danger', 'warning-sign');
+                                });
+                            });
+                        });
+            });
         });
 
         $(document).on("click", "button.btn-pdf", function(e) {
@@ -172,7 +244,7 @@
                 $('div.payment-made').html($('#currency_sign').val()+ ' ' +response.data.amountPaid)
                 $('table.payments').find('tr#'+paymentId).remove();
                 $.unblockUI();
-                displayMessageAlert('Custom Rate information removed.');
+                displayMessageAlert('Car Payment information removed.');
             })
             .fail(function(response){
                 $.unblockUI();
@@ -386,6 +458,7 @@
                                                                     .attr("value", 'notpaid')
                                                                     .text('Not paid')
                                                             ).append($("<option></option>")
+                                                                    .attr("selected", 'selected')
                                                                     .attr("value", 'pending')
                                                                     .text('Pending')
                                                             )
@@ -420,7 +493,7 @@
             });
 
             $(document).on("click", "button.add-extra", function(e) {
-                if($('#car_type_id').val()==''){
+                if($('#models').val()==''){
                     return;
                 }
                 processing();
@@ -429,7 +502,7 @@
                     name: "_method",
                     value: "POST"
                 });
-                $.get('/api/load_extras', { car_type_id: $('#car_type_id').val() })
+                $.get('/api/load_extras', { car_model_id: $('#models').val() })
                 .done(function(response){
                     var extras = response.data.extras;
                     var currency = response.data.currency;
@@ -524,42 +597,6 @@
                 });
             });
 
-            $(document).on("change", "select#car_type_id", function(e) {
-                $('#car_id').empty();
-                $('#car_id').append("<option>Please Select</option>");
-                if($(this).val()==''){
-                    return;
-                }
-                processing();
-                var formData = $('form#car_reservation').serializeArray();
-                formData.push({
-                    name: "_method",
-                    value: "POST"
-                });
-                $.get('/api/load_car_list', { car_type_id: $(this).val() })
-                .done(function(response){
-                    var cars = response.data.cars;
-                    $.each(cars, function(key, element) {
-                        $('#car_id').append("<option value='" + element.id +"'>" + element.make +' '+element.model+' - '+element.registration_number + "</option>");
-                    });
-
-//                    $.each(cars, function(key, element) {
-//                        $("div.reservation-fields > div:nth-child(9)").after("<div>foobar</div>");
-////                        $('#car_id').append("<option value='" + element.id +"'>" + element.make +' '+element.model+' - '+element.registration_number + "</option>");
-//                    });
-
-                    $.unblockUI();
-                })
-                .fail(function(response){
-                    $.unblockUI();
-                    $.each(response.responseJSON, function (key, value) {
-                        $.each(value, function (index, message) {
-                            displayMessageAlert(message, 'danger', 'warning-sign');
-                        });
-                    });
-                });
-            })
-
             $(document).on("change", "select#car_id", function(e) {
                 processing();
                 var formData = $('form#car_reservation').serializeArray();
@@ -568,64 +605,66 @@
                     value: "POST"
                 });
                 $.post('/admin/reservations/load_car_prices', formData)
-                .done(function(response){
-                    var prices = response.data.prices;
-                    var currency = response.data.currency;
-                    var currencySign = response.data.currencySign;
+                        .done(function(response){
+                            var prices = response.data.prices;
+                            var currency = response.data.currency;
+                            var currencySign = response.data.currencySign;
 
-                    $('#price_per_day').val(prices.price_per_day);
-                    $('#price_per_day_detail').val(prices.price_per_day_detail);
-                    $('#price_per_hour').val(prices.price_per_hour);
-                    $('#price_per_hour_detail').val(prices.price_per_hour_detail);
-                    $('#car_rental_fee').val(prices.car_rental_fee);
-                    $('#extra_price').val(prices.extra_price);
-                    $('#insurance').val(prices.insurance);
-                    $('#sub_total').val(prices.sub_total);
-                    $('#tax').val(prices.tax);
-                    $('#total_price').val(prices.total_price);
-                    $('#required_deposit').val(prices.required_deposit);
+                            $('#price_per_day').val(prices.price_per_day);
+                            $('#price_per_day_detail').val(prices.price_per_day_detail);
+                            $('#price_per_hour').val(prices.price_per_hour);
+                            $('#price_per_hour_detail').val(prices.price_per_hour_detail);
+                            $('#car_rental_fee').val(prices.car_rental_fee);
+                            $('#extra_price').val(prices.extra_price);
+                            $('#insurance').val(prices.insurance);
+                            $('#sub_total').val(prices.sub_total);
+                            $('#tax').val(prices.tax);
+                            $('#total_price').val(prices.total_price);
+                            $('#required_deposit').val(prices.required_deposit);
+                            $('#discount').val(prices.discount);
+                            $('#discount_detail').val(prices.discount_detail);
 
-                    $('div.lbl-total-price').html(currencySign+' '+prices.total_price)
-                    $('div.payment-due').html(currencySign+' '+ (prices.total_price-$('#payment_made').val()))
+                            $("table.payment_detail> tbody tr:nth-child(2)").find('th').html('Price per day:<br/><small>'+prices.price_per_day_detail+'<small>');
+                            $("table.payment_detail> tbody tr:nth-child(2)").find('td').html(currencySign+' '+prices.price_per_day);
 
-                    $("table.payment_detail> tbody tr:nth-child(2)").find('th').html('Price per day:<br/><small>'+prices.price_per_day_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(2)").find('td').html(currencySign+' '+prices.price_per_day);
-
-
-                    $("table.payment_detail> tbody tr:nth-child(4)").find('th').html('Price per hour:<br/><small>'+prices.price_per_hour_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(4)").find('td').html(currencySign+' '+prices.price_per_hour);
+                            $("table.payment_detail> tbody tr:nth-child(3)").find('th').html('Discount:<br/><small>'+prices.discount_detail+'<small>');
+                            $("table.payment_detail> tbody tr:nth-child(3)").find('td').html(currencySign+' '+prices.discount);
 
 
-                    $("table.payment_detail> tbody tr:nth-child(5)").find('th').html('Car rental fee:<br/><small>'+prices.car_rental_fee_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(5)").find('td').html(currencySign+' '+prices.car_rental_fee);
+                            $("table.payment_detail> tbody tr:nth-child(4)").find('th').html('Price per hour:<br/><small>'+prices.price_per_hour_detail+'<small>');
+                            $("table.payment_detail> tbody tr:nth-child(4)").find('td').html(currencySign+' '+prices.price_per_hour);
 
 
-                    $("table.payment_detail> tbody tr:nth-child(6)").find('td').html(currencySign+' '+prices.extra_price);
+                            $("table.payment_detail> tbody tr:nth-child(5)").find('th').html('Car rental fee:<br/><small>'+prices.car_rental_fee_detail+'<small>');
+                            $("table.payment_detail> tbody tr:nth-child(5)").find('td').html(currencySign+' '+prices.car_rental_fee);
 
-                    $("table.payment_detail> tbody tr:nth-child(7)").find('th').html('Insurance:<br/><small>'+prices.insurance_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(7)").find('td').html(currencySign+' '+prices.insurance);
 
-                    $("table.payment_detail> tbody tr:nth-child(8)").find('td').html(currencySign+' '+prices.sub_total);
+                            $("table.payment_detail> tbody tr:nth-child(6)").find('td').html(currencySign+' '+prices.extra_price);
 
-                    $("table.payment_detail> tbody tr:nth-child(9)").find('th').html('Tax:<br/><small>'+prices.tax_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(9)").find('td').html(currencySign+' '+prices.tax);
+                            $("table.payment_detail> tbody tr:nth-child(7)").find('th').html('Insurance:<br/><small>'+prices.insurance_detail+'<small>');
+                            $("table.payment_detail> tbody tr:nth-child(7)").find('td').html(currencySign+' '+prices.insurance);
 
-                    $("table.payment_detail> tbody tr:nth-child(10)").find('td').html(currencySign+' '+prices.total_price);
-                    $("table.payment_detail> tbody tr:nth-child(11)").find('td').html(currencySign+' '+prices.required_deposit);
+                            $("table.payment_detail> tbody tr:nth-child(8)").find('td').html(currencySign+' '+prices.sub_total);
 
-                    $.unblockUI();
-                })
-                .fail(function(response){
-                    $.unblockUI();
-                    $.each(response.responseJSON, function (key, value) {
-                        $.each(value, function (index, message) {
-                            displayMessageAlert(message, 'danger', 'warning-sign');
+                            $("table.payment_detail> tbody tr:nth-child(9)").find('th').html('Tax:<br/><small>'+prices.tax_detail+'<small>');
+                            $("table.payment_detail> tbody tr:nth-child(9)").find('td').html(currencySign+' '+prices.tax);
+
+                            $("table.payment_detail> tbody tr:nth-child(10)").find('td').html(currencySign+' '+prices.total_price);
+                            $("table.payment_detail> tbody tr:nth-child(11)").find('td').html(currencySign+' '+prices.required_deposit);
+
+                            $.unblockUI();
+                        })
+                        .fail(function(response){
+                            $.unblockUI();
+                            $.each(response.responseJSON, function (key, value) {
+                                $.each(value, function (index, message) {
+                                    displayMessageAlert(message, 'danger', 'warning-sign');
+                                });
+                            });
+
+                            $('input#date_from').val('');
+                            $('input#date_to').val('');
                         });
-                    });
-                                        
-                    $('input#date_from').val('');
-                    $('input#date_to').val('');
-                });
             });
 
             $('#pickup_date').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date()});

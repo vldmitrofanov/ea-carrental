@@ -69,7 +69,7 @@
                             @foreach($oReservation->details as $key=>$oDetail)
                             <tr>
                                 <td style="text-align:left; padding:5px 10px; background-color:#e3c9d6;border-top:2px solid #d0b1c1;">{{ ++$key }}</td>
-                                <td style="text-align:left; padding:5px 10px; background-color:#e3c9d6;border-top:2px solid #d0b1c1;">{{  $oDetail->car->make }} - {{  $oDetail->car->model }}</td></td>
+                                <td style="text-align:left; padding:5px 10px; background-color:#e3c9d6;border-top:2px solid #d0b1c1;">{{  $oDetail->model->make }} - {{  $oDetail->model->model }}</td></td>
                                 <td style="text-align:left; padding:5px 10px; background-color:#e3c9d6;border-top:2px solid #d0b1c1;">{{  $oDetail->car->registration_number }}</td>
                                 <td style="text-align:left; padding:5px 10px; background-color:#e3c9d6;border-top:2px solid #d0b1c1;">{{  $oDetail->date_from }} - {{  $oDetail->date_to }}</td>
                                 <td style="text-align:left; padding:5px 10px; background-color:#e3c9d6;border-top:2px solid #d0b1c1;">{{  $oDetail->rental_days }} Days and {{  $oDetail->rental_hours }} Hours</td>

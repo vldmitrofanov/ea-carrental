@@ -45,16 +45,16 @@
                                         <td>{{ $oReservation->user->name }} ({{ $oReservation->user->phone }})</td>
                                         <td>
                                             @foreach($oReservation->details as $oDetail)
-                                                {{ $oDetail->car->make  }} - {{ $oDetail->car->model  }}<br/>{{ $oDetail->car->registration_number}}<br/>
+                                                {{ $oDetail->model->make  }} - {{ $oDetail->model->model  }}<br/>{{ $oDetail->car->registration_number}}<br/>
                                             @endforeach
                                         </td>
                                         <td>
                                             @foreach($oReservation->details as $oDetail)
-                                                {{ $oDetail->carType->name  }}
+                                                {{ ($oDetail->carType->vehicleSize)?$oDetail->carType->vehicleSize->code_letter:'-'  }}{{ ($oDetail->carType->vehicleDoors)?$oDetail->carType->vehicleDoors->code_letter:'-'  }}{{ ($oDetail->carType->vehicleTransmissionAndDrive)?$oDetail->carType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oDetail->carType->vehicleFuelAndAC)?$oDetail->carType->vehicleFuelAndAC->code_letter:'-'  }}
                                             @endforeach
                                         </td>
                                         <td>{{ $oReservation->status }}</td>
-                                        <td>0</td>
+                                        <td>{{ $oReservation->details()->sum('total_price') }}</td>
                                         <td>
                                             <a target="_blank" href="{{ url('admin/reservations/'.$oReservation->id.'/invoice') }}"><i class="fa fa-file-pdf-o"></i></a>&nbsp;&nbsp;
                                             <a href="{{ url('admin/reservations/'.$oReservation->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;

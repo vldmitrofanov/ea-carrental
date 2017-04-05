@@ -142,6 +142,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::post('upload', 'Admin\ReservationsController@uploadFile');
         Route::post('validate_voucher', 'Admin\ReservationsController@validateVoucher');
         Route::get('{id}/invoice', 'Admin\ReservationsController@invoicePDF');
+        Route::get('{id}/delete', 'Admin\ReservationsController@destroy');
         Route::post('calculate_difference', function(){
             $from = \Carbon\Carbon::parse(Request::get('date_from'));
             $to = \Carbon\Carbon::parse(Request::get('date_to'));
@@ -178,6 +179,11 @@ Route::get('api/load_car_models_list', function(){
     return $data;
 });
 
+Route::get('api/load_model_cars_list', function(){
+    $data['data']['cars'] = \App\RentalCar::where('model_id',Request::get('model_id'))->get();
+    return $data;
+});
+
 Route::get('api/email_tags', function(){
     $data['tags'] = config('settings.email_tags');
     return $data;
@@ -190,7 +196,7 @@ Route::get('api/load_car_list', function(){
 });
 Route::get('api/load_extras', function(){
 //    $data['data']['cars'] = \App\CarType::where('id',Request::get('car_type_id'))->first()->cars()->get();
-    $data['data']['extras'] = \App\CarType::where('id',Request::get('car_type_id'))->first()->extras()->get();
+    $data['data']['extras'] = \App\CarModel::where('id',Request::get('car_model_id'))->first()->extras()->get();
     $oSetting = \App\Setting::where('key', 'currency')->first();
     $data['data']['currency'] = ($oSetting)?$oSetting->value:'USD';
     return $data;

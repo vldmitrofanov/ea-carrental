@@ -8,11 +8,12 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\RentalCarReservation;
 use App\OfficeLocation;
-use App\CarType;
-use App\CarTypePrice;
+use App\Types;
+use App\CarModelPrice;
 use App\CarExtra;
 use App\Country;
 use App\Setting;
+use App\CarModel;
 use App\RentalCar;
 use App\CarReservation;
 use App\CarReservationExtra;
@@ -80,9 +81,9 @@ class ReservationsController extends Controller
     public function create()
     {
         $oOfficeLocations = OfficeLocation::pluck('name', 'id')->toArray();
-        $oCarTypes = CarType::orderBy('name', 'ASC')->pluck('name', 'id')->toArray();
+        $oTypes = Types::get();
         $oCountries = Country::pluck('name', 'id')->toArray();
-        return view('admin.reservations.add', compact('oOfficeLocations', 'oCarTypes', 'oCountries'));
+        return view('admin.reservations.add', compact('oOfficeLocations', 'oTypes', 'oCountries'));
     }
 
     /**
@@ -95,25 +96,30 @@ class ReservationsController extends Controller
     {
         $this->_checkAjaxRequest();
 
+        $oCarType = Types::where('id',$request->input('car_type_id'))->first();
+        if(!$oCarType){
+            return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
+        }
+
+        $oCarModel = CarModel::where('id',$request->input('models'))->first();
+        if(!$oCarModel){
+            return $this->_failedJsonResponse([['Car Make & Model is not valid or has been removed.']]);
+        }
+
         $oCar = RentalCar::where('id',$request->input('car_id'))->first();
         if(!$oCar){
             return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
         }
 
-        $oCarType = CarType::where('id',$request->input('car_type_id'))->first();
-        if(!$oCarType){
-            return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
-        }
-
-        $googleEvent = new Event;
-        $googleEvent->name = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number;
-        $googleEvent->description = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number.'<br/>'.$request->input('name').' ( '.$request->input('phone').' )';
-        $googleEvent->startDateTime = Carbon::parse($request->input('date_from'));
-        $googleEvent->endDateTime = Carbon::parse($request->input('date_to'));
-        $googleEventResult = $googleEvent->save();
+//        $googleEvent = new Event;
+//        $googleEvent->name = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number;
+//        $googleEvent->description = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number.'<br/>'.$request->input('name').' ( '.$request->input('phone').' )';
+//        $googleEvent->startDateTime = Carbon::parse($request->input('date_from'));
+//        $googleEvent->endDateTime = Carbon::parse($request->input('date_to'));
+//        $googleEventResult = $googleEvent->save();
 
         \DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $result = \DB::transaction(function () use ($request, $oCar, $oCarType, $googleEventResult) {
+        $result = \DB::transaction(function () use ($request, $oCar, $oCarType, $oCarModel/*, $googleEventResult*/) {
             try{
                 $oUser = User::where('email', $request->input('email'))->first();
                 if(!$oUser){
@@ -141,6 +147,7 @@ class ReservationsController extends Controller
                     $oUser->passport_id = $request->file('passport')->store('public/users');
                     $oUser->save();
                 }
+
                 if ($request->file('licence')) {
                     $oUser->driver_licence = $request->file('licence')->store('public/users');
                     $oUser->save();
@@ -164,6 +171,7 @@ class ReservationsController extends Controller
                     $oCarReservationDetail = new CarReservationDetail;
                     $oCarReservationDetail->reservation_id = $oCarReservation->id;
                     $oCarReservationDetail->car_type_id = $oCarType->id;
+                    $oCarReservationDetail->car_model_id = $oCarModel->id;
                     $oCarReservationDetail->car_id = $oCar->id;
                     $oCarReservationDetail->pickup_date = Carbon::parse($request->input('date_from'));
                     $oCarReservationDetail->date_from = Carbon::parse($request->input('date_from'));
@@ -188,7 +196,7 @@ class ReservationsController extends Controller
                     $oCarReservationDetail->discount_code = $request->input('discount_code');
                     $oCarReservationDetail->discount = ($request->input('discount'))?:0;
                     $oCarReservationDetail->discount_detail = ($request->input('discount_detail'))?:'';
-                    $oCarReservationDetail->google_event_id = ($googleEventResult->id)?:'';
+                    $oCarReservationDetail->google_event_id = /*($googleEventResult->id)?:*/'';
                     $oCarReservationDetail->save();
                     
                     if($request->input('extra_id')){
@@ -237,13 +245,16 @@ class ReservationsController extends Controller
     {
         $oReservation = CarReservation::where('id', $id)->firstOrFail();
         $oOfficeLocations = OfficeLocation::pluck('name', 'id')->toArray();
-        $oCarTypes = CarType::orderBy('name', 'ASC')->pluck('name', 'id')->toArray();
+//        $oCarTypes = CarType::orderBy('name', 'ASC')->pluck('name', 'id')->toArray();
+        $oTypes = Types::get();
+        $oCarModels = CarModel::where('type_id', $oReservation->details->first()->car_type_id)->orderBy('make', 'ASC')->orderBy('model', 'ASC')->get();
         $oCountries = Country::pluck('name', 'id')->toArray();
-        $oCars = CarType::where('id',$oReservation->details->first()->car_type_id)->first()->cars()->get();
-        $oExtras = CarType::where('id',$oReservation->details->first()->car_type_id)->first()->extras()->get();
+//        $oCars = CarModel::where('id',$oReservation->details->first()->car_model_id)->first()->cars()->get();
+        $oCars = RentalCar::where('model_id',$oReservation->details->first()->car_model_id)->get();
+        $oExtras = CarModel::where('id',$oReservation->details->first()->car_model_id)->first()->extras()->get();
         $settingsArr = $this->option_arr;
         $currencySign = $this->getCurrencySign($this->option_arr['currency']);
-        return view('admin.reservations.edit', compact('oOfficeLocations', 'oCarTypes', 'oCountries', 'oReservation', 'oCars', 'currencySign', 'settingsArr', 'oExtras'));
+        return view('admin.reservations.edit', compact('oOfficeLocations', 'oCarModels', 'oTypes', 'oCountries', 'oReservation', 'oCars', 'currencySign', 'settingsArr', 'oExtras'));
     }
 
     public function addPayment(Request $request){
@@ -289,14 +300,20 @@ class ReservationsController extends Controller
      */
     public function update(ReservationRequest $request, $id)
     {
+
+        $oCarType = Types::where('id',$request->input('car_type_id'))->first();
+        if(!$oCarType){
+            return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
+        }
+
+        $oCarModel = CarModel::where('id',$request->input('models'))->first();
+        if(!$oCarModel){
+            return $this->_failedJsonResponse([['Car Make & Model is not valid or has been removed.']]);
+        }
+
         $oCar = RentalCar::where('id',$request->input('car_id'))->first();
         if(!$oCar){
             return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
-        }
-
-        $oCarType = CarType::where('id',$request->input('car_type_id'))->first();
-        if(!$oCarType){
-            return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
         }
 
         $oCarReservation = CarReservation::where('id',$request->input('id'))->first();
@@ -306,16 +323,16 @@ class ReservationsController extends Controller
 
         $oReservationDetail = $oCarReservation->details->first();
 
-        $googleEvent = new Event;
-        $googleEvent->name = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number;
-        $googleEvent->description = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number.'<br/>'.$request->input('name').' ( '.$request->input('phone').' )';
-        $googleEvent->startDateTime = Carbon::parse($request->input('date_from'));
-        $googleEvent->endDateTime = Carbon::parse($request->input('date_to'));
-        $googleEvent->id = $oReservationDetail->google_event_id;
-        $googleEventResult = $googleEvent->save();
+//        $googleEvent = new Event;
+//        $googleEvent->name = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number;
+//        $googleEvent->description = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number.'<br/>'.$request->input('name').' ( '.$request->input('phone').' )';
+//        $googleEvent->startDateTime = Carbon::parse($request->input('date_from'));
+//        $googleEvent->endDateTime = Carbon::parse($request->input('date_to'));
+//        $googleEvent->id = $oReservationDetail->google_event_id;
+//        $googleEventResult = $googleEvent->save();
 
         \DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $result = \DB::transaction(function () use ($request, $oCar, $oCarType, $oCarReservation, $googleEventResult) {
+        $result = \DB::transaction(function () use ($request, $oCar, $oCarType, $oCarReservation, $oCarModel/*, $googleEventResult*/) {
             try{
                 $oUser = User::where('id', $oCarReservation->user_id)->first();
                 if(!$oUser){
@@ -360,6 +377,7 @@ class ReservationsController extends Controller
 //updating the reservation detail
                 $oCarReservationDetail = $oCarReservation->details->first();
                 $oCarReservationDetail->car_type_id = $oCarType->id;
+                $oCarReservationDetail->car_model_id = $oCarModel->id;
                 $oCarReservationDetail->car_id = $oCar->id;
                 $oCarReservationDetail->return_date = Carbon::parse($request->input('return_date'));
                 $oCarReservationDetail->pickup_date = Carbon::parse($request->input('pickup_date'));
@@ -384,7 +402,7 @@ class ReservationsController extends Controller
                 $oCarReservationDetail->required_deposit = $request->input('required_deposit');
                 $oCarReservationDetail->pickup_mileage = ($request->input('pickup_mileage'))?:0;
                 $oCarReservationDetail->return_mileage = ($request->input('return_mileage'))?:0;
-                $oCarReservationDetail->google_event_id = ($googleEventResult->id)?:'' ;
+                $oCarReservationDetail->google_event_id = /*($googleEventResult->id)?:*/'' ;
                 $oCarReservationDetail->save();
 
 //updating the extras ifo
@@ -438,17 +456,17 @@ class ReservationsController extends Controller
      */
     public function destroy($id)
     {
-        $oUser = User::where('id',$id)->first();
-        if(!$oUser){
-            \Session::flash('flash_message', 'User is not valid or has been removed.');
+        $oCarReservation = CarReservation::where('id',$id)->first();
+        if(!$oCarReservation){
+            \Session::flash('flash_message', 'Reservation is not valid or has been removed.');
             \Session::flash('flash_type', 'alert-error');
-            return \Redirect::to('admin/users');
+            return \Redirect::to('admin/reservations');
         }
 
-        $oUser->delete();
-        \Session::flash('flash_message', 'User Information has been removed.');
+        $oCarReservation->delete();
+        \Session::flash('flash_message', 'Reservation Information has been removed.');
         \Session::flash('flash_type', 'alert-success');
-        return \Redirect::to('admin/users');
+        return \Redirect::to('admin/reservations');
     }
 
     //o_booking_periods = calculate_rental_fee
@@ -480,7 +498,7 @@ class ReservationsController extends Controller
     }
 
 
-    public function getPrices($datetime_from, $datetime_to, $oCarType)
+    public function getPrices($datetime_from, $datetime_to, $oCarModel)
     {
         $o_new_day_per_day =0 ;
 //        $oBookingPeriod = Setting::where('key', 'calculate_rental_fee')->first();
@@ -523,7 +541,7 @@ class ReservationsController extends Controller
             }
             while ($j <= $rental_days)
             {
-                $price_arr = CarTypePrice::where('id', $oCarType->id)
+                $price_arr = CarModelPrice::where('id', $oCarModel->id)
                     ->whereRaw("`price_per` = 'day'")
                     ->whereRaw('("'.$rental_days.'" BETWEEN `from` AND `to` )')
                     ->whereRaw("('" . date('Y-m-d',$i) . "' BETWEEN `date_from` AND `date_to` )")
@@ -541,8 +559,8 @@ class ReservationsController extends Controller
                     $price += (float) $price_arr->price;
                     $price_per_day_arr[(string) $price_arr->price][] = $i;
                 }else{
-                    $price += $oCarType->price_per_day;
-                    $price_per_day_arr[(string) $oCarType->price_per_day][] = $i;
+                    $price += $oCarModel->price_per_day;
+                    $price_per_day_arr[(string) $oCarModel->price_per_day][] = $i;
                 }
 
                 $j++;
@@ -556,7 +574,7 @@ class ReservationsController extends Controller
                 $j = 1;
                 while ($j <= $rental_hours)
                 {
-                    $price_arr = CarTypePrice::where('id', $oCarType->id)
+                    $price_arr = CarModelPrice::where('id', $oCarModel->id)
                         ->whereRaw("price_per = 'hour'")
                         ->whereRaw('("'.$rental_hours.'" BETWEEN `from` AND `to` )')
                         ->whereRaw("('" . date('Y-m-d', strtotime($datetime_from) + ($j * 3600)) . "' BETWEEN date_from AND date_to )")
@@ -571,8 +589,8 @@ class ReservationsController extends Controller
                         $price += (float) $price_arr->price;
                         $price_per_hour_arr[(string) $price_arr->price][] = $j;
                     }else{
-                        $price += $oCarType->price_per_hour;
-                        $price_per_hour_arr[(string) $oCarType->price_per_hour][] = $j;
+                        $price += $oCarModel->price_per_hour;
+                        $price_per_hour_arr[(string) $oCarModel->price_per_hour][] = $j;
                     }
                     $j++;
                 }
@@ -581,7 +599,7 @@ class ReservationsController extends Controller
         } elseif($this->option_arr['calculate_rental_fee']  == 'both'){
             while ($j <= $rental_days)
             {
-                $price_arr = CarTypePrice::where('id', $oCarType->id)
+                $price_arr = CarModelPrice::where('id', $oCarModel->id)
                     ->whereRaw("price_per = 'day'")
                     ->whereRaw('("'.$rental_hours.'" BETWEEN `from` AND `to` )')
                     ->whereRaw("('" . date('Y-m-d',$i) . "' BETWEEN date_from AND date_to )")
@@ -598,8 +616,8 @@ class ReservationsController extends Controller
                     $price += (float) $price_arr->price;
                     $price_per_day_arr[(string) $price_arr->price][] = $i;
                 }else{
-                    $price += $oCarType->price_per_day;
-                    $price_per_day_arr[(string) $oCarType->price_per_day][] = $i;
+                    $price += $oCarModel->price_per_day;
+                    $price_per_day_arr[(string) $oCarModel->price_per_day][] = $i;
                 }
 
                 $j++;
@@ -613,7 +631,7 @@ class ReservationsController extends Controller
                 $j = 1;
                 while ($j <= $extra_hours)
                 {
-                    $price_arr = CarTypePrice::where('id', $oCarType->id)
+                    $price_arr = CarModelPrice::where('id', $oCarModel->id)
                         ->whereRaw("price_per = 'hour'")
                         ->whereRaw('("'.$rental_hours.'" BETWEEN `from` AND `to` )')
                         ->whereRaw("('" . date('Y-m-d', $_end_ts + ($j * 3600)) . "' BETWEEN date_from AND date_to )")
@@ -629,8 +647,8 @@ class ReservationsController extends Controller
                         $price += (float) $price_arr->price;
                         $price_per_hour_arr[(string) $price_arr->price][] = $j;
                     }else{
-                        $price += $oCarType->price_per_hour;
-                        $price_per_hour_arr[(string) $oCarType->price_per_hour][] = $j;
+                        $price += $oCarModel->price_per_hour;
+                        $price_per_hour_arr[(string) $oCarModel->price_per_hour][] = $j;
                     }
                     $j++;
                 }
@@ -674,7 +692,7 @@ class ReservationsController extends Controller
             'price' => $price, 'day_added' => $day_added);
     }
 
-    public function getDefaultPrices($datetime_from, $datetime_to, $oCarType)
+    public function getDefaultPrices($datetime_from, $datetime_to, $oCarModel)
     {
         $o_new_day_per_day =0 ;
 
@@ -707,24 +725,24 @@ class ReservationsController extends Controller
                     $day_added = 1;
                 }
             }
-            $price = $oCarType->price_per_day * $rental_days;
+            $price = $oCarModel->price_per_day * $rental_days;
             $price_per_day = $price;
-            $price_per_day_detail = $rental_days . ' days ' . ' x ' . $this->formatCurrencySign(round($oCarType->price_per_day, 2), $this->option_arr['currency']);
+            $price_per_day_detail = $rental_days . ' days ' . ' x ' . $this->formatCurrencySign(round($oCarModel->price_per_day, 2), $this->option_arr['currency']);
         } elseif($this->option_arr['calculate_rental_fee']  == 'perhour'){
 
-            $price = $oCarType->price_per_hour * $rental_hours;
+            $price = $oCarModel->price_per_hour * $rental_hours;
             $price_per_hour = $price;
-            $price_per_hour_detail = $rental_hours . ' hours ' . ' x ' . $this->formatCurrencySign(round($oCarType->price_per_hour, 2), $this->option_arr['currency']);
+            $price_per_hour_detail = $rental_hours . ' hours ' . ' x ' . $this->formatCurrencySign(round($oCarModel->price_per_hour, 2), $this->option_arr['currency']);
 
         } elseif($this->option_arr['calculate_rental_fee']  == 'both'){
 
-            $price = $oCarType->price_per_day * $rental_days;
+            $price = $oCarModel->price_per_day * $rental_days;
             $price_per_day = $price;
-            $price_per_day_detail = $rental_days . ' days ' . ' x ' .$this->formatCurrencySign(round($oCarType->price_per_day, 2), $this->option_arr['currency']);
+            $price_per_day_detail = $rental_days . ' days ' . ' x ' .$this->formatCurrencySign(round($oCarModel->price_per_day, 2), $this->option_arr['currency']);
 
-            $price += $oCarType->price_per_hour * $extra_hours;
+            $price += $oCarModel->price_per_hour * $extra_hours;
             $price_per_hour = $price - $price_per_day;
-            $price_per_hour_detail = $extra_hours . ' hours' . ' x ' . $this->formatCurrencySign(round($oCarType->price_per_hour, 2), $this->option_arr['currency']);
+            $price_per_hour_detail = $extra_hours . ' hours' . ' x ' . $this->formatCurrencySign(round($oCarModel->price_per_hour, 2), $this->option_arr['currency']);
 
         }
 
@@ -741,9 +759,19 @@ class ReservationsController extends Controller
 
         $data['time'] = $this->calculateDateDiff($request->input('date_from'), $request->input('date_to'));
 
-        $oCarType = CarType::where('id',$request->input('car_type_id'))->first();
+        $oCarType = Types::where('id',$request->input('car_type_id'))->first();
         if(!$oCarType){
             return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
+        }
+
+        $oCarModel = CarModel::where('id',$request->input('models'))->first();
+        if(!$oCarModel){
+            return $this->_failedJsonResponse([['Car Model is not valid or has been removed.']]);
+        }
+
+        $oRentalCar = RentalCar::where('id',$request->input('car_id'))->first();
+        if(!$oRentalCar){
+            return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
         }
         
         $carAvailable = $this->checkCarAvailability($request);
@@ -754,10 +782,9 @@ class ReservationsController extends Controller
         }else if($carAvailable['code']==150){
             return $this->_failedJsonResponse([['Car is <strong>not available</strong> during selected time period. Please select another Car and/or change time period.']]);
         }
-                
-        $oPrices = $oCarType->prices()
-            ->where('car_type_prices.date_from','>=',Carbon::parse($request->input('date_from'))->format('Y-m-d'))
-            ->where('car_type_prices.date_to','<=',Carbon::parse($request->input('date_to'))->format('Y-m-d'))
+        $oPrices = $oCarModel->prices()
+            ->where('car_model_prices.date_from','>=',Carbon::parse($request->input('date_from'))->format('Y-m-d'))
+            ->where('car_model_prices.date_to','<=',Carbon::parse($request->input('date_to'))->format('Y-m-d'))
             ->get();
 
         $rental_days = $data['time']['days'];
@@ -813,10 +840,10 @@ class ReservationsController extends Controller
         }
 
 
-        $price_arr = $this->getPrices(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarType);
+        $price_arr = $this->getPrices(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel);
         if($price_arr['price'] == 0)
         {
-            $price_arr = $this->getDefaultPrices(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarType);
+            $price_arr = $this->getDefaultPrices(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel);
         }
 
         $car_rental_fee = $price_arr['price'];
@@ -954,9 +981,10 @@ class ReservationsController extends Controller
             'total_price_label', 'required_deposit_label', 'total_amount_due_label', 'discount_label',
             'car_rental_fee_detail', 'insurance_detail', 'discount_detail', 'tax_detail', 'required_deposit_detail');
 
-        $oCar = $oCarType->cars()->where('rental_cars.id', $request->input('car_id'))->first();
+        $oCar = $oCarModel->cars()->where('rental_cars.id', $request->input('car_id'))->first();
 
         $data['type'] = $oCarType;
+        $data['model'] = $oCarModel;
         $data['car'] = $oCar;
         $data['currency'] = $currency;
         $data['currencySign'] = $this->getCurrencySign($currency);
@@ -1115,12 +1143,11 @@ class ReservationsController extends Controller
             if($date_to_ts <= $date_from_ts){
                 $response = array('code' => 100);
             }else{
-                if ((int) $request->input('car_type_id') > 0 && (int) $request->input('car_id') > 0 ){
+                if ((int) $request->input('models') > 0 && (int) $request->input('car_id') > 0 ){
                     $min_hour = $this->option_arr['minimum_booking_length'];
                     if($this->option_arr['calculate_rental_fee'] == 'perday'){
                         $min_hour = $this->option_arr['minimum_booking_length'] * 24;
                     }
-                    
                     if( round($date_to_ts - $date_from_ts)/3600 < $min_hour){
                         $response['code'] = 100;
                         return $response;
@@ -1134,7 +1161,7 @@ class ReservationsController extends Controller
                         $id = 0;
                     }
                     $oBooking = CarReservation::Join('car_reservation_details', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
-                                ->where('car_reservation_details.car_type_id', $request->input('car_type_id'))
+                                ->where('car_reservation_details.car_model_id', $request->input('models'))
                                 ->where('car_reservation_details.car_id', $request->input('car_id'))
                                 ->where('rental_car_reservations.id','<>', $id)
                                 ->whereRaw("(`status` = 'confirmed' OR (`status` = 'pending' AND rental_car_reservations.created_at >= '$current_datetime'))")
@@ -1153,7 +1180,6 @@ class ReservationsController extends Controller
                     $response['code'] = 300;
                 }
             }
-            
             return $response;
     }
 
@@ -1175,7 +1201,7 @@ class ReservationsController extends Controller
         }
 
         if($oDiscount->discount_type=='selected') {
-            $oDiscountCar = $oDiscount->cars()->where('car_id', $request->input('car_id'))->first();
+            $oDiscountCar = $oDiscount->carModels()->where('model_id', $request->input('models'))->first();
             if(!$oDiscountCar){
                 return false;
             }
