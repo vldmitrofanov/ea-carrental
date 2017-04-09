@@ -8,7 +8,7 @@
                 <div class="thumbnail">
                     <div><img src="{{$oFeaturedCar->thumb_image}}" alt=""></div>
                     <div class="caption">
-                        <h3>{{$oFeaturedCar->makeAndModel->make}}</h3> <a href="#" class="btn btn-danger" role="button">View and Rent</a>
+                        <h3>{{$oFeaturedCar->makeAndModel->make}}</h3> <a href="{{$oFeaturedCar->url_token}}" class="btn btn-danger" role="button">View and Rent</a>
                         <div>
                             <span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->model}}</span>
                             <span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->SIPPCode->vehicleFuelAndAC->description}}</span>

@@ -35,7 +35,7 @@ class RentalCarRequest extends FormRequest
                 return [
                     'type_id' => 'required',
                     'model_id' => 'required',
-                    'url_token' => 'required|regex:/(^[A-Za-z0-9]+$)+/|unique:rental_cars,url_token',
+                    'url_token' => 'required|regex:/(^[A-Za-z0-9-]+$)+/|unique:rental_cars,url_token',
                     'registration_number' => 'required',
                     'location_id' => 'required'
                 ];
@@ -46,7 +46,7 @@ class RentalCarRequest extends FormRequest
                 return [
                     'type_id' => 'required',
                     'model_id' => 'required',
-                    'url_token' => 'required|regex:/(^[A-Za-z0-9]+$)+/|unique:rental_cars,url_token,'.$this->get('car'),
+                    'url_token' => 'required|regex:/(^[A-Za-z0-9-]+$)+/|unique:rental_cars,url_token,'.$this->get('car'),
                     'registration_number' => 'required',
                     'location_id' => 'required'
                 ];
