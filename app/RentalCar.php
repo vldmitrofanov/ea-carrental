@@ -22,4 +22,13 @@ class RentalCar extends Model
     public function location(){
         return $this->hasOne('\App\OfficeLocation', 'id', 'location_id');
     }
+
+    public function getThumbImageAttribute($value)
+    {
+        if($value!=''){
+            return  str_replace('public/', 'storage/', $value);
+        }else{
+            return 'administration/dist/img/no_img.png';
+        }
+    }
 }

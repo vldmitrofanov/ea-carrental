@@ -20,6 +20,7 @@ class CreateRentalCarsTable extends Migration
             $table->integer('type_id')->unsigned();
             $table->integer('model_id')->unsigned();
             $table->integer('location_id')->unsigned();
+            $table->string('thumb_image')->default('');
             $table->boolean('status')->default(1);
             $table->boolean('featured')->default(0);
             $table->timestamps();

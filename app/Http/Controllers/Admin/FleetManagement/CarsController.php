@@ -57,6 +57,10 @@ class CarsController extends Controller
         $oRentalCar->current_mileage = $request->input('current_mileage');
         $oRentalCar->location_id = $request->input('location_id');
         $oRentalCar->save();
+        if($request->file('thumb_image')){
+            $oRentalCar->thumb_image = $request->file('thumb_image')->store('/public/uploads/cars');
+            $oRentalCar->save();
+        }
 
         \Session::flash('flash_message', 'Car Information saved successfully.');
         \Session::flash('flash_type', 'alert-success');
@@ -105,6 +109,10 @@ class CarsController extends Controller
         $oRentalCar->current_mileage = $request->input('current_mileage');
         $oRentalCar->location_id = $request->input('location_id');
         $oRentalCar->save();
+        if($request->file('thumb_image')){
+            $oRentalCar->thumb_image = $request->file('thumb_image')->store('/public/uploads/cars');
+            $oRentalCar->save();
+        }
 
         \Session::flash('flash_message', 'Rental Car Information saved successfully.');
         \Session::flash('flash_type', 'alert-success');

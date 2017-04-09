@@ -28,6 +28,11 @@
         <img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title="When the system assigns a vehicle to a reservation it does not matter what is the location of the vehicle. But you can set default vehicle location to make car inventory management easier.">
         {!! Form::select('location_id', array(''=>'Please Select')+$oOfficeLocations,null,array('class'=>'form-control','id'=>'location_id')) !!}
     </div>
+
+    <div class="form-group">
+        <label for="exampleInputFile">Image</label>
+        <input name="thumb_image" type="file">
+    </div>
 </div>
 
 <div class="box-footer">

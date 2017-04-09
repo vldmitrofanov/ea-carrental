@@ -205,6 +205,4 @@ Route::get('api/load_extras', function(){
     return $data;
 });
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'IndexController@index');
