@@ -149,6 +149,7 @@
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="button" class="btn btn-primary add-extra"> <i class="fa fa-plus"></i> Add Extra</button>
+                        <button type="button" class="btn btn-warning calculate-prices"> <i class="fa fa-refresh"></i> Calculate Prices</button>
                         <button type="button" class="btn btn-success save-reservation">Submit</button>
 
                         <a href="{{  url('admin/reservations/'.$oReservation->id.'/invoice') }}" target="_blank" class="btn btn-primary btn-pdf">

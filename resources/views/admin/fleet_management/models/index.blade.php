@@ -29,7 +29,6 @@
                             <table class="table table-hover">
                                 <tr>
                                     <th>No</th>
-                                    <th>Image</th>
                                     <th>SIPP Code</th>
                                     <th>Make</th>
                                     <th>Model</th>
@@ -39,15 +38,10 @@
                                     <tr>
                                         <td>{{ ++$index }}</td>
                                         <td>
-                                            <img width="90px"
-                                                 src="{{asset($oCarModel->thumb_path)}}"
-                                                 alt="{{ $oCarModel->name }}">
-                                        </td>
-                                        <td>
-                                            {{ ($oCarModel->SIPPCode->first())?$oCarModel->SIPPCode->first()->vehicleSize->code_letter:'-'  }}
-                                            {{ ($oCarModel->SIPPCode->first())?$oCarModel->SIPPCode->first()->vehicleDoors->code_letter:'-'  }}
-                                            {{ ($oCarModel->SIPPCode->first())?$oCarModel->SIPPCode->first()->vehicleTransmissionAndDrive->code_letter:'-'  }}
-                                            {{ ($oCarModel->SIPPCode->first())?$oCarModel->SIPPCode->first()->vehicleFuelAndAC->code_letter:'-'  }}
+                                            {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleSize->code_letter:'-'  }}
+                                            {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleDoors->code_letter:'-'  }}
+                                            {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleTransmissionAndDrive->code_letter:'-'  }}
+                                            {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleFuelAndAC->code_letter:'-'  }}
                                         </td>
                                         <td>{{ $oCarModel->make }}</td>
                                         <td>{{ $oCarModel->model }}</td>

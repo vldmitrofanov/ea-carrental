@@ -156,6 +156,10 @@
                             });
                         });
             });
+
+            $(document).on("click", "button.calculate-prices", function(e){
+                $('select#car_id').trigger('change');
+            })
         });
 
         $(document).on("click", "button.btn-pdf", function(e) {
@@ -188,7 +192,7 @@
             $.post($('form#car_reservation').attr('action'), formData)
             .done(function(response){
                 displayMessageAlert(response.message);
-//                pageRefresh()
+                pageRefresh()
             })
             .fail(function(response){
                 $.unblockUI();
@@ -662,8 +666,8 @@
                                 });
                             });
 
-                            $('input#date_from').val('');
-                            $('input#date_to').val('');
+//                            $('input#date_from').val('');
+//                            $('input#date_to').val('');
                         });
             });
 

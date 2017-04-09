@@ -123,6 +123,10 @@
                         });
             });
 
+            $(document).on("click", "button.calculate-prices", function(e){
+                $('select#car_id').trigger('change');
+            })
+
             $('input[type=file]').change(function(){
                 $(this).simpleUpload("/admin/reservations/upload", {
                     allowedExts: ["jpg", "jpeg", "png", "gif"],
@@ -534,8 +538,8 @@
                         });
                     });
                     
-                    $('input#date_from').val('');
-                    $('input#date_to').val('');
+//                    $('input#date_from').val('');
+//                    $('input#date_to').val('');
                 });
             });
 

@@ -1233,12 +1233,12 @@ class ReservationsController extends Controller
             return $this->_failedJsonResponse([['Discount Voucher Code is not valid.']]);
         }
 
-        if($oDiscount->discount_type=='selected' && $request->input('car_id')==''){
-            return $this->_failedJsonResponse([['Please select Car First.']]);
+        if($oDiscount->discount_type=='selected' && $request->input('models')==''){
+            return $this->_failedJsonResponse([['Please select Car Make & Model.']]);
         }
 
         if($oDiscount->discount_type=='selected') {
-            $oDiscountCar = $oDiscount->cars()->where('car_id', $request->input('car_id'))->first();
+            $oDiscountCar = $oDiscount->carModels()->where('model_id', $request->input('models'))->first();
             if(!$oDiscountCar){
                 return $this->_failedJsonResponse([['Discount Voucher is not valid for selected Car.']]);
             }

@@ -56,7 +56,7 @@ class CarModelsController extends Controller
         $oCarModel->total_passengers = $request->input('total_passengers');
         $oCarModel->total_bags = $request->input('total_bags');
         $oCarModel->total_bags = $request->input('total_bags');
-        $oCarModel->description = $request->input('description');
+        $oCarModel->description = ($request->input('description'))?:'';
         $oCarModel->save();
         if($request->file('type_image')){
 //            $imageName = time(). $request->file('type_image')->getClientOriginalName();

@@ -34,6 +34,7 @@
                                     <th>No</th>
                                     <th>Client Name</th>
                                     <th>Car</th>
+                                    <th>Registration No</th>
                                     <th>Car Type</th>
                                     <th>Status</th>
                                     <th>Total</th>
@@ -45,7 +46,12 @@
                                         <td>{{ $oReservation->user->name }} ({{ $oReservation->user->phone }})</td>
                                         <td>
                                             @foreach($oReservation->details as $oDetail)
-                                                {{ $oDetail->model->make  }} - {{ $oDetail->model->model  }}<br/>{{ $oDetail->car->registration_number}}<br/>
+                                                {{ $oDetail->model->make  }} - {{ $oDetail->model->model  }}
+                                            @endforeach
+                                        </td>
+                                        <td>
+                                            @foreach($oReservation->details as $oDetail)
+                                                {{ $oDetail->car->registration_number}}<br/>
                                             @endforeach
                                         </td>
                                         <td>
