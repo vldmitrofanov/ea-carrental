@@ -53,6 +53,7 @@ class CarsController extends Controller
         $oRentalCar = new RentalCar;
         $oRentalCar->model_id = $request->input('model_id');
         $oRentalCar->type_id = $request->input('type_id');
+        $oRentalCar->url_token = $request->input('url_token');
         $oRentalCar->registration_number = $request->input('registration_number');
         $oRentalCar->current_mileage = $request->input('current_mileage');
         $oRentalCar->location_id = $request->input('location_id');
@@ -105,6 +106,7 @@ class CarsController extends Controller
         $oRentalCar = RentalCar::findOrFail($id);
         $oRentalCar->model_id = $request->input('model_id');
         $oRentalCar->type_id = $request->input('type_id');
+        $oRentalCar->url_token = $request->input('url_token');
         $oRentalCar->registration_number = $request->input('registration_number');
         $oRentalCar->current_mileage = $request->input('current_mileage');
         $oRentalCar->location_id = $request->input('location_id');

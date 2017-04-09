@@ -15,6 +15,7 @@ class CreateRentalCarsTable extends Migration
     {
         Schema::create('rental_cars', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('url_token')->default('');
             $table->string('registration_number');
             $table->string('current_mileage');
             $table->integer('type_id')->unsigned();

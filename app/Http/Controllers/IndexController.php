@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\RentalCar;
+use App\DiscountFreebies;
 
 class IndexController extends Controller
 {

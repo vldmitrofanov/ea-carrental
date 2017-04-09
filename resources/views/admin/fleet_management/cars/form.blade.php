@@ -16,6 +16,10 @@
     </div>
 
     <div class="form-group">
+        {!! Form::label('url_token', 'URL Token') !!}
+        {!! Form::text('url_token', null, ['class' => 'form-control', 'id' => 'url_token', 'placeholder' => 'Car URL Token']) !!}
+    </div>
+    <div class="form-group">
         {!! Form::label('registration_number', 'Registration number') !!}
         {!! Form::text('registration_number', null, ['class' => 'form-control', 'id' => 'registration_number', 'placeholder' => 'Registration number']) !!}
     </div>
