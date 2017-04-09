@@ -41,6 +41,7 @@
                                     <th>Registration No</th>
                                     <th>Make & Model</th>
                                     <th>Default Location</th>
+                                    <th>Featured</th>
                                     <th>Status</th>
                                     <th>&nbsp;</th>
                                 </tr>
@@ -50,7 +51,24 @@
                                         <td>{{ $oRentalCar->registration_number }}</td>
                                         <td>{{ $oRentalCar->makeAndModel->make }} {{ $oRentalCar->makeAndModel->model }}</td>
                                         <td>{{ $oRentalCar->location->name }}</td>
-                                        <td>{{ ($oRentalCar->status)?'Active':'Inactive' }}</td>
+                                        <td>
+                                            <a class="featured" title="{{ ($oRentalCar->featured)?'Mark Not Featured':'Mark Featured' }}" style="padding-left: 18px;" href="javascript:;" data-id="{{$oRentalCar->id}}">
+                                            @if($oRentalCar->featured)
+                                                <i class="fa fa-check-square-o"></i>
+                                            @else
+                                                <i class="fa fa-times-circle-o"></i>
+                                            @endif
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a class="publish" title="{{ ($oRentalCar->status)?'Mark Unpublish':'Mark Publish' }}" style="padding-left: 18px;" href="javascript:;" data-id="{{$oRentalCar->id}}">
+                                                @if($oRentalCar->status)
+                                                    <i class="fa fa-check-square-o"></i>
+                                                @else
+                                                    <i class="fa fa-times-circle-o"></i>
+                                                @endif
+                                            </a>
+                                        </td>
                                         <td>
                                             <a href="{{ url('admin/fleet/cars/'.$oRentalCar->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
                                             <a href="{{ url('admin/fleet/cars/'.$oRentalCar->id.'/delete') }}"><i class="fa fa-trash"></i></a>
@@ -76,6 +94,52 @@
         $(function () {
             $( "#ctype" ).change(function(){
                 window.location = ($(this).val()!='')?"?q="+$(this).val():'/admin/fleet/cars';
+            });
+
+            $(document).on("click", "a.featured", function(e) {
+                var obj = $(this);
+                processing();
+                $.get('/admin/fleet/cars/featured/'+$(this).attr('data-id'))
+                .done(function(response){
+                    displayMessageAlert(response.message, 'success', 'warning-sign');
+                    if(response.data.featured==false){
+                        obj.find('i').removeClass('fa-check-square-o').addClass('fa-times-circle-o');
+                    }else{
+                        obj.find('i').removeClass('fa-times-circle-o').addClass('fa-check-square-o');
+                    }
+                    $.unblockUI();
+                })
+                .fail(function(response){
+                    $.unblockUI();
+                    $.each(response.responseJSON, function (key, value) {
+                        $.each(value, function (index, message) {
+                            displayMessageAlert(message, 'danger', 'warning-sign');
+                        });
+                    });
+                });
+            });
+
+            $(document).on("click", "a.publish", function(e) {
+                var obj = $(this);
+                processing();
+                $.get('/admin/fleet/cars/publish/'+$(this).attr('data-id'))
+                        .done(function(response){
+                            displayMessageAlert(response.message, 'success', 'warning-sign');
+                            if(response.data.status==false){
+                                obj.find('i').removeClass('fa-check-square-o').addClass('fa-times-circle-o');
+                            }else{
+                                obj.find('i').removeClass('fa-times-circle-o').addClass('fa-check-square-o');
+                            }
+                            $.unblockUI();
+                        })
+                        .fail(function(response){
+                            $.unblockUI();
+                            $.each(response.responseJSON, function (key, value) {
+                                $.each(value, function (index, message) {
+                                    displayMessageAlert(message, 'danger', 'warning-sign');
+                                });
+                            });
+                        });
             });
         });
     </script>

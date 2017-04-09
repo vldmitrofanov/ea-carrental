@@ -132,4 +132,42 @@ class CarsController extends Controller
         \Session::flash('flash_type', 'alert-success');
         return \Redirect::to('admin/cars');
     }
+
+    /**
+     * Function to mark car as featured and vice versa.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function featured($id){
+        $this->_checkAjaxRequest();
+
+        $oCar = RentalCar::where('id', $id)->first();
+        if(!$oCar){
+            return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
+        }
+
+        $oCar->featured = !$oCar->featured;
+        $oCar->save();
+        return $this->_successJsonResponse(['message'=>'Car information is updated.', 'data' => $oCar]);
+    }
+
+    /**
+     * Function to mark car as featured and vice versa.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function publish($id){
+        $this->_checkAjaxRequest();
+
+        $oCar = RentalCar::where('id', $id)->first();
+        if(!$oCar){
+            return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
+        }
+
+        $oCar->status = !$oCar->status;
+        $oCar->save();
+        return $this->_successJsonResponse(['message'=>'Car information is updated.', 'data' => $oCar]);
+    }
 }
