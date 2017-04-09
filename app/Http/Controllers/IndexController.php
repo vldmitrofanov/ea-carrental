@@ -14,7 +14,7 @@ class IndexController extends Controller
      */
     public function index()
     {
-        $oFeaturedCars = RentalCar::where('featured', true)->take(3)->get();
+        $oFeaturedCars = RentalCar::where('featured', true)->take(4)->get();
         return view('welcome', compact('oFeaturedCars'));
     }
 }

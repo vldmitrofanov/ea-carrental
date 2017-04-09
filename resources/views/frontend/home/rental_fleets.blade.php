@@ -3,42 +3,21 @@
 <div class="container">
     <div class="rentalFleet text-center">
         <div class="row">
+            @foreach($oFeaturedCars as $oFeaturedCar)
             <div class="col-sm-6 col-md-3">
                 <div class="thumbnail">
-                    <div><img src="{{asset('template/images/car1.jpg')}}" alt=""></div>
+                    <div><img src="{{$oFeaturedCar->thumb_image}}" alt=""></div>
                     <div class="caption">
-                        <h3>Proton</h3> <a href="#" class="btn btn-danger" role="button">View and Rent</a>
-                        <div> <span><i class="fa fa-car"></i>2013</span> <span><i class="fa fa-car"></i>Petrol</span> <span><i class="fa fa-car"></i>Auto</span> </div>
+                        <h3>{{$oFeaturedCar->makeAndModel->make}}</h3> <a href="#" class="btn btn-danger" role="button">View and Rent</a>
+                        <div>
+                            <span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->model}}</span>
+                            <span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->SIPPCode->vehicleFuelAndAC->description}}</span>
+                            <span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->SIPPCode->vehicleTransmissionAndDrive->description }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="thumbnail">
-                    <div><img src="{{asset('template/images/car2.jpg')}}" alt=""></div>
-                    <div class="caption">
-                        <h3>Mitsubishi</h3> <a href="#" class="btn btn-danger" role="button">View and Rent</a>
-                        <div> <span><i class="fa fa-car"></i>2013</span> <span><i class="fa fa-car"></i>Petrol</span> <span><i class="fa fa-car"></i>Auto</span> </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="thumbnail">
-                    <div><img src="{{asset('template/images/car3.jpg')}}" alt=""></div>
-                    <div class="caption">
-                        <h3>Hyundai</h3> <a href="#" class="btn btn-danger" role="button">View and Rent</a>
-                        <div> <span><i class="fa fa-car"></i>2013</span> <span><i class="fa fa-car"></i>Petrol</span> <span><i class="fa fa-car"></i>Auto</span> </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-3">
-                <div class="thumbnail">
-                    <div><img src="{{asset('template/images/car4.jpg')}}" alt=""></div>
-                    <div class="caption">
-                        <h3>BMW 5 Series</h3> <a href="#" class="btn btn-danger" role="button">View and Rent</a>
-                        <div> <span><i class="fa fa-car"></i>2013</span> <span><i class="fa fa-car"></i>Petrol</span> <span><i class="fa fa-car"></i>Auto</span> </div>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
     <!--rentalFleet-->
