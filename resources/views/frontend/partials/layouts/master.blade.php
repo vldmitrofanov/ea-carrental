@@ -32,10 +32,14 @@
         <script src="{{ asset('template/js/bootstrap.min.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
         <script src="{{ asset('template/js/bootstrap-datetimepicker.min.js') }}"></script>
+        <script src="{{ asset('administration/plugins/jQueryBlock/jquery.blockUI.js') }}"></script>
+        <script src="{{ asset('template/js/main.js') }}"></script>
 
         <script type="text/javascript">
             $(function () {
-                $('#datetimepicker6').datetimepicker();
+                $('#datetimepicker6').datetimepicker({
+                    useCurrent: false //Important! See issue #1075
+                });
                 $('#datetimepicker7').datetimepicker({
                     useCurrent: false //Important! See issue #1075
                 });
@@ -45,6 +49,10 @@
                 $("#datetimepicker7").on("dp.change", function (e) {
                     $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
                 });
+
+            });
+            $(function () {
+
             });
             $(window).on('scroll', function () {
                 scrollPosition = $(this).scrollTop();
@@ -54,6 +62,19 @@
                 if (scrollPosition >= 85) {
                     $(".bannerCarSearch").addClass("fixedSearch");
                 };
+            });
+            $('.moreDetail').click(function(){
+                $(".showLess").toggle();
+                if ($('.moreDetail span').html() == 'More Details') {
+                    $('.moreDetail span').html('Less Details');
+                }
+                else {
+                    $('.moreDetail span').html('More Details');
+                }
+                $('.moreDetail i').toggleClass('fa-angle-down fa-angle-up')
+            });
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
             });
         </script>
         @yield('javascript')

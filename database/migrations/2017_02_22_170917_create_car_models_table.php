@@ -15,8 +15,8 @@ class CreateCarModelsTable extends Migration
     {
         Schema::create('car_models', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('make')->unique();
-            $table->string('model')->unique();
+            $table->string('make');
+            $table->string('model');
             $table->text('description');
             $table->integer('type_id');
             $table->decimal('price_per_day', 10, 2)->default(0);

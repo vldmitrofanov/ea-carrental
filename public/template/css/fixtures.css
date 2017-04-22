@@ -5,7 +5,7 @@
     .navbar-header::before {border-right: 115px solid transparent;}
     .navbar-inverse .navbar-nav > li > a{letter-spacing: 1px;}
     .userSection .loginButton{margin-top: 20px;margin-right:50px;}
-    .userSection .phoneNumber{margin-right: 90px; font-size: 17px;}
+    .userSection .phoneNumber{margin-right: 50px; font-size: 17px;}
     .phoneNumber .fa{margin: 0 10px;font-size: 18px;}
     .bannerCarSearch .form-control{width: 195px;}
 }

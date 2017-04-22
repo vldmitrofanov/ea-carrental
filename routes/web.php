@@ -206,3 +206,24 @@ Route::get('api/load_extras', function(){
 });
 
 Route::get('/', 'IndexController@index');
+Route::group(['prefix' => 'fleet'], function(){
+    Route::get('{token}', 'FleetController@detail');
+    Route::post('calculate_difference', function(){
+        $from = \Carbon\Carbon::parse(Request::get('rdate_start'));
+        $to = \Carbon\Carbon::parse(Request::get('rdate_end'));
+        $datetime1 = new \DateTime($to); // Today's Date/Time
+        $datetime2 = new \DateTime($from);
+        $interval = $datetime1->diff($datetime2);
+//        echo $interval->format('%D days %H hours');
+        $data['days'] = $interval->format('%D');
+        $data['hours'] = $interval->format('%H');
+        $data['start'] = $from;
+        $data['end'] = $to;
+        $data['start_date'] = $from->format('d F Y');
+        $data['start_time'] = $from->format('l H:i');
+
+        $data['end_date'] = $to->format('d F Y');
+        $data['end_time'] = $to->format('l H:i');
+        return $data;
+    });
+});

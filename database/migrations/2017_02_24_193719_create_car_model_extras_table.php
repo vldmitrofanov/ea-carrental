@@ -14,10 +14,10 @@ class CreateCarModelExtrasTable extends Migration
     public function up()
     {
         Schema::create('car_model_extras', function (Blueprint $table) {
-            $table->integer('model_id_id')->unsigned();
+            $table->integer('car_model_id')->unsigned();
             $table->integer('car_extras_id')->unsigned();
 
-            $table->foreign('model_id_id')->references('id')->on('car_models')
+            $table->foreign('car_model_id')->references('id')->on('car_models')
                 ->onDelete('cascade');
             $table->foreign('car_extras_id')->references('id')->on('car_extras')
                 ->onDelete('cascade');

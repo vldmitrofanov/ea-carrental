@@ -17,8 +17,8 @@ class CreateRentalCarTypesTable extends Migration
             $table->integer('car_type_id')->unsigned();
             $table->integer('car_id')->unsigned();
 
-            $table->foreign('car_type_id')->references('id')->on('car_types')
-                ->onDelete('cascade');
+//            $table->foreign('car_type_id')->references('id')->on('car_types')
+//                ->onDelete('cascade');
             $table->foreign('car_id')->references('id')->on('rental_cars')
                 ->onDelete('cascade');
         });
