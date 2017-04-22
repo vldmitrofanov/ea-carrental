@@ -208,6 +208,7 @@ Route::get('api/load_extras', function(){
 Route::get('/', 'IndexController@index');
 Route::group(['prefix' => 'fleet'], function(){
     Route::get('{token}', 'FleetController@detail');
+    Route::post('load_car_prices', 'FleetController@loadCarPrices');
     Route::post('calculate_difference', function(){
         $from = \Carbon\Carbon::parse(Request::get('rdate_start'));
         $to = \Carbon\Carbon::parse(Request::get('rdate_end'));
@@ -217,8 +218,8 @@ Route::group(['prefix' => 'fleet'], function(){
 //        echo $interval->format('%D days %H hours');
         $data['days'] = $interval->format('%D');
         $data['hours'] = $interval->format('%H');
-        $data['start'] = $from;
-        $data['end'] = $to;
+        $data['start'] = $from->format('m/d/Y H:i');
+        $data['end'] = $to->format('m/d/Y H:i');
         $data['start_date'] = $from->format('d F Y');
         $data['start_time'] = $from->format('l H:i');
 

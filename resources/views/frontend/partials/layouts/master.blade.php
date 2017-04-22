@@ -30,6 +30,7 @@
         <script src="{{ asset('template/js/jquery-2.2.3.min.js') }}"></script>
         <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
         <script src="{{ asset('template/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('administration/plugins/notify/bootstrap-notify.min.js') }}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
         <script src="{{ asset('template/js/bootstrap-datetimepicker.min.js') }}"></script>
         <script src="{{ asset('administration/plugins/jQueryBlock/jquery.blockUI.js') }}"></script>

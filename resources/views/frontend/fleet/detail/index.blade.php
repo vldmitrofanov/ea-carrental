@@ -32,6 +32,8 @@
         <input type="hidden" name="rdate_end" id="rdate_end" value="">
         <input type="hidden" name="date_from" id="date_from" value="">
         <input type="hidden" name="date_to" id="date_to" value="">
+        <input type="hidden" name="car_id" id="car_id" value="{{$oCar->id}}">
+        <input type="hidden" name="models" id="models" value="{{$oCar->makeAndModel->id}}">
 
 
             <div class="stepsContainer">
@@ -101,12 +103,12 @@
                                 <span class="amountColor">{{$currencySymbol}}{{$oExtra->price}}/{{$oExtra->per}}</span>
                             </div>
                             <div class="col-xs-6">
-                                <a href="#" data-toggle="tooltip" title="tooltip text here">
+                                <a href="#" data-toggle="tooltip" title="{{$oExtra->name}}">
                                     <img src="{{asset('template/images/infoIcon.png')}}" alt="" />
                                 </a>
                                 <div class="divider hidden-sm"></div>
                                 <label class="switch2">
-                                    <input name="extras[]" value="{{$oExtra->id}}" type="checkbox">
+                                    <input name="extra_id[]" data-currency="{{$currency}}" data-per="{{$oExtra->per}}" data-price="{{$oExtra->price}}" value="{{$oExtra->id}}" type="checkbox">
                                     <div class="slider2 round"></div>
                                 </label>
                             </div>
@@ -126,7 +128,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-xs-6">{{$oCar->makeAndModel->make}} {{$oCar->makeAndModel->model}}</div>
-                                <div class="col-xs-6 totalAmount text-right total-csot"></div>
+                                <div class="col-xs-6 totalAmount text-right total-cost"></div>
                             </div>
                         </li>
                         <li>
@@ -173,19 +175,17 @@
                                 <div class="col-xs-6 bookingColHeading">Rental</div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6">
-                                    3 Day Rental
+                                <div class="col-xs-6 days-duration">
                                 </div>
                                 <div class="col-xs-6 weight-700">
-                                    <span>USD 120.00</span>
+                                    <span class="days-duration-price"></span>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6">
-                                    03 March 2017
+                                <div class="col-xs-6 hours-duration">
                                 </div>
                                 <div class="col-xs-6 weight-700">
-                                    <span>USD 12.00</span>
+                                    <span class="hours-duration-price"></span>
                                 </div>
                             </div>
                         </li>
@@ -194,40 +194,21 @@
                                 <div class="col-xs-6 bookingColHeading">Additional Services</div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6">
-                                    1 X Additional Driver
+                                <div class="col-xs-6 extra-label">
                                 </div>
                                 <div class="col-xs-6 weight-700">
-                                    <span>USD 10.00</span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-6">
-                                    3D X Baby Seat
-                                </div>
-                                <div class="col-xs-6 weight-700">
-                                    <span>USD 30.00</span>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-xs-6">
-                                    3D X Navigation System
-                                </div>
-                                <div class="col-xs-6 weight-700">
-                                    <span>USD 15.00</span>
+                                    <span class="extra-amount"></span>
                                 </div>
                             </div>
                         </li>
-                        <li class="bgGray showLess">
+                        <li class="bgGray showLess discounts">
                             <div class="row">
                                 <div class="col-xs-6 bookingColHeading">Discounts</div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6">
-                                    6%
-                                </div>
+                                <div class="col-xs-6 discount-label"></div>
                                 <div class="col-xs-6 weight-700">
-                                    <span>USD 2</span>
+                                    <span class="discount-amount"></span>
                                 </div>
                             </div>
                         </li>
@@ -236,11 +217,9 @@
                                 <div class="col-xs-6 bookingColHeading">Taxes</div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6">
-                                    6% GST
-                                </div>
+                                <div class="col-xs-6 tax-label"></div>
                                 <div class="col-xs-6 weight-700">
-                                    <span>USD 11.22</span>
+                                    <span class="tax-amount"></span>
                                 </div>
                             </div>
                         </li>
@@ -269,119 +248,5 @@
 @endsection
 
 @section('javascript')
-    <script>
-        $(document).ready(function(){
-
-            $('#resetDateStart').datetimepicker().on('dp.change',function(event){
-                $('#rdate_start').val(event.date);
-                calculatePrices();
-            });
-            $('#resetDateEnd').datetimepicker().on('dp.change',function(event){
-                $('#rdate_end').val(event.date);
-                calculatePrices();
-            });
-        });
-        function calculatePrices(){
-            processing();
-            var formData = $('form#car_reservation').serializeArray();
-            formData.push({
-                name: "_method",
-                value: "POST"
-            });
-            $.post('/fleet/calculate_difference', formData)
-            .done(function(response){
-                $('#rental_days').val(response.days);
-                $('#rental_hours').val(response.hours);
-
-                $('span.start_date').html(response.start_date);
-                $('span.start_time').html(response.start_time);
-                $('span.end_date').html(response.end_date);
-                $('span.end_time').html(response.end_time);
-
-                $("table.payment_detail> tbody tr:first").find('td').html(
-                    response.days+" Days and "+ response.hours+" Hours"
-                );
-                $.unblockUI();
-            })
-            .fail(function(response){
-                $.unblockUI();
-                $.each(response.responseJSON, function (key, value) {
-                    $.each(value, function (index, message) {
-                        displayMessageAlert(message, 'danger', 'warning-sign');
-                    });
-                });
-            });
-        }
-
-        function calculateRental () {
-            processing();
-            var formData = $('form#car_reservation').serializeArray();
-            formData.push({
-                name: "_method",
-                value: "POST"
-            });
-            $.post('/admin/reservations/load_car_prices', formData)
-                .done(function(response){
-                    var prices = response.data.prices;
-                    var currency = response.data.currency;
-                    var currencySign = response.data.currencySign;
-
-                    $('#price_per_day').val(prices.price_per_day);
-                    $('#price_per_day_detail').val(prices.price_per_day_detail);
-                    $('#price_per_hour').val(prices.price_per_hour);
-                    $('#price_per_hour_detail').val(prices.price_per_hour_detail);
-                    $('#car_rental_fee').val(prices.car_rental_fee);
-                    $('#extra_price').val(prices.extra_price);
-                    $('#insurance').val(prices.insurance);
-                    $('#sub_total').val(prices.sub_total);
-                    $('#tax').val(prices.tax);
-                    $('#total_price').val(prices.total_price);
-                    $('#required_deposit').val(prices.required_deposit);
-                    $('#discount').val(prices.discount);
-                    $('#discount_detail').val(prices.discount_detail);
-
-                    $("table.payment_detail> tbody tr:nth-child(2)").find('th').html('Price per day:<br/><small>'+prices.price_per_day_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(2)").find('td').html(currencySign+' '+prices.price_per_day);
-
-                    $("table.payment_detail> tbody tr:nth-child(3)").find('th').html('Discount:<br/><small>'+prices.discount_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(3)").find('td').html(currencySign+' '+prices.discount);
-
-
-                    $("table.payment_detail> tbody tr:nth-child(4)").find('th').html('Price per hour:<br/><small>'+prices.price_per_hour_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(4)").find('td').html(currencySign+' '+prices.price_per_hour);
-
-
-                    $("table.payment_detail> tbody tr:nth-child(5)").find('th').html('Car rental fee:<br/><small>'+prices.car_rental_fee_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(5)").find('td').html(currencySign+' '+prices.car_rental_fee);
-
-
-                    $("table.payment_detail> tbody tr:nth-child(6)").find('td').html(currencySign+' '+prices.extra_price);
-
-                    $("table.payment_detail> tbody tr:nth-child(7)").find('th').html('Insurance:<br/><small>'+prices.insurance_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(7)").find('td').html(currencySign+' '+prices.insurance);
-
-                    $("table.payment_detail> tbody tr:nth-child(8)").find('td').html(currencySign+' '+prices.sub_total);
-
-                    $("table.payment_detail> tbody tr:nth-child(9)").find('th').html('Tax:<br/><small>'+prices.tax_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(9)").find('td').html(currencySign+' '+prices.tax);
-
-                    $("table.payment_detail> tbody tr:nth-child(10)").find('td').html(currencySign+' '+prices.total_price);
-                    $("table.payment_detail> tbody tr:nth-child(11)").find('td').html(currencySign+' '+prices.required_deposit);
-
-                    $.unblockUI();
-                })
-                .fail(function(response){
-                    $.unblockUI();
-                    $.each(response.responseJSON, function (key, value) {
-                        $.each(value, function (index, message) {
-                            displayMessageAlert(message, 'danger', 'warning-sign');
-                        });
-                    });
-
-//                    $('input#date_from').val('');
-//                    $('input#date_to').val('');
-                });
-        }
-
-    </script>
+    <script src="{{ asset('template/js/reservation.js') }}"></script>
 @endsection
