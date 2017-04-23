@@ -15,4 +15,8 @@ class OfficeLocation extends Model
     public function customWorkingTimes(){
         return $this->hasMany('App\OfficeLocationCustomWorkingTime', 'location_id', 'id');
     }
+
+    public function country(){
+        return $this->hasOne('\App\Country', 'id', 'country_id');
+    }
 }

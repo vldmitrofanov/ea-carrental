@@ -12,7 +12,7 @@
                         <div>
                             <span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->model}}</span>
                             <span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->SIPPCode->vehicleFuelAndAC->description}}</span>
-                            <span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->SIPPCode->vehicleTransmissionAndDrive->description }}</span>
+                            <?php /*<span><i class="fa fa-car"></i>{{$oFeaturedCar->makeAndModel->SIPPCode->vehicleTransmissionAndDrive->description }}</span>*/ ?>
                         </div>
                     </div>
                 </div>

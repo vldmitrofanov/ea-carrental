@@ -39,6 +39,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         'updated_at'
     ];
 
+    public function getSurName(){
+        $name = explode(" ", $this->name);
+        return ($name[1])?$name[1]:'';
+    }
+
+    public function getFirstName(){
+        $name = explode(" ", $this->name);
+        return ($name[0])?$name[0]:'';
+    }
+
     public function getCreatedAtAttribute($value)
     {
         return Carbon::parse($value)->format('m/d/Y h:i A');

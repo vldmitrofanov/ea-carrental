@@ -1,20 +1,20 @@
 <div class="bannerCarSearch">
     <div>
         <div class="panel-body">
-            <form class="form-inline">
+            <form class="form-inline" name="search" id="search" method="post">
                 <h4>Search for available cars in Malaysia or Singapore</h4>
                 <div class="form-group">
-                    <input type='text' class="form-control date" id='datetimepicker6' placeholder="Start Date" />
+                    <input type='text' class="form-control date" id='from' name="from" placeholder="Start Date" />
                 </div>
                 <div class="form-group">
-                    <input type='text' class="form-control date" id='datetimepicker7' placeholder="End Date" />
+                    <input type='text' class="form-control date" id='till' id="till" placeholder="End Date" />
                 </div>
                 <div class="form-group">
-                    <select class="form-control">
+                    <select class="form-control" name="pickup_location" id="pickup_location">
                         <option>Pick up address</option>
-                        <option>India</option>
-                        <option>Australia</option>
-                        <option>Malasia</option>
+                        @foreach ($officeLocations as $officeLocation)
+                            <option>{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-group">

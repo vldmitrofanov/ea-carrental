@@ -8,6 +8,8 @@
 
 @section('content')
     @include('frontend.searchbar.search_inner')
+    @include('frontend.partials.errors.errors')
+
     <div class="container formAndVerify">
         <form method="post" name="car_reservation" id="car_reservation">
         <input type="hidden" name="rental_days" id="rental_days">
@@ -34,7 +36,7 @@
         <input type="hidden" name="date_to" id="date_to" value="">
         <input type="hidden" name="car_id" id="car_id" value="{{$oCar->id}}">
         <input type="hidden" name="models" id="models" value="{{$oCar->makeAndModel->id}}">
-
+        <input type="hidden" name="car_type_id" id="car_type_id" value="{{$oCar->makeAndModel->type_id}}">
 
             <div class="stepsContainer">
                 <div class="stepRow"></div>
@@ -73,20 +75,43 @@
             <div class="row completeForm">
             <div class="col-sm-4 bottom">
                 <div class="driverDetails">
+                    <h3>Personal Details</h3>
+                    @if (Auth::check())
+                        <div class="topField">
+                            {!! Form::select('title', config('settings.user_title'),Auth::user()->title,array('id'=>'title')) !!}
+                            <input type="text" readonly placeholder="First Name" name="name" id="name" value="{{Auth::user()->getFirstName()}}" />
+                        </div>
+                        <input type="text" readonly name="sur_name" value="{{Auth::user()->getSurName()}}" placeholder="Sur Name" />
+                        <input type="text" readonly name="passport_no" id="passport_no" placeholder="IC / Passport Number" value="{{Auth::user()->passport_id}}" />
+                        <h3>Contact Details</h3>
+                        <input type="text" readonly name="email" id="email" placeholder="Email"  value="{{Auth::user()->email}}"/>
+                        <input type="text" readonly name="mobile_no" id="mobile_no" placeholder="Mobile Number with Country Code"  value="{{Auth::user()->phone}}"/>
+                    @else
+                        <div class="topField">
+                            {!! Form::select('title', config('settings.user_title'),null,array('id'=>'title')) !!}
+                            <input type="text" placeholder="First Name" name="name" id="name" value= />
+                        </div>
+                        <input type="text" name="sur_name" value="" placeholder="Sur Name" />
+                        <input type="text" name="passport_no" id="passport_no" placeholder="IC / Passport Number" value="" />
+                        <h3>Contact Details</h3>
+                        <input type="text" name="email" id="email" placeholder="Email" />
+                        <input type="text" name="mobile_no" id="mobile_no" placeholder="Mobile Number with Country Code" />
+                        <input type="text" id="password" name="password" placeholder="Preferred Password to our System" />
+                    @endif
                     <h3>Driver Details</h3>
-                    <div class="topField">
-                        {!! Form::select('title', config('settings.user_title'),null,array('id'=>'title')) !!}
-                        <input type="text" placeholder="" />
-                    </div>
-                    <input type="text" name="sur_name" placeholder="Sur Name" />
-                    <input type="text" name="passport_no" id="passport_no" placeholder="IC / Passport Number" />
-                    <h3>Contact Details</h3>
-                    <input type="text" name="email" id="email" placeholder="Email" />
-                    <input type="text" name="mobile_no" id="mobile_no" placeholder="Mobile Number with Country Code" />
-                    <input type="text" id="password" name="password" placeholder="Preferred Password to our System" />
-                    <h3>Driver Details</h3>
-                    <input type="text" name="pick_up" id="pick_up" placeholder="Pick Up" />
-                    <input type="text" name="return" id="return" placeholder="Return" />
+                    <select name="pick_up" id="pick_up" style="width: 100%">
+                        <option>Select Pick Up Location</option>
+                        @foreach ($officeLocations as $officeLocation)
+                            <option value="{{$officeLocation->name}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
+                        @endforeach
+                    </select>
+
+                    <select name="return" id="return" style="width: 100%">
+                        <option>Select Return Location</option>
+                        @foreach ($officeLocations as $officeLocation)
+                            <option value="{{$officeLocation->name}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
+                        @endforeach
+                    </select>
                     <h3>Discount Coupon</h3>
                     <input type="text" name="coupon_code" id="coupon_code" placeholder="Coupon Number" />
                     <img class="img-responsive" src="{{asset('template/images/googeMap.png')}}" />
@@ -234,7 +259,7 @@
                             </div>
                         </li>
                         <li class="showLess">
-                            <a role="button" class="btn btn-default" href="">CONTINUE</a>
+                            <a role="button" class="btn btn-default btn-continue" href="javascript:;">CONTINUE</a>
                         </li>
                         <li  class="visible-xs moreDetail">
                             <span>More Details</span> <i class="fa fa-angle-down"></i>

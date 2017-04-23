@@ -4,6 +4,42 @@ $(document).ready(function(){
         calculatePrices()
     });
 
+    $(document).on('click', 'a.btn-continue', function() {
+        if(!moment($('#date_from').val()).isValid()){
+            displayMessageAlert("Please select booking date!", 'danger', 'warning-sign');
+            return false;
+        }
+        if(!moment($('#date_to').val()).isValid()){
+            displayMessageAlert("Please select valid booking end date!", 'danger', 'warning-sign');
+            return false;
+        }
+
+        if(!moment($('#date_to').val()).isAfter($('#date_from').val())){
+            displayMessageAlert("Please select valid booking end date!", 'danger', 'warning-sign');
+            return false;
+        }
+
+        processing();
+        var formData = $('form#car_reservation').serializeArray();
+        formData.push({
+            name: "_method",
+            value: "POST"
+        });
+        $.post('/cart/add', formData)
+        .done(function(response){
+            displayMessageAlert(response.message);
+            redirectPage('/cart/checkout')
+        })
+        .fail(function(response){
+            $.unblockUI();
+            $.each(response.responseJSON, function (key, value) {
+                $.each(value, function (index, message) {
+                    displayMessageAlert(message, 'danger', 'warning-sign');
+                });
+            });
+        });
+    });
+
     $('#resetDateStart').datetimepicker().on('dp.change',function(event){
         $('#rdate_start').val(event.date);
         calculatePrices();
@@ -21,35 +57,49 @@ function calculatePrices(){
         value: "POST"
     });
     $.post('/fleet/calculate_difference', formData)
-        .done(function(response){
-            $('div.days-duration').html(response.days+' Days Rental');
-            $('div.hours-duration').html(response.hours+' Hours Rental');
+    .done(function(response){
+        $('div.days-duration').html(response.days+' Days Rental');
+        $('div.hours-duration').html(response.hours+' Hours Rental');
 
-            $('#date_from').val(response.start);
-            $('#date_to').val(response.end);
+        $('#date_from').val(response.start);
+        $('#date_to').val(response.end);
 
-            $('span.start_date').html(response.start_date);
-            $('span.start_time').html(response.start_time);
-            $('span.end_date').html(response.end_date);
-            $('span.end_time').html(response.end_time);
+        $('span.start_date').html(response.start_date);
+        $('span.start_time').html(response.start_time);
+        $('span.end_date').html(response.end_date);
+        $('span.end_time').html(response.end_time);
 
-            $("table.payment_detail> tbody tr:first").find('td').html(
-                response.days+" Days and "+ response.hours+" Hours"
-            );
-            calculateRental();
-            // $.unblockUI();
-        })
-        .fail(function(response){
-            $.unblockUI();
-            $.each(response.responseJSON, function (key, value) {
-                $.each(value, function (index, message) {
-                    displayMessageAlert(message, 'danger', 'warning-sign');
-                });
+        $("table.payment_detail> tbody tr:first").find('td').html(
+            response.days+" Days and "+ response.hours+" Hours"
+        );
+        calculateRental();
+        // $.unblockUI();
+    })
+    .fail(function(response){
+        $.unblockUI();
+        $.each(response.responseJSON, function (key, value) {
+            $.each(value, function (index, message) {
+                displayMessageAlert(message, 'danger', 'warning-sign');
             });
         });
+    });
 }
 
 function calculateRental () {
+    if(!moment($('#date_from').val()).isValid()){
+        $.unblockUI();
+        return false;
+    }
+    if(!moment($('#date_to').val()).isValid()){
+        $.unblockUI();
+        return false;
+    }
+
+    if(!moment($('#date_to').val()).isAfter($('#date_from').val())){
+        $.unblockUI();
+        return false;
+    }
+
     processing();
     var formData = $('form#car_reservation').serializeArray();
     formData.push({

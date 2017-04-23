@@ -206,6 +206,14 @@ Route::get('api/load_extras', function(){
 });
 
 Route::get('/', 'IndexController@index');
+
+Route::get('register', 'UsersController@getRegistration')->middleware('guest');
+Route::post('register', 'Auth\RegisterController@register')->middleware('guest');
+Route::get('login', 'UsersController@getLogin')->middleware('guest');
+Route::post('login', 'Auth\LoginController@login')->middleware('guest');
+Route::get('logout', 'Auth\LoginController@logout');
+
+
 Route::group(['prefix' => 'fleet'], function(){
     Route::get('{token}', 'FleetController@detail');
     Route::post('load_car_prices', 'FleetController@loadCarPrices');
@@ -215,7 +223,6 @@ Route::group(['prefix' => 'fleet'], function(){
         $datetime1 = new \DateTime($to); // Today's Date/Time
         $datetime2 = new \DateTime($from);
         $interval = $datetime1->diff($datetime2);
-//        echo $interval->format('%D days %H hours');
         $data['days'] = $interval->format('%D');
         $data['hours'] = $interval->format('%H');
         $data['start'] = $from->format('m/d/Y H:i');
@@ -227,4 +234,9 @@ Route::group(['prefix' => 'fleet'], function(){
         $data['end_time'] = $to->format('l H:i');
         return $data;
     });
+});
+
+Route::group(['prefix' => 'cart'], function (){
+    Route::post('add', 'CartController@add');
+    Route::get('checkout', 'CartController@checkout');
 });

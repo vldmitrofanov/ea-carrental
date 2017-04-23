@@ -11,7 +11,13 @@
             <li><a href="javascript:;">Contact us</a></li>
         </ul>
         <ul class="userSection navbar-right">
-            <li class="loginButton"><i class="fa fa-user"></i> <a href="javascript:;">Login</a> <a href="javascript:;">EN</a> <a href="javascript:;">USD</a> </li>
+            <li class="loginButton">
+                @if (Auth::check())
+                <i class="fa fa-user"></i> Welcome {{ Auth::user()->username }} | <a href="{{ url('logout') }}">Logout</a>
+                @else
+                <i class="fa fa-user"></i> <a href="{{ url('login') }}">Login</a>
+                @endif
+                <a href="javascript:;">EN</a> <a href="javascript:;">USD</a> </li>
             <li class="phoneNumber">Call us <i class="fa fa-phone"></i> +60123208132</li>
         </ul>
     </div>
