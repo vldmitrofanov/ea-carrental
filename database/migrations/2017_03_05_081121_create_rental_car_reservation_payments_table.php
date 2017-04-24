@@ -19,7 +19,7 @@ class CreateRentalCarReservationPaymentsTable extends Migration
             $table->string('payment_method')->default('');
             $table->string('payment_type');
             $table->decimal('amount', 10, 2)->default(0);
-            $table->enum('status', ['paid', 'notpaid']);
+            $table->enum('status', ['paid', 'notpaid', 'pending']);
             $table->timestamps();
 
             $table->foreign('reservation_id')->references('id')->on('rental_car_reservations')->onDelete('cascade');

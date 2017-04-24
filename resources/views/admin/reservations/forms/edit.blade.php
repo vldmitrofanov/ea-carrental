@@ -500,6 +500,7 @@
                             <td><select class="form-control" name="payment_status[{{$oPayment->id}}]">
                                     <option value="paid" {{($oPayment->status=='paid')?'selected':''}}>Paid</option>
                                     <option value="notpaid" {{($oPayment->status=='notpaid')?'selected':''}}>Not paid</option>
+                                    <option value="pending" {{($oPayment->status=='pending')?'selected':''}}>Pending</option>
                                 </select></td>
                             <td><a href="javascript:;" class="remove-payment" data-id="{{$oPayment->id}}"><i
                                             class="fa fa-trash"></i></a></td>

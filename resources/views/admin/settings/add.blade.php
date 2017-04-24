@@ -3,6 +3,7 @@
         <li class="active"><a href="#options" data-toggle="tab">Options</a></li>
         <li><a href="#rental" data-toggle="tab">Rental Settings</a></li>
         <li><a href="#payments" data-toggle="tab">Payments</a></li>
+        <li><a href="#notifications" data-toggle="tab">Notifications</a></li>
     </ul>
 
     <div class="tab-content">
@@ -163,6 +164,68 @@
             </div>
         </div>
 
+        <div class="tab-pane" id="notifications">
+            <div class="alert alert-info alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h4><i class="icon fa fa-info"></i>Notifications to customers!</h4>
+                Set and customize email notifications to your customers to prompt new actions or send them important information. You can enable or disable sending the notifications below. You can personalize emails with subscribers' names and other information using the available tokens.
+            </div>
+            <div class="form-group">
+                <label for="email_confirmation" class="col-sm-3 control-label">New Reservation Received email &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title="  Select 'Yes' if you want to send an email to clients after they make new reservation. Otherwise select 'No'. "></label>
+                <div class="col-sm-9">
+                    {!! Form::select('data[email_confirmation]', config('settings.email_confirmation'),($oSettings->where('key','email_confirmation')->first())?$oSettings->where('key','email_confirmation')->first()->value:'null',array('class'=>'form-control','id'=>'email_confirmation')) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email_confirmation_subject" class="col-sm-3 control-label">New Reservation email subject &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title="  A specific car is assigned to each new reservation. If reservation is not confirmed within X hours then this car will be available for booking again for the same date and time."></label>
+                <div class="col-sm-9">
+                    {!! Form::text('data[email_confirmation_subject]', ($oSettings->where('key','email_confirmation_subject')->first())?$oSettings->where('key','email_confirmation_subject')->first()->value:null, ['class' => 'form-control', 'id' => 'email_confirmation_subject', 'placeholder' => 'Email Subject']) !!}
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="rental_terms" class="col-sm-3 control-label">New Reservation email message<br/>
+                   <small>{Title}<br/>
+                    {Name}<br/>
+                    {Email}<br/>
+                    {Phone}<br/>
+                    {Country}<br/>
+                    {City}<br/>
+                    {State}<br/>
+                    {Zip}<br/>
+                    {Address}<br/>
+                    {Company}<br/>
+                    {Notes}<br/>
+                    {DtFrom}{DtTo}<br/>
+                    {PickupLocation}<br/>
+                    {ReturnLocation}<br/>
+                    {Type}<br/>
+                    {Extras}<br/>
+                    {BookingID}<br/>
+                    {UniqueID}<br/>
+                    {Deposit}<br/>
+                    {Total}<br/>
+                    {Tax}<br/>
+                    {Security}<br/>
+                    {Insurance}<br/>
+                    {PaymentMethod}<br/>
+                    {CCType}<br/>
+                    {CCNum}<br/>
+                    {CCExp}<br/>
+                    {CCSec}<br/>
+                    {CancelURL}</small> </label>
+                <div class="col-sm-9">
+                    {!! Form::textarea('data[email_confirmation_message]',($oSettings->where('key','email_confirmation_message')->first())?$oSettings->where('key','email_confirmation_message')->first()->value:null,['class'=>'form-control', 'rows' => '30', 'id' => 'email_confirmation_message']) !!}
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>

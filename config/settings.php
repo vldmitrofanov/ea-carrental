@@ -92,6 +92,11 @@ return [
         '0' => 'No',
         '1' => 'Yes',
     ],
+
+    'email_confirmation' => [
+        '1' => 'Yes',
+        '0' => 'No',
+    ],
     
     'discount_type' => [
         'amount' => 'Amount',
