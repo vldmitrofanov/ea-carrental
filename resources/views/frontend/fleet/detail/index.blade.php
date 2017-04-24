@@ -85,11 +85,11 @@
                         <input type="text" {{  (Auth::user()->passport_id!='')?'readonly':''}} name="passport_no" id="passport_no" placeholder="IC / Passport Number" value="{{Auth::user()->passport_id}}" />
                         <h3>Contact Details</h3>
                         <input type="text" readonly name="email" id="email" placeholder="Email"  value="{{Auth::user()->email}}"/>
-                        <input type="text" readonly name="mobile_no" id="mobile_no" placeholder="Mobile Number with Country Code"  value="{{Auth::user()->phone}}"/>
+                        <input type="text" {{  (Auth::user()->mobile_no!='')?'readonly':''}} name="mobile_no" id="mobile_no" placeholder="Mobile Number with Country Code"  value="{{Auth::user()->phone}}"/>
                     @else
                         <div class="topField">
                             {!! Form::select('title', config('settings.user_title'),null,array('id'=>'title')) !!}
-                            <input type="text" placeholder="First Name" name="name" id="name" value= />
+                            <input type="text" placeholder="First Name" name="name" id="name" value= "">
                         </div>
                         <input type="text" name="sur_name" value="" placeholder="Sur Name" />
                         <input type="text" name="passport_no" id="passport_no" placeholder="IC / Passport Number" value="" />
@@ -100,14 +100,14 @@
                     @endif
                     <h3>Driver Details</h3>
                     <select name="pick_up" id="pick_up" style="width: 100%">
-                        <option>Select Pick Up Location</option>
+                        <option value="">Select Pick Up Location</option>
                         @foreach ($officeLocations as $officeLocation)
                             <option value="{{$officeLocation->name}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
                         @endforeach
                     </select>
 
                     <select name="return" id="return" style="width: 100%">
-                        <option>Select Return Location</option>
+                        <option value="">Select Return Location</option>
                         @foreach ($officeLocations as $officeLocation)
                             <option value="{{$officeLocation->name}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
                         @endforeach

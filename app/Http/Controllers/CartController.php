@@ -21,6 +21,7 @@ use App\CarReservationPayment;
 use App\Http\Requests\ReservationRequest;
 use \PDF;
 use \SendPulse;
+use App\Http\Requests\CheckOutRequest;
 use App\Http\Requests\CartStepOneRequest;
 use Session;
 
@@ -35,14 +36,33 @@ class CartController extends Controller
         }
     }
 
-    public function checkout(){
+    public function confirm(){
         $cartData = Session::get('oCart');
+        if(empty($cartData)){
+            \Session::flash('flash_message', 'Session time is out. Please reserve your Car again.');
+            \Session::flash('flash_type', 'alert-danger');
+
+            return \Redirect::to('/');
+        }
+
         $oCountries = Country::pluck('name', 'id')->toArray();
-        
         $currencySymbol = $this->getCurrencySign($this->option_arr['currency']);
         $currency = $this->option_arr['currency'];
         $reservationDateTime = $this->calculateDateDiff($cartData[key($cartData)]->date_from, $cartData[key($cartData)]->date_to);
         return view('frontend.fleet.detail.checkout', compact('cartData', 'oCountries', 'currencySymbol', 'currency', 'reservationDateTime'));
+    }
+
+    public function checkout(CheckOutRequest $request){
+        $this->_checkAjaxRequest();
+//        Session::forget('oCart');
+
+        $cartData = Session::get('oCart');
+        if(empty($cartData)){
+            return $this->_failedJsonResponse([[' Session time is out. Please reserve your Car again.']]);
+        }
+
+        print_r($cartData);
+
     }
 
 
@@ -622,9 +642,11 @@ class CartController extends Controller
         $data['type'] = $oCarType;
         $data['model'] = $oCarModel;
         $data['car'] = $oRentalCar;
+        $data['extra_arr'] = $extra_arr;
         $data['currency'] = $currency;
         $data['currencySign'] = $this->getCurrencySign($currency);
-//        Session::forget('oCart');
+
+
         $this->_addtoCart($request, $data);
 
         return $this->_successJsonResponse(['message'=>'Car Reservation information added to cart.']);
@@ -723,7 +745,7 @@ class CartController extends Controller
 
     private function _addtoCart($request, $data=[]){
         $cart =new \stdClass();
-
+        Session::forget('oCart');
         $cartData = Session::get('oCart');
 //        if(!$cartData){
             $cart->car_id = $request->get('car_id');

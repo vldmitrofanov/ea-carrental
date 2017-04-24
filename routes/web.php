@@ -238,5 +238,6 @@ Route::group(['prefix' => 'fleet'], function(){
 
 Route::group(['prefix' => 'cart'], function (){
     Route::post('add', 'CartController@add');
-    Route::get('checkout', 'CartController@checkout');
+    Route::get('confirm', 'CartController@confirm');
+    Route::post('checkout', 'CartController@checkout');
 });

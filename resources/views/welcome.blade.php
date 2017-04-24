@@ -8,9 +8,11 @@
     @include('frontend.home.carousel')
     @include('frontend.searchbar.search')
 
+    @include('frontend.partials.errors.errors')
     <div class="container">
         <p class="lead text-center mb0">Our Car Rental service offers you a great choice of vehicles for hire in Malaysia. Whether you would like an economical sedan to get you going or a luxury car or van we have the option for you. We feature cars of different make: from Proton to Toyota and Kia, comfortable HyndaiStarex Vans, and luxurious BMW and Mercedes Vans.</p>
     </div>
+
 
     @include('frontend.home.rental_fleets')
     @include('frontend.home.services')

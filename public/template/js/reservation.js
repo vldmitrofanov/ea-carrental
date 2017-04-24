@@ -28,7 +28,7 @@ $(document).ready(function(){
         $.post('/cart/add', formData)
         .done(function(response){
             displayMessageAlert(response.message);
-            redirectPage('/cart/checkout')
+            redirectPage('/cart/confirm')
         })
         .fail(function(response){
             $.unblockUI();

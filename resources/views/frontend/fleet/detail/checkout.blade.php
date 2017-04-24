@@ -78,7 +78,6 @@
             <div class="col-sm-4 top">
                 <div class="bookSummary">
                     <h3>Booking Summary</h3>
-                    <?php // print_r($cartData[key($cartData)]);exit;?>
                     <ul>
                         <li>
                             <div class="row">
@@ -196,7 +195,7 @@
                             </div>
                         </li>
                         <li class="showLess">
-                            <a role="button" class="btn btn-default" href="">CONTINUE</a>
+                            <a role="button" class="btn btn-default btn-checkout" href="javascript:;">CHECKOUT</a>
                         </li>
                         <li  class="visible-xs moreDetail">
                             <span>More Details</span> <i class="fa fa-angle-down"></i>
@@ -207,9 +206,8 @@
             {!! Form::close() !!}
         </div>
     </div>
-
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('template/js/reservation.js') }}"></script>
+    <script src="{{ asset('template/js/checkout.js') }}"></script>
 @endsection
