@@ -27,7 +27,3 @@
         </div>
     </div>
 @endsection
-
-@section('javascript')
-    <script src="{{ asset('template/js/users.js') }}"></script>
-@endsection

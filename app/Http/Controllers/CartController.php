@@ -37,8 +37,12 @@ class CartController extends Controller
 
     public function checkout(){
         $cartData = Session::get('oCart');
-
-        return view('frontend.fleet.detail.checkout', compact('cartData'));
+        $oCountries = Country::pluck('name', 'id')->toArray();
+        
+        $currencySymbol = $this->getCurrencySign($this->option_arr['currency']);
+        $currency = $this->option_arr['currency'];
+        $reservationDateTime = $this->calculateDateDiff($cartData[key($cartData)]->date_from, $cartData[key($cartData)]->date_to);
+        return view('frontend.fleet.detail.checkout', compact('cartData', 'oCountries', 'currencySymbol', 'currency', 'reservationDateTime'));
     }
 
 
@@ -448,7 +452,7 @@ class CartController extends Controller
             foreach ($request->input('extra_id') as $key => $extra_id){
                 if((int) $extra_id){
                     $e_arr[] = $extra_id;
-                    $extra_qty_arr[$extra_id] = $request->input('extra_cnt')[$key];
+                    $extra_qty_arr[$extra_id] = 1;//$request->input('extra_cnt')[$key];
                 }
 
             }
@@ -613,11 +617,11 @@ class CartController extends Controller
             'total_price_label', 'required_deposit_label', 'total_amount_due_label', 'discount_label',
             'car_rental_fee_detail', 'insurance_detail', 'discount_detail', 'tax_detail', 'required_deposit_detail');
 
-        $oCar = $oCarModel->cars()->where('rental_cars.id', $request->input('car_id'))->first();
+//        $oCar = $oCarModel->cars()->where('rental_cars.id', $request->input('car_id'))->first();
 
         $data['type'] = $oCarType;
         $data['model'] = $oCarModel;
-        $data['car'] = $oCar;
+        $data['car'] = $oRentalCar;
         $data['currency'] = $currency;
         $data['currencySign'] = $this->getCurrencySign($currency);
 //        Session::forget('oCart');

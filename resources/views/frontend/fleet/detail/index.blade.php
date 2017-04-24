@@ -82,7 +82,7 @@
                             <input type="text" readonly placeholder="First Name" name="name" id="name" value="{{Auth::user()->getFirstName()}}" />
                         </div>
                         <input type="text" readonly name="sur_name" value="{{Auth::user()->getSurName()}}" placeholder="Sur Name" />
-                        <input type="text" readonly name="passport_no" id="passport_no" placeholder="IC / Passport Number" value="{{Auth::user()->passport_id}}" />
+                        <input type="text" {{  (Auth::user()->passport_id!='')?'readonly':''}} name="passport_no" id="passport_no" placeholder="IC / Passport Number" value="{{Auth::user()->passport_id}}" />
                         <h3>Contact Details</h3>
                         <input type="text" readonly name="email" id="email" placeholder="Email"  value="{{Auth::user()->email}}"/>
                         <input type="text" readonly name="mobile_no" id="mobile_no" placeholder="Mobile Number with Country Code"  value="{{Auth::user()->phone}}"/>
