@@ -116,7 +116,7 @@
             $.post($('form#car_reservation').attr('action'), formData)
             .done(function(response){
                 displayMessageAlert(response.message);
-                pageRefresh()
+//                pageRefresh()
             })
             .fail(function(response){
                 $.unblockUI();

@@ -11,6 +11,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         return view('admin.errors.404');
     });
     Route::get('dashboard', 'Admin\DashboardController@index');
+    Route::get('fleetavailability', 'Admin\FleetAvailabilityController@index');
 
     Route::group(['prefix' => 'locations'], function(){
         Route::get('/', 'Admin\OfficeLocationController@index');
@@ -33,6 +34,24 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('{id}/edit', 'Admin\Discounts\VouchersController@edit');
             Route::get('{id}/show', 'Admin\Discounts\VouchersController@show');
             Route::patch('update/{id}', 'Admin\Discounts\VouchersController@update');
+        });
+
+        Route::group(['prefix' => 'volume'], function(){
+            Route::get('/', 'Admin\Discounts\VolumeController@index');
+            Route::get('/create', 'Admin\Discounts\VolumeController@create');
+            Route::post('store', 'Admin\Discounts\VolumeController@store');
+            Route::get('{id}/edit', 'Admin\Discounts\VolumeController@edit');
+            Route::get('{id}/show', 'Admin\Discounts\VolumeController@show');
+            Route::patch('update/{id}', 'Admin\Discounts\VolumeController@update');
+        });
+
+        Route::group(['prefix' => 'freebies'], function(){
+            Route::get('/', 'Admin\Discounts\FreebiesController@index');
+            Route::get('/create', 'Admin\Discounts\FreebiesController@create');
+            Route::post('store', 'Admin\Discounts\FreebiesController@store');
+            Route::get('{id}/edit', 'Admin\Discounts\FreebiesController@edit');
+            Route::get('{id}/show', 'Admin\Discounts\FreebiesController@show');
+            Route::patch('update/{id}', 'Admin\Discounts\FreebiesController@update');
         });
     });
 
@@ -114,6 +133,19 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::patch('update/{id}', 'Admin\SettingsController@update');
     });
 
+    Route::group(['prefix' => 'notifications'], function(){
+        Route::get('/', 'Admin\NotificationsController@index');
+        Route::get('/create', 'Admin\NotificationsController@create');
+        Route::post('store', 'Admin\NotificationsController@store');
+        Route::get('{id}/edit', 'Admin\NotificationsController@edit');
+        Route::patch('update/{id}', 'Admin\NotificationsController@update');
+    });
+
+});
+
+Route::get('api/email_tags', function(){
+    $data['tags'] = config('settings.email_tags');
+    return $data;
 });
 
 Route::get('api/load_car_list', function(){

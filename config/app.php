@@ -180,6 +180,8 @@ return [
         Zizaco\Entrust\EntrustServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
 //        Elibyy\TCPDF\ServiceProvider::class,
+        SendPulse\SendPulseLaravel\SendPulseLaravelServiceProvider::class,
+        Spatie\GoogleCalendar\GoogleCalendarServiceProvider::class,
 
     ],
 
@@ -235,6 +237,8 @@ return [
         'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
 //        'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
+        'SendPulse' => 'SendPulse\SendPulseLaravel\SendPulseFacade',
+        'GoogleCalendar' => 'Spatie\GoogleCalendar\GoogleCalendarFacade',
     ],
 
 ];

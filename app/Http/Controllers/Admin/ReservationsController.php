@@ -21,6 +21,9 @@ use App\Discount;
 use App\CarReservationPayment;
 use App\Http\Requests\ReservationRequest;
 use \PDF;
+use \SendPulse;
+use Spatie\GoogleCalendar\Event;
+
 
 class ReservationsController extends Controller
 {
@@ -39,6 +42,32 @@ class ReservationsController extends Controller
      */
     public function index()
     {
+        $email = array(
+        'html' => '<p>Hello!</p>',
+        'text' => 'text',
+        'subject' => 'Mail subject',
+        'from' => array(
+            'name' => 'suzanne',
+            'email' => 'suzanne@embassyalliance.com'
+        ),
+        'to' => array(
+            array(
+                'name' => 'Idrees',
+                'email' => 'medriis@gmail.com'
+            )
+        ),
+//        'bcc' => array(
+//            array(
+//                'name' => 'Manager',
+//                'email' => 'manager@domain.com'
+//            )
+//        ),
+//        'attachments' => array(
+//            'file.txt' => file_get_contents(PATH_TO_ATTACH_FILE)
+//        )
+    );
+//    print_r(SendPulse::smtpSendMail($email));
+    
         $oReservations = CarReservation::orderBy('id', 'desc')->paginate(15);
         return view('admin.reservations.index', compact('oReservations'));
     }
@@ -76,8 +105,15 @@ class ReservationsController extends Controller
             return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
         }
 
+        $googleEvent = new Event;
+        $googleEvent->name = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number;
+        $googleEvent->description = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number.'<br/>'.$request->input('name').' ( '.$request->input('phone').' )';
+        $googleEvent->startDateTime = Carbon::parse($request->input('date_from'));
+        $googleEvent->endDateTime = Carbon::parse($request->input('date_to'));
+        $googleEventResult = $googleEvent->save();
+
         \DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $result = \DB::transaction(function () use ($request, $oCar, $oCarType) {
+        $result = \DB::transaction(function () use ($request, $oCar, $oCarType, $googleEventResult) {
             try{
                 $oUser = User::where('email', $request->input('email'))->first();
                 if(!$oUser){
@@ -152,6 +188,7 @@ class ReservationsController extends Controller
                     $oCarReservationDetail->discount_code = $request->input('discount_code');
                     $oCarReservationDetail->discount = ($request->input('discount'))?:0;
                     $oCarReservationDetail->discount_detail = ($request->input('discount_detail'))?:'';
+                    $oCarReservationDetail->google_event_id = ($googleEventResult->id)?:'';
                     $oCarReservationDetail->save();
                     
                     if($request->input('extra_id')){
@@ -267,8 +304,18 @@ class ReservationsController extends Controller
             return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
         }
 
+        $oReservationDetail = $oCarReservation->details->first();
+
+        $googleEvent = new Event;
+        $googleEvent->name = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number;
+        $googleEvent->description = $oCar->make.' - '.$oCar->model.' - '.$oCar->registration_number.'<br/>'.$request->input('name').' ( '.$request->input('phone').' )';
+        $googleEvent->startDateTime = Carbon::parse($request->input('date_from'));
+        $googleEvent->endDateTime = Carbon::parse($request->input('date_to'));
+        $googleEvent->id = $oReservationDetail->google_event_id;
+        $googleEventResult = $googleEvent->save();
+
         \DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $result = \DB::transaction(function () use ($request, $oCar, $oCarType, $oCarReservation) {
+        $result = \DB::transaction(function () use ($request, $oCar, $oCarType, $oCarReservation, $googleEventResult) {
             try{
                 $oUser = User::where('id', $oCarReservation->user_id)->first();
                 if(!$oUser){
@@ -337,6 +384,7 @@ class ReservationsController extends Controller
                 $oCarReservationDetail->required_deposit = $request->input('required_deposit');
                 $oCarReservationDetail->pickup_mileage = ($request->input('pickup_mileage'))?:0;
                 $oCarReservationDetail->return_mileage = ($request->input('return_mileage'))?:0;
+                $oCarReservationDetail->google_event_id = ($googleEventResult->id)?:'' ;
                 $oCarReservationDetail->save();
 
 //updating the extras ifo

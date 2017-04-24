@@ -11,7 +11,9 @@
         "laravelcollective/html":"^5.4",
         "zizaco/entrust": "5.2.x-dev",
         "barryvdh/laravel-dompdf": "^0.8.0",
-        "guzzlehttp/guzzle": "~5.0"
+        "guzzlehttp/guzzle": "~5.0",
+        "wensleydale/sendpulse-laravel": "1.*",
+        "spatie/laravel-google-calendar" : "1.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
@@ -44,9 +46,7 @@
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-            "php artisan optimize",
-            "yes | php artisan migrate:refresh",
-            "yes | php artisan migrate:refresh --seed"
+            "php artisan optimize"
         ]
     },
     "config": {

@@ -1,9 +1,12 @@
+<?php header('X-Frame-Options: GOFORIT'); ?>
 @extends('admin.partials.layouts.master')
 @section('title')
     Car Reservations Management
 @endsection
 
 @section('content')
+
+
     <div class="content-wrapper">
         <section class="content-header">
             <h1>

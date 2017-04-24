@@ -57,6 +57,10 @@ Your server must meet the following requirements
     * countries.sql is dump file for countries with currencies and currency code information downloaded from google
 
 9. Server website folder path must must be set to: /path/to/laravel/public (As in laravel the index.php file exists under public folder)
+10. For Google calendar configuration, please check the link :https://murze.be/2016/05/how-to-setup-and-use-the-google-calendar-api/ and 
+    place the json file containing the credentials of a Google Service account under "storage/app/laravel-google-calendar/" folder and
+    update the 'config/laravel-google-calendar.php' file with json file name
+
 
 ### Storage
 According to Laravel 5.2 docs, your publicly accessible files should be put in directory storage/app/public

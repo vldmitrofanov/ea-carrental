@@ -18,11 +18,15 @@
               </a>
             </li>
 
-            <li data-breadcrumb="{{ url('admin/settings') }}" class="treeview">
-              <a href="{{ url('admin/settings') }}">
-                <i class="fa fa-cogs"></i>
-                <span>Settings</span>
-              </a>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-cogs"></i> <span>Settings</span>
+                    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="{{ url('admin/settings') }}"><i class="fa fa-cog"></i><span>Settings</span></a></li>
+                    <li><a href="{{ url('admin/notifications') }}"><i class="fa fa-envelope"></i> Email Notifications</a></li>
+                </ul>
             </li>
 
             <li class="treeview">
@@ -43,6 +47,8 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="{{ url('admin/discounts/vouchers') }}"><i class="fa fa-percent"></i> Vouchers</a></li>
+                    <li><a href="{{ url('admin/discounts/volume') }}"><i class="fa fa-percent"></i> Volume Discount</a></li>
+                    <li><a href="{{ url('admin/discounts/freebies') }}"><i class="fa fa-car"></i> Freebies</a></li>
                 </ul>
             </li>
 
@@ -107,6 +113,13 @@
                     <li><a href="{{ url('admin/clients') }}"><i class="fa fa-list"></i> List</a></li>
                     <li><a href="{{ url('admin/clients/create') }}"><i class="fa fa-plus-square"></i> Add New</a></li>
                 </ul>
+            </li>
+
+            <li data-breadcrumb="{{ url('admin/dashboard') }}" class="treeview">
+                <a href="{{ url('admin/fleetavailability') }}">
+                    <i class="fa fa-automobile"></i>
+                    <span>Fleet Availability</span>
+                </a>
             </li>
 
 
