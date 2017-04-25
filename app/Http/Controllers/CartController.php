@@ -19,11 +19,13 @@ use App\User;
 use App\Discount;
 use App\CarReservationPayment;
 use App\Http\Requests\ReservationRequest;
+use App\CarReservationDetail;
 use \PDF;
 use \SendPulse;
 use App\Http\Requests\CheckOutRequest;
 use App\Http\Requests\CartStepOneRequest;
 use Session;
+use Auth;
 
 class CartController extends Controller
 {
@@ -61,7 +63,123 @@ class CartController extends Controller
             return $this->_failedJsonResponse([[' Session time is out. Please reserve your Car again.']]);
         }
 
-        print_r($cartData);
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        $result = \DB::transaction(function () use ($cartData, $request) {
+            try{
+                foreach ($cartData as $cart){
+
+                    $oCar = RentalCar::where('id',$cart->car_id)->first();
+                    if(!$oCar){
+                        return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
+                    }
+
+                    $oCarType = $cart->info['type'];
+
+                    if(!$oCarType){
+                        return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
+                    }
+
+                    $oCarModel = $cart->info['model'];
+                    if(!$oCarModel){
+                        return $this->_failedJsonResponse([['Car Make & Model is not valid or has been removed.']]);
+                    }
+
+//                    check if user is logged in
+                    if (Auth::check()){
+                        $oUser = User::where('id', Auth::user()->id)->first();
+                    }else{
+                        $oUser = new User;
+                        $oUser->password = bcrypt('elecon123');
+                        $oUser->username = strstr($cart->email, '@', true);
+                    }
+
+                    $oUser->title = $cart->title;
+                    $oUser->email = $cart->email;
+                    $oUser->name = $cart->name. ' '.$cart->sur_name;
+                    $oUser->phone = $cart->mobile_no;
+                    $oUser->company_name = (isset($cart->company_name))?:'';
+                    $oUser->address = $request->input('baddress1');
+                    $oUser->state = $request->input('bstate');
+                    $oUser->city = $request->input('bcity');
+                    $oUser->zip = $request->input('bzip');
+                    $oUser->country_id = $request->input('bcountry_id');
+                    $oUser->passport_id = $cart->passport_no;
+                    $oUser->driver_licence = (isset($cart->licence))?:'';
+                    $oUser->rental_form = (isset($cart->rental_form))?:'';
+                    $oUser->other_info = '';
+                    if($oUser->save() && !Auth::check()){
+                        $oUser->roles()->attach(3);
+                    }
+
+                    $oCarReservation = new CarReservation;
+                    $oCarReservation->reservation_number = time() . mt_rand(100000, 999999);
+                    $oCarReservation->ip_address = $request->ip();
+                    $oCarReservation->user_id = $oUser->id;
+                    $oCarReservation->processed_on = Carbon::now();
+                    $oCarReservation->status = 'pending';
+                    $oCarReservation->cc_type = $request->input('cc_type');
+                    $oCarReservation->cc_num = $request->input('cc_number');
+                    $oCarReservation->cc_code = $request->input('cc_code');
+                    $oCarReservation->cc_exp = $request->input('cc_expiration_month').'-'.$request->input('cc_expiration_year');
+                    if($oCarReservation->save()){
+                        $timeDiff = $this->calculateDateDiff($cart->date_from, $cart->date_to);
+
+                        $oCarReservationDetail = new CarReservationDetail;
+                        $oCarReservationDetail->reservation_id = $oCarReservation->id;
+                        $oCarReservationDetail->car_type_id = $oCarType->id;
+                        $oCarReservationDetail->car_model_id = $oCarModel->id;
+                        $oCarReservationDetail->car_id = $oCar->id;
+                        $oCarReservationDetail->pickup_date = Carbon::parse($cart->date_from);
+                        $oCarReservationDetail->date_from = Carbon::parse($cart->date_from);
+                        $oCarReservationDetail->date_to = Carbon::parse($cart->date_to);
+                        $oCarReservationDetail->pickup_location_id = $cart->pick_up;
+                        $oCarReservationDetail->pickup_near_location = '';
+                        $oCarReservationDetail->return_location_id = $cart->return;
+                        $oCarReservationDetail->return_near_location = '';
+                        $oCarReservationDetail->rental_days = $timeDiff['days'];
+                        $oCarReservationDetail->rental_hours = $timeDiff['hours'];
+                        $oCarReservationDetail->price_per_day = $cart->info['prices']['price_per_day'];
+                        $oCarReservationDetail->price_per_day_detail = ($cart->info['prices']['price_per_day_detail'])?:'';
+                        $oCarReservationDetail->price_per_hour = $cart->info['prices']['price_per_hour'];
+                        $oCarReservationDetail->price_per_hour_detail = ($cart->info['prices']['price_per_hour_detail'])?:'';
+                        $oCarReservationDetail->car_rental_fee = $cart->info['prices']['car_rental_fee'];
+                        $oCarReservationDetail->extra_price = $cart->info['prices']['extra_price'];
+                        $oCarReservationDetail->insurance = $cart->info['prices']['insurance'];
+                        $oCarReservationDetail->sub_total = $cart->info['prices']['sub_total'];
+                        $oCarReservationDetail->tax = $cart->info['prices']['tax'];
+                        $oCarReservationDetail->total_price = $cart->info['prices']['total_price'];
+                        $oCarReservationDetail->required_deposit = $cart->info['prices']['required_deposit'];
+                        $oCarReservationDetail->discount_code = (isset($cart->info['prices']['discount_code']))?:'';
+                        $oCarReservationDetail->discount = ($cart->info['prices']['discount'])?:0;
+                        $oCarReservationDetail->discount_detail = ($cart->info['prices']['discount_detail'])?:'';
+                        $oCarReservationDetail->google_event_id = /*($googleEventResult->id)?:*/'';
+                        $oCarReservationDetail->save();
+
+                        if($cart->info['extra_arr']){
+                            foreach ($cart->info['extra_arr'] as $key=>$oExtra) {
+//                                $oExtra = CarExtra::where('id', $val)->first();
+                                $oCarReservationExtra = new CarReservationExtra;
+                                $oCarReservationExtra->reservation_id = $oCarReservation->id;
+                                $oCarReservationExtra->extra_id = $oExtra->id;
+                                $oCarReservationExtra->quantity = 1; //$request->input('extra_cnt')[$key];
+                                $oCarReservationExtra->price = $oExtra->price;
+                                $oCarReservationExtra->extended_notes = '';
+                                $oCarReservationExtra->save();
+                            }
+                        }
+                        Mail::to($oUser->email)->send(new Reservation($oCarReservation));
+                        return $this->_successJsonResponse(['message'=>'Reservation information saved.', 'data' => $oCarReservation]);
+                    }
+                }
+            }catch (\Exception $e) {
+                return $this->_failedJsonResponse([[$e->getMessage()]]);
+            }
+        });
+
+
+
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        return $result;
 
     }
 

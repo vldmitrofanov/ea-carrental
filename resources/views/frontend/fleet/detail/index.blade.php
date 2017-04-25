@@ -102,18 +102,18 @@
                     <select name="pick_up" id="pick_up" style="width: 100%">
                         <option value="">Select Pick Up Location</option>
                         @foreach ($officeLocations as $officeLocation)
-                            <option value="{{$officeLocation->name}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
+                            <option value="{{$officeLocation->id}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
                         @endforeach
                     </select>
 
                     <select name="return" id="return" style="width: 100%">
                         <option value="">Select Return Location</option>
                         @foreach ($officeLocations as $officeLocation)
-                            <option value="{{$officeLocation->name}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
+                            <option value="{{$officeLocation->id}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
                         @endforeach
                     </select>
                     <h3>Discount Coupon</h3>
-                    <input type="text" name="coupon_code" id="coupon_code" placeholder="Coupon Number" />
+                    <input type="text" name="discount_code" id="discount_code" placeholder="Coupon Number" />
                     <img class="img-responsive" src="{{asset('template/images/googeMap.png')}}" />
                 </div>
             </div>

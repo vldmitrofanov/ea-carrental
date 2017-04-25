@@ -10,7 +10,7 @@ $(document).ready(function(){
             .done(function(response){
                 $.unblockUI();
 
-                // displayMessageAlert(response.message);
+                displayMessageAlert(response.message);
                 // redirectPage('/cart/checkout')
             })
             .fail(function(response){
