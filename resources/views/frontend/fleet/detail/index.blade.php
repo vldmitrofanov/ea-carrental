@@ -94,9 +94,9 @@
                         <input type="text" name="sur_name" value="" placeholder="Sur Name" />
                         <input type="text" name="passport_no" id="passport_no" placeholder="IC / Passport Number" value="" />
                         <h3>Contact Details</h3>
-                        <input type="text" name="email" id="email" placeholder="Email" />
                         <input type="text" name="mobile_no" id="mobile_no" placeholder="Mobile Number with Country Code" />
-                        <input type="text" id="password" name="password" placeholder="Preferred Password to our System" />
+                        <input type="text" name="email" id="email" placeholder="Email" />
+                        <input type="password" id="password" name="password" placeholder="Preferred Password to our System" />
                     @endif
                     <h3>Driver Details</h3>
                     <select name="pick_up" id="pick_up" style="width: 100%">
@@ -113,7 +113,8 @@
                         @endforeach
                     </select>
                     <h3>Discount Coupon</h3>
-                    <input type="text" name="discount_code" id="discount_code" placeholder="Coupon Number" />
+                    <input type="text" name="discount_code" id="discount_code" placeholder="Coupon Number" style="width:50%;" />
+                    <a role="button" class="btn btn-success validate-code" href="javascript:;" style="border-radius: 8px;margin-left: 4px;">Validate</a>
                     <img class="img-responsive" src="{{asset('template/images/googeMap.png')}}" />
                 </div>
             </div>

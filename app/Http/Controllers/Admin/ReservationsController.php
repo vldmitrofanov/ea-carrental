@@ -42,33 +42,7 @@ class ReservationsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $email = array(
-        'html' => '<p>Hello!</p>',
-        'text' => 'text',
-        'subject' => 'Mail subject',
-        'from' => array(
-            'name' => 'suzanne',
-            'email' => 'suzanne@embassyalliance.com'
-        ),
-        'to' => array(
-            array(
-                'name' => 'Idrees',
-                'email' => 'medriis@gmail.com'
-            )
-        ),
-//        'bcc' => array(
-//            array(
-//                'name' => 'Manager',
-//                'email' => 'manager@domain.com'
-//            )
-//        ),
-//        'attachments' => array(
-//            'file.txt' => file_get_contents(PATH_TO_ATTACH_FILE)
-//        )
-    );
-//    print_r(SendPulse::smtpSendMail($email));
-    
+    {    
         $oReservations = CarReservation::orderBy('id', 'desc')->paginate(15);
         return view('admin.reservations.index', compact('oReservations'));
     }
@@ -1255,5 +1229,43 @@ class ReservationsController extends Controller
         $data['voucher'] = $oDiscount;
         return $this->_successJsonResponse(['message'=>'Discount Voucher Code is valid.', 'data' => $data]);
 
+    }
+    
+    private function _sendReservationEmail($oReservation){
+        if(!$oReservation){
+            return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
+        }
+
+        $currency = $this->getCurrencySign($this->option_arr['currency']);
+        $pdf = PDF::loadView('emails.reservation.pdf', compact('oReservation', 'currency'))->save(storage_path('emails/'.$oReservation->reservation_number.'.pdf'));
+        
+        $view = \View::make('emails.reservation.notification', compact('oReservation', 'currency'));
+        $contents = $view->render();
+
+        $email = array(
+            'html' => $contents,
+            'text' => 'New Car Reservation#'.$oReservation->reservation_number,
+            'subject' => 'New Car Reservation#'.$oReservation->reservation_number,
+            'from' => array(
+                'name' => 'suzanne',
+                'email' => 'suzanne@embassyalliance.com'
+            ),
+            'to' => array(
+                array(
+                    'name' => 'Idrees',
+                    'email' => 'medriis@gmail.com'
+                )
+            ),
+    //        'bcc' => array(
+    //            array(
+    //                'name' => 'Manager',
+    //                'email' => 'manager@domain.com'
+    //            )
+    //        ),
+            'attachments' => array(
+                'invoice.pdf' => file_get_contents(str_replace('public/', 'storage/', storage_path('emails/'.$oReservation->reservation_number.'.pdf')))
+            )
+        );
+        SendPulse::smtpSendMail($email);        
     }
 }

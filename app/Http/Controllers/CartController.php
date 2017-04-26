@@ -67,7 +67,6 @@ class CartController extends Controller
         $result = \DB::transaction(function () use ($cartData, $request) {
             try{
                 foreach ($cartData as $cart){
-
                     $oCar = RentalCar::where('id',$cart->car_id)->first();
                     if(!$oCar){
                         return $this->_failedJsonResponse([['Car is not valid or has been removed.']]);
@@ -89,7 +88,7 @@ class CartController extends Controller
                         $oUser = User::where('id', Auth::user()->id)->first();
                     }else{
                         $oUser = new User;
-                        $oUser->password = bcrypt('elecon123');
+                        $oUser->password = bcrypt($cart->pwd);
                         $oUser->username = strstr($cart->email, '@', true);
                     }
 
@@ -167,7 +166,12 @@ class CartController extends Controller
                                 $oCarReservationExtra->save();
                             }
                         }
-                        Mail::to($oUser->email)->send(new Reservation($oCarReservation));
+                        $this->_sendReservationEmail($oCarReservation);
+//                        Mail::to($oUser->email)->send(new Reservation($oCarReservation));
+                        
+                        \Session::flash('flash_message', 'Your car has been booked.');
+                        \Session::flash('flash_type', 'alert-success');
+            
                         return $this->_successJsonResponse(['message'=>'Reservation information saved.', 'data' => $oCarReservation]);
                     }
                 }
@@ -771,6 +775,81 @@ class CartController extends Controller
 
     }
 
+    
+    public function getDiscountInfo(Request $request){
+        if($request->input('discount_code')==''){
+            return false;
+        }
+
+        if($request->input('date_from')=='' || $request->input('date_to')==''){
+            return false;
+        }
+        $oDiscount = Discount::where('voucher_code', $request->input('discount_code'))->first();
+        if(!$oDiscount){
+            return false;
+        }
+
+        if($oDiscount->discount_type=='selected' && $request->input('car_id')==''){
+            return false;
+        }
+
+        if($oDiscount->discount_type=='selected') {
+            $oDiscountCar = $oDiscount->carModels()->where('model_id', $request->input('models'))->first();
+            if(!$oDiscountCar){
+                return false;
+            }
+        }
+
+        $oInfo = $oDiscount->recurring->repititions()
+                    ->where('start_repeat', '<=', Carbon::parse($request->input('date_from')))
+                    ->where('end_repeat', '>=', Carbon::parse($request->input('date_to')))
+                    ->first();
+        if(!$oInfo){
+            return false;
+        }
+
+        return ['amount' => $oDiscount->amount, 'amount_type' => $oDiscount->amount_type];
+
+    }
+    public function validateVoucher(Request $request){
+        $this->_checkAjaxRequest();
+
+        if($request->input('discount_code')==''){
+            return $this->_failedJsonResponse([['Please mention Discount Voucher Code.']]);
+        }
+
+        if($request->input('date_from')=='' || $request->input('date_to')==''){
+            return $this->_failedJsonResponse([['Please define Reservation Dates.']]);
+        }
+        $oDiscount = Discount::where('voucher_code', $request->input('discount_code'))->first();
+        if(!$oDiscount){
+            return $this->_failedJsonResponse([['Discount Voucher Code is not valid.']]);
+        }
+
+        if($oDiscount->discount_type=='selected' && $request->input('models')==''){
+            return $this->_failedJsonResponse([['Please select Car Make & Model.']]);
+        }
+
+        if($oDiscount->discount_type=='selected') {
+            $oDiscountCar = $oDiscount->carModels()->where('model_id', $request->input('models'))->first();
+            if(!$oDiscountCar){
+                return $this->_failedJsonResponse([['Discount Voucher is not valid for selected Car.']]);
+            }
+        }
+
+        $oInfo = $oDiscount->recurring->repititions()
+                    ->where('start_repeat', '<=', Carbon::parse($request->input('date_from')))
+                    ->where('end_repeat', '>=', Carbon::parse($request->input('date_to')))
+                    ->first();
+        if(!$oInfo){
+            return $this->_failedJsonResponse([['Discount Voucher is not valid for selected Duration.']]);
+        }
+
+        $data['voucher'] = $oDiscount;
+        return $this->_successJsonResponse(['message'=>'Discount Voucher Code is valid.', 'data' => $data]);
+
+    }
+    
     public function calculateDateDiff($start , $end){
         $from = Carbon::parse($start);
         $to = Carbon::parse($end);
@@ -879,6 +958,7 @@ class CartController extends Controller
             $cart->passport_no = $request->get('passport_no');
             $cart->email = $request->get('email');
             $cart->mobile_no = $request->get('mobile_no');
+            $cart->pwd = (isset($request->get('password')))?$request->get('password'):'';
             $cart->info = $data;
 //        }else{ //cart data already exist, check if car already exist then update
 //            if(isset($cartData[$request->get('car_id')])){
@@ -901,6 +981,45 @@ class CartController extends Controller
 //        }
 
         Session::put('oCart', [$request->get('car_id') => $cart]);
+    }
+    
+    private function _sendReservationEmail($oReservation){
+        if(!$oReservation){
+            return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
+        }
+
+        $currency = $this->getCurrencySign($this->option_arr['currency']);
+        $pdf = PDF::loadView('emails.reservation.pdf', compact('oReservation', 'currency'))->save(storage_path('emails/'.$oReservation->reservation_number.'.pdf'));
+        
+        $view = \View::make('emails.reservation.notification', compact('oReservation', 'currency'));
+        $contents = $view->render();
+
+        $email = array(
+            'html' => $contents,
+            'text' => 'New Car Reservation#'.$oReservation->reservation_number,
+            'subject' => 'New Car Reservation#'.$oReservation->reservation_number,
+            'from' => array(
+                'name' => 'suzanne',
+                'email' => 'suzanne@embassyalliance.com'
+            ),
+            'to' => array(
+                array(
+                    'name' => 'Idrees',
+                    'email' => 'medriis@gmail.com'
+                )
+            ),
+    //        'bcc' => array(
+    //            array(
+    //                'name' => 'Manager',
+    //                'email' => 'manager@domain.com'
+    //            )
+    //        ),
+            'attachments' => array(
+                'invoice.pdf' => file_get_contents(str_replace('public/', 'storage/', storage_path('emails/'.$oReservation->reservation_number.'.pdf')))
+            )
+        );
+        SendPulse::smtpSendMail($email);
+        
     }
 
 }

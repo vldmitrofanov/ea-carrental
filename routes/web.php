@@ -206,6 +206,7 @@ Route::get('api/load_extras', function(){
 });
 
 Route::get('/', 'IndexController@index');
+Route::get('dashboard', 'IndexController@dashboard');
 
 Route::get('register', 'UsersController@getRegistration')->middleware('guest');
 Route::post('register', 'Auth\RegisterController@register')->middleware('guest');
@@ -237,6 +238,7 @@ Route::group(['prefix' => 'fleet'], function(){
 });
 
 Route::group(['prefix' => 'cart'], function (){
+    Route::post('validate_voucher', 'CartController@add@validateVoucher');
     Route::post('add', 'CartController@add');
     Route::get('confirm', 'CartController@confirm');
     Route::post('checkout', 'CartController@checkout');
