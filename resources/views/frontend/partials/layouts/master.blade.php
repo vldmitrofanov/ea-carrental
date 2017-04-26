@@ -38,17 +38,17 @@
 
         <script type="text/javascript">
             $(function () {
-                $('#from').datetimepicker({
+                $('#start').datetimepicker({
                     useCurrent: false //Important! See issue #1075
                 });
-                $('#till').datetimepicker({
+                $('#end').datetimepicker({
                     useCurrent: false //Important! See issue #1075
                 });
-                $("#from").on("dp.change", function (e) {
-                    $('#till').data("DateTimePicker").minDate(e.date);
+                $("#start").on("dp.change", function (e) {
+                    $('#end').data("DateTimePicker").minDate(e.date);
                 });
-                $("#till").on("dp.change", function (e) {
-                    $('#from').data("DateTimePicker").maxDate(e.date);
+                $("#end").on("dp.change", function (e) {
+                    $('#start').data("DateTimePicker").maxDate(e.date);
                 });
 
             });

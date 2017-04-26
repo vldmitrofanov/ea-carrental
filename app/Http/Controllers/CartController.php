@@ -110,7 +110,7 @@ class CartController extends Controller
                         $oUser->roles()->attach(3);
                     }
 
-                    $oCarReservation = new CarReservation;
+                    $oCarReservation = new RentalCarReservation;
                     $oCarReservation->reservation_number = time() . mt_rand(100000, 999999);
                     $oCarReservation->ip_address = $request->ip();
                     $oCarReservation->user_id = $oUser->id;
@@ -942,8 +942,12 @@ class CartController extends Controller
 
     private function _addtoCart($request, $data=[]){
         $cart =new \stdClass();
+        $password ='';
         Session::forget('oCart');
         $cartData = Session::get('oCart');
+        if($request->get('password')){
+            $password = $request->get('password');
+        }
 //        if(!$cartData){
             $cart->car_id = $request->get('car_id');
             $cart->models = $request->get('models');
@@ -958,7 +962,7 @@ class CartController extends Controller
             $cart->passport_no = $request->get('passport_no');
             $cart->email = $request->get('email');
             $cart->mobile_no = $request->get('mobile_no');
-            $cart->pwd = (isset($request->get('password')))?$request->get('password'):'';
+            $cart->pwd = isset($password)?$request->get('password'):'';
             $cart->info = $data;
 //        }else{ //cart data already exist, check if car already exist then update
 //            if(isset($cartData[$request->get('car_id')])){
@@ -984,6 +988,7 @@ class CartController extends Controller
     }
     
     private function _sendReservationEmail($oReservation){
+        return true;
         if(!$oReservation){
             return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
         }

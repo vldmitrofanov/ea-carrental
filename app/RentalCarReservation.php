@@ -18,6 +18,23 @@ class RentalCarReservation extends Model
         'return_date'
     ];
 
+    public function details(){
+        return $this->hasMany('App\CarReservationDetail', 'reservation_id', 'id');
+    }
+
+    public function payments(){
+        return $this->hasMany('App\CarReservationPayment', 'reservation_id', 'id');
+    }
+
+    public function extras(){
+        return $this->hasMany('App\RentalCarReservationExtra', 'reservation_id', 'id');
+    }
+
+    public function getProcessedOnAttribute($value)
+    {
+        return Carbon::parse($value)->format('F jS, Y');
+    }
+
     public function getDateFromAttribute($value)
     {
         return Carbon::parse($value)->format('m/d/Y h:i A');
@@ -39,6 +56,6 @@ class RentalCarReservation extends Model
     }
 
     public function user(){
-        return $this->hasOne('\App\User', 'user_id', 'id');
+        return $this->hasOne('\App\User', 'id', 'user_id');
     }
 }
