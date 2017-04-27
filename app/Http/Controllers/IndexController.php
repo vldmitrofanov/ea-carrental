@@ -56,6 +56,9 @@ class IndexController extends Controller
 
     public function search(SearchFormRequest $request){
         $searchData = Session::get('search');
+        if(empty($searchData) && \Request::isMethod('get')){
+            return \Redirect::to('/');
+        }
         if(\Request::isMethod('post')) {
             $search = new \stdClass();
             Session::forget('search');
