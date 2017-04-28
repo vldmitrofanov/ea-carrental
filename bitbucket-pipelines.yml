@@ -1,0 +1,17 @@
+image: python:3.5.1
+
+pipelines:
+  branches:
+    master:
+      - step:
+          script:
+            # - apt-get update # required to install zip
+            # - apt-get install -y zip # required if you want to zip repository objects
+            - git archive -o carrental.zip HEAD
+            - pip install boto3==1.3.0 # required for s3_upload.py
+            # the first argument is the name of the existing S3 bucket to upload the artefact to
+            # the second argument is the artefact to be uploaded
+            # the third argument is the the bucket key
+            - python s3_upload.py source-drop carrental.zip carrental.zip # run the deployment script
+            # Example command line parameters. Replace with your values
+            #- python s3_upload.py bb-s3-upload SampleApp_Linux.zip SampleApp_Linux # run the deployment script
