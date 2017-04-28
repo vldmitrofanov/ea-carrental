@@ -1,20 +1,21 @@
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-      #  Options -MultiViews
-    </IfModule>
-
-    RewriteEngine On
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)/$ /$1 [L,R=301]
-
-    # Handle Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
-
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-</IfModule>
+if (!-d $request_filename){
+ set $rule_0 1$rule_0;
+}
+if ($rule_0 = "1"){
+ rewrite ^/(.*)/$ /$1 permanent;
+}
+if (!-d $request_filename){
+ set $rule_1 1$rule_1;
+}
+if (!-f $request_filename){
+ set $rule_1 2$rule_1;
+}
+if ($rule_1 = "21"){
+ rewrite ^/ /index.php last;
+}
+if ($http_authorization ~ "."){
+ set $rule_2 1$rule_2;
+}
+if ($rule_2 = "1"){
+ #setenv HTTP_AUTHORIZATION:$http_authorization;
+}

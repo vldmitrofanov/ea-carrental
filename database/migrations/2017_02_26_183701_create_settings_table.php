@@ -16,7 +16,7 @@ class CreateSettingsTable extends Migration
         Schema::create('rental_settings', function (Blueprint $table) {
             $table->increments('id');
             $table->string('key');
-            $table->text('value');
+            $table->text('value')->nullable();
             $table->timestamps();
         });
     }

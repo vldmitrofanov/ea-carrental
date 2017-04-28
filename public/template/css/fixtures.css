@@ -1,0 +1,158 @@
+@media screen and (min-width:1200px){
+    .ourFeatures .row > .col-lg-4{border-left: dotted 1px #999;}
+    .ourFeatures .row > .col-lg-4:first-child{border: 0;}
+    .navbar-header{width: 255px;padding-left: 35px;margin-right: 150px;}
+    .navbar-header::before {border-right: 115px solid transparent;}
+    .navbar-inverse .navbar-nav > li > a{letter-spacing: 1px;}
+    .userSection .loginButton{margin-top: 20px;margin-right:50px;}
+    .userSection .phoneNumber{margin-right: 50px; font-size: 17px;}
+    .phoneNumber .fa{margin: 0 10px;font-size: 18px;}
+    .bannerCarSearch .form-control{width: 195px;}
+}
+@media screen and (max-width:1199px){
+    .ourFeatures .row > .col-lg-4{padding: 15px;}
+    .rental {font-size: 18px;}
+    .ourFeatures img{width: 160px;}
+}
+@media screen and (min-width:992px){
+    .fixedSearch > div{
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 20;
+    }
+}
+@media screen and (min-width:1025px){
+	.bannerCarSearch.darkBg .form-group{
+		display:table-cell;
+	}
+	.bookSummary li,.bookExtras li{
+		font-size:18px;
+	}
+	.divider {
+		padding: 0 30px;
+	}
+}
+@media (min-width: 768px){
+	.sideBarMenu > ul {
+		margin-right: 60px;
+	}
+}
+@media (min-width: 768px) and (max-width: 1024px) {
+	.bannerCarSearch.darkBg .form-group:first-child{
+		width:90%;
+	}
+	.bannerCarSearch.darkBg .form-group{
+		width:49.5%;
+	}
+	.bannerCarSearch.darkBg .form-group input,.bannerCarSearch.darkBg .form-group select{
+		width:100%;
+	}
+	.searchCarList .row {
+	  margin: 0;
+	}
+	.searchCarList .container{
+		padding:0;
+		width:98%;
+	}
+	.searchCarList .row > div{
+		padding:0 5px;
+	}
+}
+@media screen and (max-width:1024px){
+	.bookSummary li,.bookExtras li{
+		font-size:15px;
+	}
+}
+@media screen and (max-width:991px){
+    .satisfiedCustomer .media-left img{width: 90px;}
+    .satisfiedCustomer .media-heading {font-size: 21px;}
+    .satisfiedCustomer .media-body p{font-size: 14px;}
+    .rentalPackages .theText{font-size: 20px;}
+    .h3, h3 {font-size: 20px;}
+    #myTestimonials blockquote{font-size: 14px;}
+    footer{padding: 30px 0 20px;}
+    .footerNav li{margin: 2px 10px;}
+    .copyright {font-size: 12px;}
+    .socialIcons a, .socialIcons a:active{margin: 5px 4px;}
+    .page-header > *{font-size: 22px; font-weight: 600;}
+    .navbar-header{margin-right: 0;}
+    .navbar-header::before{display: none;}
+    .navbar-inverse .navbar-nav > li > a {
+        padding: 0 13px;
+        font-size: 15px;
+    }
+    .userSection .phoneNumber {font-size: 14px;}
+    .bannerCarSearch .form-group{margin: 3px 0;}
+    .searchCarList {text-align: center;}
+    .searchCarList .detailInfo{border: 2px solid #fff;}
+    .searchCarList .theInfo .theGreen{margin-top: 5px;}
+}
+@media screen and (min-width:768px) and (max-width:991px){}
+@media screen and (max-width:767px){
+    .navbar-inverse .navbar-toggle{border:2px solid #D3006C; color: #D3006C;}
+    .navbar-inverse .navbar-toggle .icon-bar{background-color: #D3006C;}
+    .navbar-brand{height: 49px;}
+    .navbar-nav {margin: 0 -15px;}
+    .userSection{padding-bottom: 10px;}
+    .navbar-inverse .navbar-nav > li > a{padding: 10px 13px; height: auto; line-height: 1.2;}
+    .navbar{position: relative;z-index: 2; height: auto;}
+    .page-header > *{font-size: 18px;}
+	.searchCarList .thumbnail {
+	  margin: 0 auto 30px;
+	  width: 260px;
+	}
+	.divider {
+		padding: 0 10px;
+	}
+	.carSteps li:last-child{
+		display:none;
+	}
+	.carSteps li{
+		width:25%;
+	}
+	.pad-0{
+		padding:0;
+	}
+	.moreDetail{
+		text-align:center;
+		cursor:pointer;
+	}
+	.showLess{
+		display:none;	
+	}
+	.bookSummary{
+		border:none;
+	}
+	.completeForm{
+		display:table;
+	}
+	.bottom {
+	  display: table-footer-group;
+	}
+	.driverDetails{
+		padding:10px 15px;
+	}
+	.bookSummary,.middle{
+		border-bottom:10px solid #999;
+		border-radius:0;
+	}
+	.bookExtras li span {
+	  display: block;
+	}
+	.bookExtras{
+		margin:0 -15px;
+	}
+	.top {
+	  display: table-header-group;
+	}
+	.carStep1{
+		display:none;
+	}
+}
+@media screen and (max-width:420px){
+	.hideOnSmall{
+		display:none;
+	}
+}

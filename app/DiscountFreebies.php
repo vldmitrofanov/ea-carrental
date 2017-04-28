@@ -35,4 +35,14 @@ class DiscountFreebies extends Model
         return $this->belongsToMany('App\RentalCar', 'discount_freebies_cars',
             'discount_freebies_id', 'car_id'); //->withPivot('name', 'price', 'per', 'type')->wherePivot('status', 1);
     }
+
+    public function carModels()
+    {
+        return $this->belongsToMany('App\CarModel', 'discount_freebie_models',
+            'discount_freebie_id', 'model_id'); //->withPivot('name', 'price', 'per', 'type')->wherePivot('status', 1);
+    }
+
+    public function periods(){
+        return $this->hasMany('App\DiscountFreebiesPeriod', 'discount_freebies_id', 'id');
+    }
 }

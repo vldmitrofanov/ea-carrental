@@ -55,6 +55,39 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         });
     });
 
+
+    Route::group(['prefix' => 'fleet'], function(){
+        Route::group(['prefix' => 'types'], function(){
+            Route::get('/', 'Admin\FleetManagement\TypesController@index');
+            Route::get('/create', 'Admin\FleetManagement\TypesController@create');
+            Route::post('store', 'Admin\FleetManagement\TypesController@store');
+            Route::get('{id}/edit', 'Admin\FleetManagement\TypesController@edit');
+            Route::patch('update/{id}', 'Admin\FleetManagement\TypesController@update');
+        });
+
+        Route::group(['prefix' => 'models'], function(){
+            Route::get('/', 'Admin\FleetManagement\CarModelsController@index');
+            Route::get('/create', 'Admin\FleetManagement\CarModelsController@create');
+            Route::post('store', 'Admin\FleetManagement\CarModelsController@store');
+            Route::get('{id}/edit', 'Admin\FleetManagement\CarModelsController@edit');
+            Route::patch('update/{id}', 'Admin\FleetManagement\CarModelsController@update');
+            Route::post('add_customrate', 'Admin\FleetManagement\CarModelsController@addCarTypeCustomRate');
+            Route::post('remove_customrate', 'Admin\FleetManagement\CarModelsController@removeCarTypeCustomRate');
+        });
+
+        Route::group(['prefix' => 'cars'], function(){
+            Route::get('/', 'Admin\FleetManagement\CarsController@index');
+            Route::get('/create', 'Admin\FleetManagement\CarsController@create');
+            Route::post('store', 'Admin\FleetManagement\CarsController@store');
+            Route::get('{id}/edit', 'Admin\FleetManagement\CarsController@edit');
+            Route::patch('update/{id}', 'Admin\FleetManagement\CarsController@update');
+            Route::get('featured/{id}', 'Admin\FleetManagement\CarsController@featured');
+            Route::get('publish/{id}', 'Admin\FleetManagement\CarsController@publish');
+
+        });
+
+    });
+
     Route::group(['prefix' => 'types'], function(){
         Route::get('/', 'Admin\CarTypes\TypesController@index');
         Route::get('/create', 'Admin\CarTypes\TypesController@create');
@@ -112,6 +145,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         Route::post('upload', 'Admin\ReservationsController@uploadFile');
         Route::post('validate_voucher', 'Admin\ReservationsController@validateVoucher');
         Route::get('{id}/invoice', 'Admin\ReservationsController@invoicePDF');
+        Route::get('{id}/delete', 'Admin\ReservationsController@destroy');
         Route::post('calculate_difference', function(){
             $from = \Carbon\Carbon::parse(Request::get('date_from'));
             $to = \Carbon\Carbon::parse(Request::get('date_to'));
@@ -143,6 +177,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
 
 });
 
+Route::get('api/load_car_models_list', function(){
+    $data['data']['cars'] = \App\CarModel::where('type_id',Request::get('car_type_id'))->get();
+    return $data;
+});
+
+Route::get('api/load_model_cars_list', function(){
+    $data['data']['cars'] = \App\RentalCar::where('model_id',Request::get('model_id'))->get();
+    return $data;
+});
+
 Route::get('api/email_tags', function(){
     $data['tags'] = config('settings.email_tags');
     return $data;
@@ -155,12 +199,57 @@ Route::get('api/load_car_list', function(){
 });
 Route::get('api/load_extras', function(){
 //    $data['data']['cars'] = \App\CarType::where('id',Request::get('car_type_id'))->first()->cars()->get();
-    $data['data']['extras'] = \App\CarType::where('id',Request::get('car_type_id'))->first()->extras()->get();
+    $data['data']['extras'] = \App\CarModel::where('id',Request::get('car_model_id'))->first()->extras()->get();
     $oSetting = \App\Setting::where('key', 'currency')->first();
     $data['data']['currency'] = ($oSetting)?$oSetting->value:'USD';
     return $data;
 });
 
-Route::get('/', function () {
-    return view('welcome');
+
+
+Route::group(['prefix' => 'fleet'], function(){
+
+    Route::post('search', 'IndexController@search');
+    Route::get('search', 'IndexController@search');
+
+    Route::post('load_car_prices', 'FleetController@loadCarPrices');
+    Route::post('calculate_difference', function(){
+        $from = \Carbon\Carbon::parse(Request::get('rdate_start'));
+        $to = \Carbon\Carbon::parse(Request::get('rdate_end'));
+        $datetime1 = new \DateTime($to); // Today's Date/Time
+        $datetime2 = new \DateTime($from);
+        $interval = $datetime1->diff($datetime2);
+        $data['days'] = $interval->format('%D');
+        $data['hours'] = $interval->format('%H');
+        $data['start'] = $from->format('m/d/Y H:i');
+        $data['end'] = $to->format('m/d/Y H:i');
+        $data['start_date'] = $from->format('d F Y');
+        $data['start_time'] = $from->format('l H:i');
+
+        $data['end_date'] = $to->format('d F Y');
+        $data['end_time'] = $to->format('l H:i');
+        return $data;
+    });
+
+    Route::get('{token}', 'FleetController@detail');
 });
+
+Route::group(['prefix' => 'cart'], function (){
+    Route::post('validate_voucher', 'CartController@add@validateVoucher');
+    Route::post('add', 'CartController@add');
+    Route::get('confirm', 'CartController@confirm');
+    Route::post('checkout', 'CartController@checkout');
+});
+
+
+
+Route::get('dashboard', 'IndexController@dashboard')->middleware('auth');
+
+Route::get('register', 'UsersController@getRegistration')->middleware('guest');
+Route::post('register', 'Auth\RegisterController@register')->middleware('guest');
+Route::get('login', 'UsersController@getLogin')->middleware('guest');
+Route::post('login', 'Auth\LoginController@login')->middleware('guest');
+Route::get('logout', 'Auth\LoginController@logout');
+
+
+Route::get('/', 'IndexController@index');

@@ -1,0 +1,1 @@
+A new Reservation order has been placed. Please check the attached invoice.

@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use App\OfficeLocation;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        \View::share('officeLocations', OfficeLocation::where('status', true)->get() );
         Schema::defaultStringLength(190);
     }
 

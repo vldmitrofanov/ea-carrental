@@ -16,6 +16,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     use Notifiable, Authenticatable, CanResetPassword, EntrustUserTrait;
 
     protected $table = 'users';
+
+    protected $primaryKey = 'id';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -38,6 +41,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         'created_at',
         'updated_at'
     ];
+
+    public function getSurName(){
+        $name = explode(" ", $this->name);
+        return ($name[1])?$name[1]:'';
+    }
+
+    public function getFirstName(){
+        $name = explode(" ", $this->name);
+        return ($name[0])?$name[0]:'';
+    }
 
     public function getCreatedAtAttribute($value)
     {

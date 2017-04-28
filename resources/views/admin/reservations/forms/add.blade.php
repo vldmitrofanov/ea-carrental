@@ -52,10 +52,20 @@
                 </div>
                 <div class="form-group">
                     <label for="car_type_id" class="col-sm-2 control-label">Car Type</label>
-                    <div class="col-sm-10">
-                        {!! Form::select('car_type_id', array(''=>'Please Select')+$oCarTypes,null,array('class'=>'form-control','id'=>'car_type_id')) !!}
-                    </div>
+                    <div class="col-sm-4">
+                        <select style="display: inline;"  class="form-control" name="car_type_id" id="car_type_id" data-index="0">
+                            <option value="">Please Select Type</option>
+                            @foreach($oTypes as $oType)
+                                <option value="{{ $oType->id }}">{{ ($oType->vehicleSize)?$oType->vehicleSize->code_letter:'-'  }}{{ ($oType->vehicleDoors)?$oType->vehicleDoors->code_letter:'-'  }}{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->code_letter:'-'  }}</option>
+                            @endforeach
+                        </select>&nbsp</div>
+
+                    <div class="col-sm-4"><select style="display: inline;" class="form-control" name="models" id="models" data-index="0">
+                            <option value="">Make & Model</option>
+                        </select>&nbsp</div>
+
                 </div>
+
                 <div class="form-group">
                     <label for="car_id" class="col-sm-2 control-label">Car</label>
                     <div class="col-sm-10">
@@ -108,6 +118,7 @@
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
                         <button type="button" class="btn btn-primary add-extra"> <i class="fa fa-plus"></i> Add Extra</button>
+                        <button type="button" class="btn btn-warning calculate-prices"> <i class="fa fa-refresh"></i> Calculate Prices</button>
                         <button type="button" class="btn btn-success save-reservation">Submit</button>
                     </div>
                 </div>

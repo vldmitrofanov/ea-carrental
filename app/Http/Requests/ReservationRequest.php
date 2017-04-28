@@ -37,6 +37,7 @@ class ReservationRequest extends FormRequest
                     'date_from' => 'required',
                     'date_to' => 'required|after:date_from',
                     'car_type_id' => 'required',
+                    'models' => 'required',
                     'car_id' => 'required',
                     'pickup_location_id' => 'required',
                     'return_location_id' => 'required',
@@ -57,6 +58,7 @@ class ReservationRequest extends FormRequest
                     'date_from' => 'required',
                     'date_to' => 'required|after:date_from',
                     'car_type_id' => 'required',
+                    'models' => 'required',
                     'car_id' => 'required',
                     'pickup_location_id' => 'required',
                     'return_location_id' => 'required',
@@ -77,6 +79,7 @@ class ReservationRequest extends FormRequest
     {
         return [
             'car_type_id.required' => 'Please Select Car Type.',
+            'models.required' => 'Please Select Make & Model.',
             'car_id.required' => 'Please select Car.',
             'pickup_location_id.required' => 'Please select Pick-up Lcoation.',
             'return_location_id.required' => 'Please select Pick-up Lcoation.',

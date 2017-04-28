@@ -22,8 +22,12 @@ class CarReservationDetail extends Model
         return $this->hasOne('\App\RentalCar', 'id', 'car_id');
     }
 
+    public function model(){
+        return $this->hasOne('\App\CarModel', 'id', 'car_model_id');
+    }
+
     public function carType(){
-        return $this->hasOne('\App\CarType', 'id', 'car_type_id');
+        return $this->hasOne('\App\Types', 'id', 'car_type_id');
     }
 
     public function getDateFromAttribute($value)

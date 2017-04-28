@@ -22,18 +22,29 @@
             </div>
 
             <div class="form-group">
-                <label for="products" class="col-sm-2 control-label">Products</label>
-                <div class="col-sm-10">
-                    <select name="products[]" id="products" multiple="multiple" class="form-control select2" >
-                        @foreach($oCarTypes as $oCarType)
-                        <optgroup class="select2-result-selectable" label="{{ $oCarType->name }}">
-                            @foreach($oCarType->cars as $oCar)
-                            <option value="{{ $oCar->id }}">{{ $oCar->make }} - {{ $oCar->model }}</option>
-                            @endforeach
-                        </optgroup>
-                        @endforeach
-                    </select>
-                </div>
+                <table class="table products-table">
+                    <tbody>
+                    <tr class="">
+                        <td>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <select style="display: inline;" onchange="loadModels(this)" class="form-control" name="types[]" id="types_0" data-index="0">
+                                        <option value="">Type</option>
+                                        @foreach($oTypes as $oType)
+                                            <option value="{{ $oType->id }}">{{ ($oType->vehicleSize)?$oType->vehicleSize->code_letter:'-'  }}{{ ($oType->vehicleDoors)?$oType->vehicleDoors->code_letter:'-'  }}{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->code_letter:'-'  }}</option>
+                                        @endforeach
+                                    </select>&nbsp</div>
+
+                                <div class="col-sm-4"><select style="display: inline;" class="form-control" name="models[]" id="models_0" data-index="0">
+                                        <option value="">Make & Model</option>
+                                    </select>&nbsp</div>
+
+                                <div class="col-sm-2"><button type="button" class="btn btn-info btn-addtype"><i class="fa fa-plus"></i> Add Type</button></div>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="form-group">

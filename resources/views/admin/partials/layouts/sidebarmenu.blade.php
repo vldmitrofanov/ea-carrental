@@ -54,26 +54,21 @@
 
             <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-book"></i> <span>Types and Rates</span>
+                    <i class="fa fa-car"></i> <span>Fleet Management</span>
                     <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="{{ url('admin/types') }}"><i class="fa fa-book"></i> Types</a></li>
-                    <li><a href="{{ url('admin/extras') }}"><i class="fa fa-book"></i> Extras</a></li>
+                    <li><a href="{{ url('admin/fleet/types') }}"><i class="fa fa-cog"></i> Types</a></li>
+                    <li><a href="{{ url('admin/fleet/models') }}"><i class="fa fa-cog"></i> Model & Make</a></li>
+                    <li><a href="{{ url('admin/fleet/cars') }}"><i class="fa fa-car"></i> Car Inventory</a></li>
                 </ul>
             </li>
 
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-car"></i> <span>Car Inventory</span>
-                    <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
+            <li data-breadcrumb="{{ url('admin/extras') }}" class="treeview">
+                <a href="{{ url('admin/extras') }}">
+                    <i class="fa fa-book"></i>
+                    <span>Extras</span>
                 </a>
-                <ul class="treeview-menu">
-                    <li><a href="{{ url('admin/cars') }}"><i class="fa fa-list"></i> List</a></li>
-                    <li><a href="{{ url('admin/cars/create') }}"><i class="fa fa-plus-square"></i> Add New</a></li>
-                </ul>
             </li>
 
             <li class="treeview">

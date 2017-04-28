@@ -27,7 +27,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -49,8 +49,30 @@ class RegisterController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|max:255',
+            'last_name' => 'required|max:255',
+            'passport_id' => 'required|max:255',
+            'phone' => 'required|max:255',
+            'address' => 'required|max:255',
+            'state' => 'required|max:255',
+            'city' => 'required|max:255',
+            'zip' => 'required|max:255',
+            'country_id' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
+            'username' => 'required|alpha_num|max:255|unique:users,username',
             'password' => 'required|min:6|confirmed',
+        ],
+        [
+            'name.required' => 'First Name is required.',
+            'last_name.required' => 'Sur Name is required.',
+            'passport_id.required' => 'IC/Passport Number is required.',
+            'phone.required' => 'Mobile Number is required.',
+            'address.required' => 'Address is required.',
+            'state.required' => 'State is required.',
+            'city.required' => 'City is required.',
+            'zip.required' => 'Zip Code is required.',
+            'country_id.required' => 'Country is required.',
+            'email.required' => 'Email is required.',
+            'username.required' => 'User Name is required.',
         ]);
     }
 
@@ -62,10 +84,44 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+        $oUser = new User;
+        $oUser->title = $data['title'];
+        $oUser->name = $data['name']. ' '.$data['last_name'];
+        $oUser->username = $data['username'];
+        $oUser->email = $data['email'];
+        $oUser->phone = $data['phone'];
+        $oUser->passport_id = $data['passport_id'];
+        $oUser->address = $data['address'];
+        $oUser->state = $data['state'];
+        $oUser->city = $data['city'];
+        $oUser->zip = $data['zip'];
+        $oUser->country_id = $data['country_id'];
+        $oUser->password = bcrypt($data['password']);
+        $oUser->status = true;
+        $oUser->other_info = '';
+        $oUser->company_name = '';
+        if($oUser->save()){
+            $oUser->roles()->attach(3);
+        }
+
+        return $oUser;
+
         return User::create([
-            'name' => $data['name'],
+            'title' => $data['title'],
+            'name' => $data['first_name']. ' '.$data['last_name'],
+            'username' => $data['username'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'phone' => $data['phone'],
+            'passport_id' => $data['passport_id'],
+            'address' => $data['address'],
+            'state' => $data['state'],
+            'city' => $data['city'],
+            'zip' => $data['zip'],
+            'country_id' => $data['country_id'],
+            'other_info' => '',
+            'company_name' => '',
+            'status' => true,
         ]);
     }
 }

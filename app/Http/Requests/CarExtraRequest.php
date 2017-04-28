@@ -41,7 +41,7 @@ class CarExtraRequest extends FormRequest
             case 'PATCH':
             {
                 return [
-                    'name' => 'required|unique:car_extras,name,'.$this->get('type'),
+                    'name' => 'required|unique:car_extras,name,'.$this->id,
                     'price' => 'required|numeric',
                 ];
             }

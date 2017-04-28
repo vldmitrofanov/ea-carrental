@@ -50,6 +50,55 @@
     <script src="{{ asset('js/su.min.js') }}"></script>
     <script type="text/javascript" >
         $(document).ready(function(){
+            $(document).on("change", "select#car_type_id", function(e) {
+                $('#models').empty();
+                $('#models').append("<option>Select Make & Model</option>");
+                if($(this).val()==''){
+                    return;
+                }
+                processing();
+                $.get('/api/load_car_models_list', { car_type_id: $(this).val() })
+                .done(function(response){
+                    var cars = response.data.cars;
+                    $.each(cars, function(key, element) {
+                        $('#models').append("<option value='" + element.id +"'>" + element.make +' - '+element.model+ "</option>");
+                    });
+                    $.unblockUI();
+                })
+                .fail(function(response){
+                    $.unblockUI();
+                    $.each(response.responseJSON, function (key, value) {
+                        $.each(value, function (index, message) {
+                            displayMessageAlert(message, 'danger', 'warning-sign');
+                        });
+                    });
+                });
+            });
+
+            $(document).on("change", "select#models", function(e) {
+                $('#car_id').empty();
+                $('#car_id').append("<option>Select Car</option>");
+                if($(this).val()==''){
+                    return;
+                }
+                processing();
+                $.get('/api/load_model_cars_list', { model_id: $(this).val() })
+                .done(function(response){
+                    var cars = response.data.cars;
+                    $.each(cars, function(key, element) {
+                        $('#car_id').append("<option value='" + element.id +"'>" + element.registration_number +"</option>");
+                    });
+                    $.unblockUI();
+                })
+                .fail(function(response){
+                    $.unblockUI();
+                    $.each(response.responseJSON, function (key, value) {
+                        $.each(value, function (index, message) {
+                            displayMessageAlert(message, 'danger', 'warning-sign');
+                        });
+                    });
+                });
+            });
 
             $(document).on("click", "button.validate-code", function(e) {
                 processing();
@@ -73,6 +122,10 @@
                             });
                         });
             });
+
+            $(document).on("click", "button.calculate-prices", function(e){
+                $('select#car_id').trigger('change');
+            })
 
             $('input[type=file]').change(function(){
                 $(this).simpleUpload("/admin/reservations/upload", {
@@ -280,7 +333,7 @@
             });
 
             $(document).on("click", "button.add-extra", function(e) {
-                if($('#car_type_id').val()==''){
+                if($('#models').val()==''){
                     return;
                 }
                 processing();
@@ -289,7 +342,7 @@
                     name: "_method",
                     value: "POST"
                 });
-                $.get('/api/load_extras', { car_type_id: $('#car_type_id').val() })
+                $.get('/api/load_extras', { car_model_id: $('#models').val() })
                 .done(function(response){
                     var extras = response.data.extras;
                     var currency = response.data.currency;
@@ -384,7 +437,7 @@
                 });
             });
 
-            $(document).on("change", "select#car_type_id", function(e) {
+            /*$(document).on("change", "select#car_type_id", function(e) {
                 $('#car_id').empty();
                 $('#car_id').append("<option>Please Select</option>");
                 if($(this).val()==''){
@@ -418,7 +471,7 @@
                         });
                     });
                 });
-            })
+            })*/
 
             $(document).on("change", "select#car_id", function(e) {
                 processing();
@@ -485,8 +538,8 @@
                         });
                     });
                     
-                    $('input#date_from').val('');
-                    $('input#date_to').val('');
+//                    $('input#date_from').val('');
+//                    $('input#date_to').val('');
                 });
             });
 
