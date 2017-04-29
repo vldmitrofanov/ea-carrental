@@ -11,6 +11,7 @@
     @include('frontend.partials.errors.errors')
 
     @foreach($oCars as $oCar)
+    <?php echo $oCar->getCarPrice(); exit;?>
         <div class="searchCarList">
         <div class="container">
             <div class="row">

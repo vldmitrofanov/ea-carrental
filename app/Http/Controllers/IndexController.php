@@ -76,11 +76,11 @@ class IndexController extends Controller
         }
 
         $currency = $this->option_arr['currency'];
-        $oCars = $this->_getAvailableCars($searchData);
+        $oModels = $this->_getAvailableCars($searchData);
 
 //print_r($oCars);exit;
 
-        return view('frontend.search.index', compact('oCars', 'currency', 'searchData'));
+        return view('frontend.search.index', compact('oModels', 'currency', 'searchData'));
 
     }
 
@@ -92,23 +92,23 @@ class IndexController extends Controller
         $date_from_ts = strtotime($date_from);
         $date_to_ts = strtotime($date_to);
 
-        $oCars = RentalCar::Join('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')
-            ->Join('rental_car_reservations', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
-            ->where('rental_cars.status','=', true)
-            ->whereRaw("(`rental_car_reservations`.`status` != 'confirmed' OR (`rental_car_reservations`.`status` != 'pending'))")
-            ->whereRaw(sprintf("!(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to))
-            ->distinct()
-            ->paginate(10);
-
-//        $oCars = CarModel::Join('rental_cars', 'car_models.id', '=', 'rental_cars.model_id')
-//            ->Join('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')
+//        $oCars = RentalCar::Join('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')
 //            ->Join('rental_car_reservations', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
 //            ->where('rental_cars.status','=', true)
 //            ->whereRaw("(`rental_car_reservations`.`status` != 'confirmed' OR (`rental_car_reservations`.`status` != 'pending'))")
 //            ->whereRaw(sprintf("!(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to))
-//            ->distinct('car_models.*')
+//            ->distinct()
 //            ->paginate(10);
+
+        $oModels = CarModel::Join('rental_cars', 'car_models.id', '=', 'rental_cars.model_id')
+            ->Join('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')
+            ->Join('rental_car_reservations', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
+            ->where('rental_cars.status','=', true)
+            ->whereRaw("(`rental_car_reservations`.`status` != 'confirmed' OR (`rental_car_reservations`.`status` != 'pending'))")
+            ->whereRaw(sprintf("!(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to))
+            ->distinct('car_models.*')
+            ->paginate(10);
 //print_r($oCars);exit;
-        return $oCars;
+        return $oModels;
     }
 }
