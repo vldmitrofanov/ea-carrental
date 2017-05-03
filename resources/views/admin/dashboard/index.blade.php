@@ -10,6 +10,9 @@ Dashboard
 <link rel="stylesheet" href="{{ asset('administration/plugins/datepicker/datepicker3.css') }}">
 <link rel="stylesheet" href="{{ asset('administration/plugins/daterangepicker/daterangepicker.css') }}">
 <link rel="stylesheet" href="{{ asset('administration/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css') }}">
+
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.print.css">
 @endsection
 
 @section('content')
@@ -455,14 +458,10 @@ Dashboard
     <script src="{{ asset('administration/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js') }}"></script>
     <script src="{{ asset('administration/plugins/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
 
-
     <script src="{{ asset('administration/plugins/daterangepicker/daterangepicker.js') }}"></script>
     <script src="{{ asset('administration/plugins/datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('administration/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js') }}"></script>
-
     <script src="{{ asset('administration/dist/js/pages/dashboard.js') }}"></script>
-
     <script src="{{ asset('administration/dist/js/demo.js') }}"></script>
-<!-- Sparkline -->
-
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.4.0/fullcalendar.min.js"></script>
 @endsection
