@@ -958,7 +958,7 @@ class CartController extends Controller
             $cart->passport_no = $request->get('passport_no');
             $cart->email = $request->get('email');
             $cart->mobile_no = $request->get('mobile_no');
-            $cart->pwd = (isset($request->get('password')))?$request->get('password'):'';
+            $cart->pwd = ($request->get('password'))?$request->get('password'):'';
             $cart->info = $data;
 //        }else{ //cart data already exist, check if car already exist then update
 //            if(isset($cartData[$request->get('car_id')])){
