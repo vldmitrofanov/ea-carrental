@@ -182,6 +182,8 @@ return [
 //        Elibyy\TCPDF\ServiceProvider::class,
         SendPulse\SendPulseLaravel\SendPulseLaravelServiceProvider::class,
         Spatie\GoogleCalendar\GoogleCalendarServiceProvider::class,
+        
+        MaddHatter\LaravelFullcalendar\ServiceProvider::class,
 
     ],
 
@@ -239,6 +241,8 @@ return [
 //        'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
         'SendPulse' => 'SendPulse\SendPulseLaravel\SendPulseFacade',
         'GoogleCalendar' => 'Spatie\GoogleCalendar\GoogleCalendarFacade',
+        'Calendar' => MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
+
     ],
 
 ];
