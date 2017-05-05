@@ -274,5 +274,14 @@
 @endsection
 
 @section('javascript')
-    <script src="{{ asset('template/js/reservation.js') }}"></script>
+<script src="{{ asset('template/js/reservation.js') }}"></script>
+<script>    
+    $(document).ready(function(){
+        @if($searchData)
+        $('#rdate_start').val('{{$searchData->start}}');
+        $('#rdate_end').val('{{$searchData->end}}');
+        calculatePrices();
+        @endif
+    });
+</script>    
 @endsection

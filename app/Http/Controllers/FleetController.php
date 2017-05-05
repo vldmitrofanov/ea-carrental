@@ -21,6 +21,7 @@ use App\CarReservationPayment;
 use App\Http\Requests\ReservationRequest;
 use \PDF;
 use \SendPulse;
+use Session;
 
 class FleetController extends Controller
 {
@@ -40,6 +41,8 @@ class FleetController extends Controller
      */
     public function detail($token)
     {
+        $searchData = Session::get('search');
+//        print_r($searchData);exit;
         $oCar = RentalCar::where('url_token', $token)->first();
         if(!$oCar){
             \Session::flash('flash_message', 'Car is not valid or has been removed.');
@@ -50,7 +53,7 @@ class FleetController extends Controller
         $currencySymbol = $this->getCurrencySign($this->option_arr['currency']);
         $currency = $this->option_arr['currency'];
 
-        return view('frontend/fleet/detail/index', compact('oCar','currency', 'currencySymbol'));
+        return view('frontend/fleet/detail/index', compact('oCar','currency', 'currencySymbol', 'searchData'));
     }
 
     public function calculateDateDiff($start , $end){

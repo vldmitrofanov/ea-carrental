@@ -78,8 +78,6 @@ class IndexController extends Controller
         $currency = $this->option_arr['currency'];
         $oCars = $this->_getAvailableCars($searchData);
 
-//print_r($oCars);exit;
-
         return view('frontend.search.index', compact('oCars', 'currency', 'searchData'));
 
     }
@@ -100,7 +98,7 @@ class IndexController extends Controller
             ->distinct()
             ->paginate(10);
 
-//        $oCars = CarModel::Join('rental_cars', 'car_models.id', '=', 'rental_cars.model_id')
+//        $oModels = CarModel::Join('rental_cars', 'car_models.id', '=', 'rental_cars.model_id')
 //            ->Join('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')
 //            ->Join('rental_car_reservations', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
 //            ->where('rental_cars.status','=', true)
