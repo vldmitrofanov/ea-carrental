@@ -43,14 +43,12 @@
         ],
         "post-install-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postInstall",
-			"php artisan migrate:refresh",
-            "php artisan optimize"
+			"php artisan migrate:refresh --seed"
 			
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
-			"php artisan migrate:refresh",
-            "php artisan optimize"
+			"php artisan migrate:refresh --seed"
         ]
     },
     "config": {
