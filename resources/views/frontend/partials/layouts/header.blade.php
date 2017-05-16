@@ -5,7 +5,7 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li class="active"><a href="javascript:;">Out Fleet</a></li>
+            <li class="active"><a href="{{ url('our_fleet') }}">Our Fleet</a></li>
             <li><a href="javascript:;">Chafeur Driven</a></li>
             <li><a href="javascript:;">Rental Offers</a></li>
             <li><a href="javascript:;">Contact us</a></li>
@@ -13,7 +13,7 @@
         <ul class="userSection navbar-right">
             <li class="loginButton">
                 @if (Auth::check())
-                <i class="fa fa-user"></i> Welcome {{ Auth::user()->username }} | <a href="{{ url('logout') }}">Logout</a>
+                    <i class="fa fa-user"></i> Welcome <a href="{{ url('dashboard')  }}">{{ Auth::user()->username }}</a> | <a href="{{ url('logout') }}">Logout</a>
                 @else
                 <i class="fa fa-user"></i> <a href="{{ url('login') }}">Login</a>
                 @endif

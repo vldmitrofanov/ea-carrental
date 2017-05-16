@@ -12,7 +12,7 @@ return [
     | any other location as required by the application or its packages.
     */
 
-    'name' => 'Laravel',
+    'name' => env('APP_NAME', 'Laravel'),
 
     /*
     |--------------------------------------------------------------------------
@@ -182,9 +182,7 @@ return [
 //        Elibyy\TCPDF\ServiceProvider::class,
         SendPulse\SendPulseLaravel\SendPulseLaravelServiceProvider::class,
         Spatie\GoogleCalendar\GoogleCalendarServiceProvider::class,
-        
         MaddHatter\LaravelFullcalendar\ServiceProvider::class,
-
     ],
 
     /*

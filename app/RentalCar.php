@@ -58,20 +58,19 @@ class RentalCar extends Model
         return $data;
     }
     
-    private function _checkCarAvailability($oRentalCar){
+    private function _checkCarAvailability($oRentalCar, $makeAndModel){
+//        $oRentalCar = $this;
         $response = array('code' => 100);
         $cartData = Session::get('search');
-
         $date_from =Carbon::parse($cartData->start);
         $date_to =Carbon::parse($cartData->end);
 
         $date_from_ts = strtotime($date_from);
         $date_to_ts = strtotime($date_to);
-
         if($date_to_ts <= $date_from_ts){
             $response = array('code' => 100);
         }else{
-            if ((int) $oRentalCar->makeAndModel->id > 0 && (int) $oRentalCar->id > 0 ){
+            if ((int) $makeAndModel->id > 0 && (int) $oRentalCar->id > 0 ){
                 $min_hour = $this->option_arr['minimum_booking_length'];
                 if($this->option_arr['calculate_rental_fee'] == 'perday'){
                     $min_hour = $this->option_arr['minimum_booking_length'] * 24;
@@ -81,15 +80,16 @@ class RentalCar extends Model
                     return $response;
                 }
 
-                $current_datetime = date('Y-m-d H:i:s', time() - ($this->option_arr['booking_pending'] * 3600));                
+                $current_datetime = date('Y-m-d H:i:s', time() - ($this->option_arr['booking_pending'] * 3600));
                 $oBooking = CarReservation::Join('car_reservation_details', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
-                    ->where('car_reservation_details.car_model_id', $oRentalCar->makeAndModel->id)
+                    ->where('car_reservation_details.car_model_id', $makeAndModel->id)
                     ->where('car_reservation_details.car_id', $oRentalCar->id)
-                    ->whereRaw("(`status` = 'confirmed' OR (`status` = 'pending' AND rental_car_reservations.created_at >= '$current_datetime'))")
-                    ->whereRaw(sprintf("(((`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`date_from` < '%1\$s' AND `date_to` > '%2\$s') OR (`date_from` > '%1\$s' AND `date_to` < '%2\$s'))",$date_from, $date_to))
+//                    ->whereRaw("(`status` = 'confirmed' OR (`status` = 'pending' AND rental_car_reservations.created_at >= '$current_datetime'))")
+                    ->whereRaw(sprintf("!(((`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`date_from` < '%1\$s' AND `date_to` > '%2\$s') OR (`date_from` > '%1\$s' AND `date_to` < '%2\$s'))",$date_from, $date_to))
                     ->distinct('rental_car_reservations.id')
+//                    ->toSql();
                     ->count('rental_car_reservations.id');
-
+//        dd($oBooking);exit;
                 $booking_cnt = $oBooking;
                 if ($booking_cnt == 0){
                     $response['code'] = 200;
@@ -111,7 +111,6 @@ class RentalCar extends Model
 
         $data['time'] = $this->_calculateDateDiff($cartData->start, $cartData->end);
         $oRentalCar = $this;
-        
         $oCarModel = $oRentalCar->makeAndModel;
         if(!$oCarModel){
             return $this->_failedJsonResponse([['Car Model is not valid or has been removed.']]);
@@ -121,8 +120,8 @@ class RentalCar extends Model
         if(!$oCarType){
             return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
         }
-        
-        $carAvailable = $this->_checkCarAvailability($oRentalCar);
+
+        $carAvailable = $this->_checkCarAvailability($oRentalCar, $oRentalCar->makeAndModel);
         if($carAvailable['code']==100){
             return $this->_failedJsonResponse([['Reservation date range is not valid.']]);
         }else if($carAvailable['code']==300){
@@ -130,7 +129,7 @@ class RentalCar extends Model
         }else if($carAvailable['code']==150){
             return $this->_failedJsonResponse([['Car is <strong>not available</strong> during selected time period. Please select another Car and/or change time period.']]);
         }
-        
+
         $oPrices = $oCarModel->prices()
             ->where('car_model_prices.date_from','>=',Carbon::parse($cartData->start)->format('Y-m-d'))
             ->where('car_model_prices.date_to','<=',Carbon::parse($cartData->end)->format('Y-m-d'))

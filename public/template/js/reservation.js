@@ -1,6 +1,6 @@
 
 $(document).ready(function(){
-    $(document).on("click", "button.validate-code", function(e) {
+    $(document).on("click", "a.validate-code", function(e) {
         processing();
         var formData = $('form#car_reservation').serializeArray();
         formData.push({
@@ -11,6 +11,7 @@ $(document).ready(function(){
         .done(function(response){
             $.unblockUI();
             displayMessageAlert(response.message);
+            calculatePrices();
         })
         .fail(function(response){
             $('#discount_code').val('');

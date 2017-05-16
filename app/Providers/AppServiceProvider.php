@@ -16,8 +16,10 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {        
-        \View::share('officeLocations', OfficeLocation::where('status', true)->get() );
+    {
+        if (! $this->app->runningInConsole()) {
+            \View::share('officeLocations', OfficeLocation::where('status', true)->get() );
+        }
         Schema::defaultStringLength(190);
     }
 

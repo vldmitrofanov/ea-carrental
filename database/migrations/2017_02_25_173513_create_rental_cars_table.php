@@ -26,8 +26,8 @@ class CreateRentalCarsTable extends Migration
             $table->boolean('featured')->default(0);
             $table->timestamps();
 
-            $table->foreign('location_id')->references('id')->on('office_locations')
-                    ->onDelete('cascade');
+//            $table->foreign('location_id')->references('id')->on('office_locations')
+//                    ->onDelete('cascade');
             $table->foreign('model_id')->references('id')->on('car_models')
                     ->onDelete('cascade');
         });

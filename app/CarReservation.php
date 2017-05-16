@@ -28,7 +28,7 @@ class CarReservation extends Model
     }
 
     public function extras(){
-        return $this->hasMany('App\CarReservationExtra', 'reservation_id', 'id');
+        return $this->hasMany('App\RentalCarReservationExtra', 'reservation_id', 'id');
     }
    
     public function getProcessedOnAttribute($value)

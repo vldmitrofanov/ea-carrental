@@ -11,6 +11,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         return view('admin.errors.404');
     });
     Route::get('dashboard', 'Admin\DashboardController@index');
+    Route::get('api', 'Admin\DashboardController@api');
     Route::get('fleetavailability', 'Admin\FleetAvailabilityController@index');
 
     Route::group(['prefix' => 'locations'], function(){
@@ -235,7 +236,7 @@ Route::group(['prefix' => 'fleet'], function(){
 });
 
 Route::group(['prefix' => 'cart'], function (){
-    Route::post('validate_voucher', 'CartController@add@validateVoucher');
+    Route::post('validate_voucher', 'CartController@validateVoucher');
     Route::post('add', 'CartController@add');
     Route::get('confirm', 'CartController@confirm');
     Route::post('checkout', 'CartController@checkout');
@@ -250,6 +251,7 @@ Route::post('register', 'Auth\RegisterController@register')->middleware('guest')
 Route::get('login', 'UsersController@getLogin')->middleware('guest');
 Route::post('login', 'Auth\LoginController@login')->middleware('guest');
 Route::get('logout', 'Auth\LoginController@logout');
+Route::get('our_fleet', 'IndexController@ourFleet');
 
 
 Route::get('/', 'IndexController@index');

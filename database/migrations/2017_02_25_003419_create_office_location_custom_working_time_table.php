@@ -22,8 +22,8 @@ class CreateOfficeLocationCustomWorkingTimeTable extends Migration
             $table->boolean('is_dayoff')->default(0);
             $table->timestamps();
 
-            $table->foreign('location_id')->references('id')->on('office_locations')
-                ->onDelete('cascade');
+//            $table->foreign('location_id')->references('id')->on('office_locations')
+//                ->onDelete('cascade');
         });
     }
 

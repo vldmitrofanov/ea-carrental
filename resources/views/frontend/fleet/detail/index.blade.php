@@ -149,7 +149,7 @@
                     <ul>
                         <li>
                             <div class="row">
-                                <div class="col-xs-6 bookingColHeading">Selected Car <a href="search-inner.html"><img src="{{asset('template/images/edit-icon.png')}}" /></a></div>
+                                <div class="col-xs-6 bookingColHeading">Selected Car <a href="{{ url('our_fleet')  }}"><img src="{{asset('template/images/edit-icon.png')}}" /></a></div>
                                 <div class="col-xs-6 bookingColHeading text-right">Total {{$currency}}</div>
                             </div>
                             <div class="row">
