@@ -30,17 +30,17 @@
                 <h4>{{ $oReservation->processed_on }}</h4>
                 <div class="row">
                     <div class="col-sm-2">
-                        <a href="form.html"><img src="{{asset('template/images/smallCar.png')}}" alt=""></a> 
+                        <a href="{{ url('fleet/'.$oReservation->details->first()->car->url_token) }}"><img width="78" src="{{asset($oReservation->details->first()->car->thumb_image)}}" alt=""></a>
                     </div>
                     <div class="col-sm-5">
                         <h3>{{ $oReservation->details->first()->car->makeAndModel->make }} {{ $oReservation->details->first()->car->makeAndModel->model }}</h3>
                         <p class="redColor">{{$oReservation->details->first()->rental_days}} days and {{$oReservation->details->first()->rental_hours}} hours</p>
                     </div>
                     <div class="col-sm-5 text-right">
-                        <div class="theInfo"> 
-                            <span class="theBlue"><img src="{{asset('template/images/1.png')}}" alt="">2</span> 
-                            <span class="theBlue"><img src="{{asset('template/images/2.png')}}" alt="">2</span> 
-                            <span class="theBlue"><img src="{{asset('template/images/3.png')}}" alt="">2</span> 
+                        <div class="theInfo">
+                            <span class="theBlue"><img src="{{asset('template/images/1.png')}}" alt="">2</span>
+                            <span class="theBlue"><img src="{{asset('template/images/2.png')}}" alt="">2</span>
+                            <span class="theBlue"><img src="{{asset('template/images/3.png')}}" alt="">2</span>
                             <span class="theBlue"><img src="{{asset('template/images/4.png')}}" alt="">2</span>
                         </div>
                     </div>
@@ -77,6 +77,7 @@
                                 <div class="row">
                                     <div class="col-xs-6 bookingColHeading">Additional Services</div>
                                 </div>
+                                @if($oReservation->extras->count()>0)
                                 @foreach($oReservation->extras as $oExtra)
                                 <div class="row">
                                     <div class="col-xs-6">
@@ -87,6 +88,7 @@
                                     </div>
                                 </div>
                                 @endforeach
+                                @endif
                             </li>
                             @if($oReservation->details->first()->discount>0)
                             <li class="bgGray">
@@ -95,7 +97,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-xs-6">
-                                        6% 
+                                        6%
                                     </div>
                                     <div class="col-xs-6 weight-700">
                                         <span>{{$currency}} {{$oReservation->details->first()->discount}}</span>

@@ -46,8 +46,8 @@ class CreateOfficeLocationWorkingTimeTable extends Migration
             $table->integer('location_id')->unsigned();
             $table->timestamps();
 
-            $table->foreign('location_id')->references('id')->on('office_locations')
-                    ->onDelete('cascade');
+//            $table->foreign('location_id')->references('id')->on('office_locations')
+//                    ->onDelete('cascade');
         });
     }
 

@@ -13,7 +13,7 @@
                     <select required class="form-control" name="location" id="location">
                         <option value="">Pick up address</option>
                         @foreach ($officeLocations as $officeLocation)
-                        <option {{ (isset($searchData) &&isset($searchData->location) && $searchData->location==$officeLocation->id)?'selected':'' }} value="{{$officeLocation->i}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
+                        <option {{ (isset($searchData) &&isset($searchData->location) && $searchData->location==$officeLocation->id)?'selected':'' }} value="{{$officeLocation->id}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
                         @endforeach
                     </select>
                 </div>
