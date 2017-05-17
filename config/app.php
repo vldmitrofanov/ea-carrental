@@ -183,6 +183,7 @@ return [
         SendPulse\SendPulseLaravel\SendPulseLaravelServiceProvider::class,
         Spatie\GoogleCalendar\GoogleCalendarServiceProvider::class,
         MaddHatter\LaravelFullcalendar\ServiceProvider::class,
+        Greggilbert\Recaptcha\RecaptchaServiceProvider::class,
     ],
 
     /*
@@ -240,6 +241,7 @@ return [
         'SendPulse' => 'SendPulse\SendPulseLaravel\SendPulseFacade',
         'GoogleCalendar' => 'Spatie\GoogleCalendar\GoogleCalendarFacade',
         'Calendar' => MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
+        'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
 
     ],
 

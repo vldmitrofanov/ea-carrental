@@ -24,6 +24,9 @@
     }
 }
 @media screen and (min-width:1025px){
+	.OurCars h2{
+		width: 50%;		
+	}
 	.bannerCarSearch.darkBg .form-group{
 		display:table-cell;
 	}
@@ -37,6 +40,9 @@
 @media (min-width: 768px){
 	.sideBarMenu > ul {
 		margin-right: 60px;
+	}
+	.OurCars h2{
+		margin: 43px 0;
 	}
 }
 @media (min-width: 768px) and (max-width: 1024px) {
@@ -91,6 +97,12 @@
 }
 @media screen and (min-width:768px) and (max-width:991px){}
 @media screen and (max-width:767px){
+	.OurCars h2{
+		margin: 30px 0;
+	}
+	.OurCars h3{
+		margin-top:30px;
+	}
     .navbar-inverse .navbar-toggle{border:2px solid #D3006C; color: #D3006C;}
     .navbar-inverse .navbar-toggle .icon-bar{background-color: #D3006C;}
     .navbar-brand{height: 49px;}

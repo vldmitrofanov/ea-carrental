@@ -252,6 +252,9 @@ Route::get('login', 'UsersController@getLogin')->middleware('guest');
 Route::post('login', 'Auth\LoginController@login')->middleware('guest');
 Route::get('logout', 'Auth\LoginController@logout');
 Route::get('our_fleet', 'IndexController@ourFleet');
+Route::get('contact-us', 'ContactUsController@index');
+Route::get('contact-us/contact', 'ContactUsController@contact');
+Route::post('contact-us/contact', 'ContactUsController@sendContactEmail');
 
 
 Route::get('/', 'IndexController@index');

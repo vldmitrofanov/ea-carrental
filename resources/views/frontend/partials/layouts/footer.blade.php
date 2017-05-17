@@ -1,7 +1,7 @@
 <footer>
     <div class="container">
         <ul class="footerNav">
-            <li><a href="javascript:;">Contact us</a></li>
+            <li><a href="{{ url('contact-us') }}">Contact us</a></li>
             <li><a href="javascript:;">About us</a></li>
             <li><a href="javascript:;">Privacy</a></li>
             <li><a href="javascript:;">Faq</a></li>

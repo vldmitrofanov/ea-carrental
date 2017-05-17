@@ -81,15 +81,16 @@ class RentalCar extends Model
                 }
 
                 $current_datetime = date('Y-m-d H:i:s', time() - ($this->option_arr['booking_pending'] * 3600));
+
+
                 $oBooking = CarReservation::Join('car_reservation_details', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
                     ->where('car_reservation_details.car_model_id', $makeAndModel->id)
                     ->where('car_reservation_details.car_id', $oRentalCar->id)
 //                    ->whereRaw("(`status` = 'confirmed' OR (`status` = 'pending' AND rental_car_reservations.created_at >= '$current_datetime'))")
-                    ->whereRaw(sprintf("!(((`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`date_from` < '%1\$s' AND `date_to` > '%2\$s') OR (`date_from` > '%1\$s' AND `date_to` < '%2\$s'))",$date_from, $date_to))
+                    ->whereRaw(sprintf("(((`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`date_from` < '%1\$s' AND `date_to` > '%2\$s') OR (`date_from` > '%1\$s' AND `date_to` < '%2\$s'))",$date_from, $date_to))
                     ->distinct('rental_car_reservations.id')
 //                    ->toSql();
                     ->count('rental_car_reservations.id');
-//        dd($oBooking);exit;
                 $booking_cnt = $oBooking;
                 if ($booking_cnt == 0){
                     $response['code'] = 200;
