@@ -18,6 +18,7 @@
                         @include('admin.partials.errors.errors')
                         {!! Form::model($oRentalCar, array('url' =>array('admin/fleet/cars/update', $oRentalCar->id), 'id' => 'rental_car', 'method' => 'PATCH', 'enctype'=>'multipart/form-data')) !!}
                         <input type="hidden" name="make" id="make" value="{{ $oRentalCar->model_id }}">
+                        <input type="hidden" name="car" id="car" value="{{ $oRentalCar->id }}">
                         @include('admin.fleet_management.cars.form', ['submit_button'=>'Submit'])
                     </div>
 

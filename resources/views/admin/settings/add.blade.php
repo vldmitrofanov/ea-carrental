@@ -3,6 +3,7 @@
         <li class="active"><a href="#options" data-toggle="tab">Options</a></li>
         <li><a href="#rental" data-toggle="tab">Rental Settings</a></li>
         <li><a href="#payments" data-toggle="tab">Payments</a></li>
+        <li><a href="#sitesettings" data-toggle="tab">Settings</a></li>
     </ul>
 
     <div class="tab-content">
@@ -155,6 +156,23 @@
                 </div>
             </div>
 
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="tab-pane" id="sitesettings">
+
+            <div class="form-group">
+                <label for="contact_us_notify" class="col-sm-2 control-label">Contact Us Notify To<br><small>example: name:email,name:email2</small></label>
+                <div class="col-sm-10">
+                    {!! Form::textarea('data[contact_us_notify]',($oSettings->where('key','contact_us_notify')->first())?$oSettings->where('key','contact_us_notify')->first()->value:'',['class'=>'form-control', 'id' => 'contact_us_notify', 'placeholder' => 'example: name:email,name:email2']) !!}
+                </div>
+            </div>
 
             <div class="form-group">
                 <div class="col-sm-12">
