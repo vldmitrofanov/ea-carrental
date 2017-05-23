@@ -52,7 +52,21 @@
                         });
                     });
                 });
-            })
+            });
+
+            $(document).on("change", "select#model_id", function(e) {
+                var makeAndModel = $('#model_id :selected').text();
+                var registrationNumber = $('#registration_number').val();
+                var token = makeAndModel.replace(/\s+/g, '') +'-'+ registrationNumber.replace(/\s+/g, '');
+                $('#url_token').val(token.toLowerCase());
+            });
+
+            $('#registration_number').on("blur", function(e) {
+                var makeAndModel = $('#model_id :selected').text();
+                var registrationNumber = $('#registration_number').val();
+                var token = makeAndModel.replace(/\s+/g, '') +'-'+ registrationNumber.replace(/\s+/g, '');
+                $('#url_token').val(token.toLowerCase());
+            });
         });
     </script>
 @endsection
