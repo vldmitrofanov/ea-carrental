@@ -5,10 +5,10 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li><a href="{{ url('our_fleet') }}">Our Fleet</a></li>
+            <li class="{{ Request::is('our_fleet') ? 'active' : '' }}"><a href="{{ url('our_fleet') }}">Our Fleet</a></li>
             <li><a href="javascript:;">Chafeur Driven</a></li>
             <li><a href="javascript:;">Rental Offers</a></li>
-            <li><a href="javascript:;">Contact us</a></li>
+            <li class="{{ Request::is('contact-us') ? 'active' : '' }}"><a href="{{ url('contact-us') }}">Contact us</a></li>
         </ul>
         <ul class="userSection navbar-right">
             <li class="loginButton">

@@ -16,13 +16,15 @@
     </div>
 
     <div class="form-group">
-        {!! Form::label('url_token', 'URL Token') !!}
-        {!! Form::text('url_token', null, ['class' => 'form-control', 'id' => 'url_token', 'placeholder' => 'Car URL Token']) !!}
-    </div>
-    <div class="form-group">
         {!! Form::label('registration_number', 'Registration number') !!}
         {!! Form::text('registration_number', null, ['class' => 'form-control', 'id' => 'registration_number', 'placeholder' => 'Registration number']) !!}
     </div>
+
+    <div class="form-group">
+        {!! Form::label('url_token', 'URL Token') !!}
+        {!! Form::text('url_token', null, ['class' => 'form-control', 'id' => 'url_token', 'placeholder' => 'Car URL Token']) !!}
+    </div>
+
     <div class="form-group">
         {!! Form::label('current_mileage', 'Current Mileage (@/km)') !!}
         {!! Form::text('current_mileage', null, ['class' => 'form-control', 'id' => 'current_mileage', 'placeholder' => 'Current Mileage']) !!}
@@ -37,6 +39,14 @@
         <label for="exampleInputFile">Image</label>
         <input name="thumb_image" type="file">
     </div>
+
+    @if($oRentalCar && $oRentalCar->thumb_image)
+    <div class="form-group">
+        <label for="exampleInputFile"></label>
+        <img src="/{{$oRentalCar->thumb_image}}" width="150" alt="">
+    </div>
+    @endif;
+
 </div>
 
 <div class="box-footer">

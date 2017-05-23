@@ -94,7 +94,7 @@
                 Here you can choose your payment methods and set payment gateway accounts and payment preferences. Note that for cash payments the system will not be able to collect deposit amount online.
             </div>
             <div class="form-group">
-                <label for="deposit_payment" class="col-sm-3 control-label">Deposit payment &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title="  Set flat amount or % of total price."></label>
+                <label for="deposit_payment" class="col-sm-3 control-label">Rental Deposit &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title="  Set flat amount or % of total price."></label>
                 <div class="col-sm-9">
                     {!! Form::number('data[deposit_payment]', ($oSettings->where('key','deposit_payment')->first())?$oSettings->where('key','deposit_payment')->first()->value:'null', ['class' => 'form-control', 'id' => 'deposit_payment', 'min' => '0', 'style' => 'width:180px; display:inline']) !!}&nbsp;
 
@@ -118,7 +118,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="security_payment" class="col-sm-3 control-label">Security payment &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title=" The system does not calculate the Security payment in the Deposit payment amount or the Total rental price. It will be used for defining reservation payments for each reservation that you can manage on Payments tab while editing a reservation."></label>
+                <label for="security_payment" class="col-sm-3 control-label">Security Deposit <img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title=" The system does not calculate the Security payment in the Deposit payment amount or the Total rental price. It will be used for defining reservation payments for each reservation that you can manage on Payments tab while editing a reservation."></label>
                 <div class="col-sm-9">
                     {!! Form::number('data[security_payment]', ($oSettings->where('key','security_payment')->first())?$oSettings->where('key','security_payment')->first()->value:'0', ['class' => 'form-control', 'id' => 'security_payment', 'min' => '0', 'style' => 'width:180px; display:inline']) !!}&nbsp;
                 </div>
@@ -144,7 +144,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="payment_disable" class="col-sm-3 control-label">Disable payments &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title=" You can disable online payments and only accept bookings."></label>
+                <label for="payment_disable" class="col-sm-3 control-label">Online payments &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title=" You can disable online payments and only accept bookings."></label>
                 <div class="col-sm-9">
                     {!! Form::select('data[payment_disable]', config('settings.payment_disable'),($oSettings->where('key','payment_disable')->first())?$oSettings->where('key','payment_disable')->first()->value:'null',array('class'=>'form-control','id'=>'payment_disable', 'style' => 'width:180px; display:inline')) !!}
                 </div>

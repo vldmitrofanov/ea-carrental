@@ -318,7 +318,8 @@
                     
                 <input type="file" class="form-control" style="border:none;" name="passport">
                 @if($oReservation->user->passport())
-                <p class="help-block"><a target="_blank" href="{{$oReservation->user->passport()}}">Download ID/IC/Passport</a></p>
+                    <br/><img src="{{$oReservation->user->passport()}}" width="150" alt=""><br/>
+                    {{--<p class="help-block"><a target="_blank" href="{{$oReservation->user->passport()}}">Download ID/IC/Passport</a></p>--}}
                 @endif
                 </div>
             </div>
@@ -329,7 +330,8 @@
                 <input type="file" class="form-control" style="border:none;" name="licence">
                 
                 @if($oReservation->user->licence())
-                    <p class="help-block"><a target="_blank" href="{{$oReservation->user->licence()}}">Download Driver Licence</a></p>
+                    <br/><img src="{{$oReservation->user->licence()}}" width="150" alt=""><br/>
+                    {{--<p class="help-block"><a target="_blank" href="{{$oReservation->user->licence()}}">Download Driver Licence</a></p>--}}
                 @endif
                 </div>
             </div>
@@ -340,7 +342,8 @@
                 <input type="file" class="form-control" style="border:none;" name="rental_form">
 
                 @if($oReservation->user->rentalForm())
-                    <p class="help-block"><a target="_blank" href="{{$oReservation->user->rentalForm()}}">Download Rental Form</a></p>
+                    <br/><img src="{{$oReservation->user->rentalForm()}}" width="150" alt=""><br/>
+                    {{--<p class="help-block"><a target="_blank" href="{{$oReservation->user->rentalForm()}}">Download Rental Form</a></p>--}}
                 @endif
                 </div>
             </div>

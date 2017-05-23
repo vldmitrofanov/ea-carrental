@@ -84,13 +84,13 @@ return [
     ],
 
     'payment_disable' => [
-        '0' => 'No',
-        '1' => 'Yes',
+        '0' => 'Disable',
+        '1' => 'Enable',
     ],
     
     'allow_cash' => [
-        '0' => 'No',
-        '1' => 'Yes',
+        '0' => 'Disable',
+        '1' => 'Enable',
     ],
 
     'email_confirmation' => [

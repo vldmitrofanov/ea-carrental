@@ -1021,3 +1021,11 @@ select.form-control{
 .tagLineDetail .tagLine h2{ 
 	margin:0;
 }
+.driverDetails .form-control {
+    width: 100%;
+}
+.g-recaptcha {
+    /*margin-bottom: 20px;*/
+    padding: 10px 0 0 0;
+    /*display: none;*/
+}
