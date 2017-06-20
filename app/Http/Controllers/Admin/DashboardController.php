@@ -6,46 +6,49 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use \PDF;
 use App\RentalCarReservation as EventModel;
+use App\CarReservation;
+use Carbon\Carbon;
+use App\Setting;
+use App\User;
+use App\Role;
+use \SendPulse;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-//        $events = [];
-//
-//        $events[] = \Calendar::event(
-//            'Event One', //event title
-//            false, //full day event?
-//            '2015-02-11T0800', //start time (you can also use Carbon instead of DateTime)
-//            '2015-02-12T0800', //end time (you can also use Carbon instead of DateTime)
-//                0 //optionally, you can specify an event ID
-//        );
-//
-//        $events[] = \Calendar::event(
-//            "Valentine's Day", //event title
-//            true, //full day event?
-//            new \DateTime('2015-02-14'), //start time (you can also use Carbon instead of DateTime)
-//            new \DateTime('2015-02-14'), //end time (you can also use Carbon instead of DateTime)
-//                'stringEventId' //optionally, you can specify an event ID
-//        );
-//
-//        $eloquentEvent = EventModel::first(); //EventModel implements MaddHatter\LaravelFullcalendar\Event
-//
-//        $calendar = \Calendar::addEvents($events) //add an array with addEvents
-//            ->addEvent($eloquentEvent, [ //set custom color fo this event
-//                'color' => '#800',
-//            ])->setOptions([ //set fullcalendar options
-//                        'firstDay' => 1
-//                ])->setCallbacks([ //set fullcalendar callback options (will not be JSON encoded)
-//                'viewRender' => 'function() {alert("Callbacks!");}'
-//            ]);
+        $oCustomers = User::whereHas('roles', function($q){$q->whereIn('name', ['customer']);})->get();
+        $oUsers = User::whereHas('roles', function($q){$q->whereIn('name', ['admin','editor']);})->get();
+        $oReservations = CarReservation::all();
 
-//        $calendar = \Calendar::addEvents($events); //add an array with addEvents
-//        exit;
-//        $data = array();
-//        $pdf = PDF::loadView('admin.auth.login', $data);
-//        return $pdf->download('invoice.pdf');
-        return view('admin.dashboard.index', compact('calendar'));
+        return view('admin.dashboard.index', compact('oCustomers','oUsers','oReservations'));
+    }
+
+    public function email(Request $request){
+
+        $oEmails = explode(",", $request->input('emailto'));
+        foreach($oEmails as $email) {
+          $emails[]=   array(
+                'name' => 'infor',
+                'email' => $email
+            );
+        }
+        $view = \View::make('emails.admin.quickemail', compact('request'));
+        $contents = $view->render();
+
+        $email = array(
+            'html' => $contents,
+            'text' =>  strip_tags($request->input('message')),
+            'subject' => $request->input('subject'),
+            'from' => array(
+                'name' => 'suzanne',
+                'email' => 'suzanne@embassyalliance.com'
+            ),
+            'to' => $emails
+        );
+        SendPulse::smtpSendMail($email);
+
+        return $this->_successJsonResponse(['message'=>'Email sent successfully.']);
     }
     
     public function api(){

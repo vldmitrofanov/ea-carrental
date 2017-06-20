@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 
-class RentalCarReservation extends Model implements \MaddHatter\LaravelFullcalendar\Event
+class RentalCarReservation extends Model implements  \MaddHatter\LaravelFullcalendar\Event
 {
     protected $table = 'rental_car_reservations';
 
@@ -29,8 +29,8 @@ class RentalCarReservation extends Model implements \MaddHatter\LaravelFullcalen
             'color' => $this->background_color,
 			//etc
         ];
-    }	
-    
+    }
+
     public function getId() {
         return $this->id;
     }

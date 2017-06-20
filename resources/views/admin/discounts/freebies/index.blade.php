@@ -25,12 +25,13 @@
                             <h3 class="box-title">Showing {!! $oDiscounts->currentPage() !!} of {!! $oDiscounts->lastPage() !!} </h3>
 
                         </div>
-                        <div class="box-body table-responsive no-padding">
+                        <div class="box-body no-padding">
                             <table class="table table-hover">
                                 <tr>
                                     <th>No</th>
                                     <th>Name</th>
                                     <th>Condition</th>
+                                    <th>Featured</th>
                                     <th>Status</th>
                                     <th>&nbsp;</th>
                                 </tr>
@@ -39,10 +40,39 @@
                                         <td>{{ ++$index }}</td>
                                         <td>{{ $oDiscount->name }}</td>
                                         <td>{{ $oDiscount->booking_duration }} {{ $oDiscount->booking_duration_type }}</td>
+                                        <td>
+                                            <a class="featured" title="{{ ($oDiscount->featured)?'Mark Not Featured':'Mark Featured' }}" style="padding-left: 18px;" href="javascript:;" data-id="{{$oDiscount->id}}">
+                                            @if($oDiscount->featured)
+                                                <i class="fa fa-check-square-o"></i>
+                                            @else
+                                                <i class="fa fa-times-circle-o"></i>
+                                            @endif
+                                            </a>
+                                        </td>
                                         <td>{{ ($oDiscount->status)?'Active':'In-active' }}</td>
                                         <td>
-                                            <a href="{{ url('admin/discounts/freebies/'.$oDiscount->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
-                                            <?php /*<a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i></a>*/?>
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-info">Action</button>
+                                                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li><a href="{{ url('admin/discounts/freebies/'.$oDiscount->id.'/edit') }}"><i class="fa fa-edit"></i>Edit</a>&nbsp;&nbsp;</li>
+                                                    <?php /*<a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i></a>*/?>
+                                                    <li>
+                                                        <a class="featured" title="{{ ($oDiscount->featured)?'Mark Not Featured':'Mark Featured' }}" style="padding-left: 18px;" href="javascript:;" data-id="{{$oDiscount->id}}">
+                                                            @if($oDiscount->featured)
+                                                                <i class="fa fa-check-square-o"></i>Mark Not Featured
+                                                            @else
+                                                                <i class="fa fa-times-circle-o"></i>Mark Features
+                                                            @endif
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+
+
                                         </td>
                                     </tr>
                                 @endforeach
@@ -60,3 +90,35 @@
     </div>
 @endsection
 
+@section('javascript')
+    <script>
+        $(function () {
+            $( "#ctype" ).change(function(){
+                window.location = ($(this).val()!='')?"?q="+$(this).val():'/admin/fleet/cars';
+            });
+
+            $(document).on("click", "a.featured", function(e) {
+                var obj = $(this);
+                processing();
+                $.get('/admin/discounts/freebies/featured/'+$(this).attr('data-id'))
+                .done(function(response){
+                    displayMessageAlert(response.message, 'success', 'warning-sign');
+                    if(response.data.featured==false){
+                        obj.find('i').removeClass('fa-check-square-o').addClass('fa-times-circle-o');
+                    }else{
+                        obj.find('i').removeClass('fa-times-circle-o').addClass('fa-check-square-o');
+                    }
+                    $.unblockUI();
+                })
+                .fail(function(response){
+                    $.unblockUI();
+                    $.each(response.responseJSON, function (key, value) {
+                        $.each(value, function (index, message) {
+                            displayMessageAlert(message, 'danger', 'warning-sign');
+                        });
+                    });
+                });
+            });
+        });
+</script>
+@endsection

@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    @include('frontend.searchbar.search_bar')
+{{--    @include('frontend.searchbar.search_bar')--}}
     @include('frontend.partials.errors.errors')
 
     @if($oCars->count()>0)

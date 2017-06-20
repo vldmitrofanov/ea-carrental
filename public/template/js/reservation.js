@@ -64,14 +64,31 @@ $(document).ready(function(){
         });
     });
 
-    $('#resetDateStart').datetimepicker().on('dp.change',function(event){
-        $('#rdate_start').val(event.date);
-        calculatePrices();
+
+    $('#resetDateStart').datetimepicker({
+        useCurrent: false,
+        onChangeDateTime:function(dp,$input){
+            $('#rdate_start').val($input.val());
+            calculatePrices();
+        }
     });
-    $('#resetDateEnd').datetimepicker().on('dp.change',function(event){
-        $('#rdate_end').val(event.date);
-        calculatePrices();
+    $('#resetDateEnd').datetimepicker({
+        useCurrent: false,
+        onChangeDateTime:function(dp,$input){
+            $('#rdate_end').val($input.val());
+            calculatePrices();
+        }
     });
+
+    // $('#resetDateStart').on('dp.change',function(event){
+    //     alert("in")
+    //     $('#rdate_start').val(event.date);
+    //     calculatePrices();
+    // });
+    // $('#resetDateEnd').on('dp.change',function(event){
+    //     $('#rdate_end').val(event.date);
+    //     calculatePrices();
+    // });
 });
 function calculatePrices(){
     processing();

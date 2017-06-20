@@ -30,6 +30,14 @@ class CarReservationDetail extends Model
         return $this->hasOne('\App\Types', 'id', 'car_type_id');
     }
 
+    public function pickup(){
+        return $this->hasOne('\App\OfficeLocation', 'id', 'pickup_location_id');
+    }
+
+    public function returnLocation(){
+        return $this->hasOne('\App\OfficeLocation', 'id', 'return_location_id');
+    }
+
     public function getDateFromAttribute($value)
     {
         return Carbon::parse($value)->format('m/d/Y H:i');

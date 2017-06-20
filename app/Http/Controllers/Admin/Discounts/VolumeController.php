@@ -179,4 +179,23 @@ class VolumeController extends Controller
     {
         //
     }
+
+    /**
+     * Function to mark car as featured and vice versa.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function featured($id){
+        $this->_checkAjaxRequest();
+
+        $oDiscountVolume = DiscountVolume::where('id', $id)->first();
+        if(!$oDiscountVolume){
+            return $this->_failedJsonResponse([['Discount is not valid or has been removed.']]);
+        }
+
+        $oDiscountVolume->featured = !$oDiscountVolume->featured;
+        $oDiscountVolume->save();
+        return $this->_successJsonResponse(['message'=>'Discount information is updated.', 'data' => $oDiscountVolume]);
+    }
 }

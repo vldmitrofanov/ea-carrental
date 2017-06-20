@@ -15,7 +15,8 @@
         "wensleydale/sendpulse-laravel": "1.*",
         "spatie/laravel-google-calendar" : "1.*",
         "maddhatter/laravel-fullcalendar": "~1.0",
-        "greggilbert/recaptcha": "dev-master"
+        "greggilbert/recaptcha": "dev-master",
+        "league/flysystem-aws-s3-v3" : "~1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
