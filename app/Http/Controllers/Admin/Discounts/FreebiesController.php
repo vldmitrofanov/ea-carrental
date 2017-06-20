@@ -60,7 +60,7 @@ class FreebiesController extends Controller
                     }else{
                         $oDiscount->carModels()->sync([]);
                     }
-
+//
                     if(is_array($request->input('start_date'))) {
                         foreach ($request->input('start_date') as $key=>$val){
                             $oPeriod = new DiscountFreebiesPeriod;
@@ -168,5 +168,25 @@ class FreebiesController extends Controller
     public function destroy($id)
     {
         //
+    }
+    
+    
+    /**
+     * Function to mark car as featured and vice versa.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function featured($id){
+        $this->_checkAjaxRequest();
+
+        $oDiscountFreebies = DiscountFreebies::where('id', $id)->first();
+        if(!$oDiscountFreebies){
+            return $this->_failedJsonResponse([['Freebies Discount is not valid or has been removed.']]);
+        }
+
+        $oDiscountFreebies->featured = !$oDiscountFreebies->featured;
+        $oDiscountFreebies->save();
+        return $this->_successJsonResponse(['message'=>'Freebies Discount information is updated.', 'data' => $oDiscountFreebies]);
     }
 }

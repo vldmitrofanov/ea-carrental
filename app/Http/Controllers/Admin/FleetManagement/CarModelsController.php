@@ -10,6 +10,7 @@ use App\Types;
 use App\CarExtra;
 use App\Http\Requests\CarModelsRequest;
 use App\CarModelPrice;
+use Storage;
 
 class CarModelsController extends Controller
 {
@@ -59,13 +60,15 @@ class CarModelsController extends Controller
         $oCarModel->description = ($request->input('description'))?:'';
         $oCarModel->save();
         if($request->file('type_image')){
-//            $imageName = time(). $request->file('type_image')->getClientOriginalName();
-//            $request->file('type_image')->move(
-//                base_path() . '/public/uploads/car_types/', $imageName
-//            );
-//            $oCarType->thumb_path = '/uploads/car_types/'. $imageName;
-            $oCarModel->thumb_path = $request->file('type_image')->store('/public/uploads/car_models');
+            $imageName = time().'.'.$request->file('type_image')->getClientOriginalExtension();
+
+            $t = Storage::disk('s3')->put($imageName, file_get_contents($request->file('type_image')));
+//            $imageName = Storage::disk('s3')->url($imageName);
+            $oCarModel->thumb_path = $imageName;
             $oCarModel->save();
+
+//            $oCarModel->thumb_path = $request->file('type_image')->store('/public/uploads/car_models');
+//            $oCarModel->save();
         }
 
         $available_extras = $request->input('available_extras');
@@ -137,13 +140,19 @@ class CarModelsController extends Controller
         $oCarModel->save();
 
         if($request->file('type_image')){
-//            $imageName = time(). $request->file('type_image')->getClientOriginalName();
-//            $request->file('type_image')->move(
-//                base_path() . '/public/uploads/car_types/', $imageName
-//            );
-            $oCarModel->thumb_path = $request->file('type_image')->store('/public/uploads/car_models');
-//            $oCarType->thumb_path = '/uploads/car_types/'. $imageName;
+            if($oCarModel->thumb_path) {
+                Storage::disk('s3')->delete($oCarModel->thumb_path);
+            }
+            $imageName = time().'.'.$request->file('type_image')->getClientOriginalExtension();
+
+            $t = Storage::disk('s3')->put($imageName, file_get_contents($request->file('type_image')));
+//            $imageName = Storage::disk('s3')->url($imageName);
+//            $oOfficeLocation->thumb_path = $request->file('thumb_image')->store('/public/uploads/office_locations');
+            $oCarModel->thumb_path = $imageName;
             $oCarModel->save();
+
+//            $oCarModel->thumb_path = $request->file('type_image')->store('/public/uploads/car_models');
+//            $oCarModel->save();
         }
 
         $available_extras = $request->input('available_extras');

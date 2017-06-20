@@ -1,7 +1,13 @@
-<?php header('X-Frame-Options: GOFORIT'); ?>
 @extends('admin.partials.layouts.master')
+@section('meta-info')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
 @section('title')
     Car Reservations Management
+@endsection
+
+@section('stylesheet')
+    <link rel="stylesheet" href="{{ asset('//cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css') }}">
 @endsection
 
 @section('content')
@@ -28,10 +34,11 @@
                             <h3 class="box-title">Showing {!! $oReservations->currentPage() !!} of {!! $oReservations->lastPage() !!} </h3>
 
                         </div>
-                        <div class="box-body table-responsive no-padding">
-                            <table class="table table-hover">
+                        <div class="box-body ">
+                            <table id="reservationsTbl" cellspacing="0" width="100%" class="display table table-hover">
+                                <thead>
                                 <tr>
-                                    <th>No</th>
+                                    <th>Serial</th>
                                     <th>Client Name</th>
                                     <th>Car</th>
                                     <th>Registration No</th>
@@ -40,7 +47,9 @@
                                     <th>Total</th>
                                     <th>&nbsp;</th>
                                 </tr>
-                                @foreach($oReservations as $index =>$oReservation)
+                                </thead>
+                                <tbody></tbody>
+                            <?php /*@foreach($oReservations as $index =>$oReservation)
                                     <tr>
                                         <td>{{ ++$index }}</td>
                                         <td>{{ $oReservation->user->name }} ({{ $oReservation->user->phone }})</td>
@@ -67,14 +76,14 @@
                                             <a href="{{ url('admin/reservations/'.$oReservation->id.'/delete') }}"><i class="fa fa-trash"></i></a>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @endforeach*/?>
                             </table>
                         </div>
-                        @if($oReservations->render())
+                        <?php /*@if($oReservations->render())
                             <div class="box-footer clearfix">
                                 {!! $oReservations->render() !!}
                             </div>
-                        @endif
+                        @endif*/?>
                     </div>
                 </div>
             </div>
@@ -82,3 +91,7 @@
     </div>
 @endsection
 
+@section('javascript')
+    <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="{{ asset('administration/dist/js/reservations.js') }}"></script>
+@endsection

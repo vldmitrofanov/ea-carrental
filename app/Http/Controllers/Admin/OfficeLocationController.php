@@ -12,6 +12,7 @@ use App\Http\Requests\OfficeLocationRequest;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Storage;
 
 class OfficeLocationController extends Controller
 {
@@ -61,7 +62,11 @@ class OfficeLocationController extends Controller
         $oOfficeLocation->save();
 
         if($request->file('thumb_image')){
-            $oOfficeLocation->thumb_path = $request->file('thumb_image')->store('/public/uploads/office_locations');
+            $imageName = time().'.'.$request->file('thumb_image')->getClientOriginalExtension();
+
+            $t = Storage::disk('s3')->put($imageName, file_get_contents($request->file('thumb_image')));
+//            $imageName = Storage::disk('s3')->url($imageName);
+            $oOfficeLocation->thumb_path = $imageName;
             $oOfficeLocation->save();
         }
 
@@ -120,7 +125,15 @@ class OfficeLocationController extends Controller
         $oOfficeLocation->save();
 
         if($request->file('thumb_image')){
-            $oOfficeLocation->thumb_path = $request->file('thumb_image')->store('/public/uploads/office_locations');
+            if($oOfficeLocation->thumb_path) {
+                Storage::disk('s3')->delete($oOfficeLocation->thumb_path);
+            }
+            $imageName = time().'.'.$request->file('thumb_image')->getClientOriginalExtension();
+
+            $t = Storage::disk('s3')->put($imageName, file_get_contents($request->file('thumb_image')));
+//            $imageName = Storage::disk('s3')->url($imageName);
+//            $oOfficeLocation->thumb_path = $request->file('thumb_image')->store('/public/uploads/office_locations');
+            $oOfficeLocation->thumb_path = $imageName;
             $oOfficeLocation->save();
         }
 

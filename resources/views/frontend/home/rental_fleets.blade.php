@@ -6,7 +6,11 @@
             @foreach($oFeaturedCars as $oFeaturedCar)
             <div class="col-sm-6 col-md-3">
                 <div class="thumbnail">
-                    <div><img src="{{$oFeaturedCar->thumb_image}}" alt=""></div>
+                    <div>
+                        @if($oFeaturedCar && Storage::has($oFeaturedCar->thumb_image))
+                            <img class="container img-responsive" src="{{Storage::url($oFeaturedCar->thumb_image)}}" alt="">
+                        @endif
+                    </div>
                     <div class="caption">
                         <h3>{{$oFeaturedCar->makeAndModel->make}}</h3> <a href="{{ url('fleet/'.$oFeaturedCar->url_token)  }}" class="btn btn-danger" role="button">View and Rent</a>
                         <div>

@@ -11,6 +11,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
         return view('admin.errors.404');
     });
     Route::get('dashboard', 'Admin\DashboardController@index');
+    Route::post('dashboard/email', 'Admin\DashboardController@email');
     Route::get('api', 'Admin\DashboardController@api');
     Route::get('fleetavailability', 'Admin\FleetAvailabilityController@index');
 
@@ -44,6 +45,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('{id}/edit', 'Admin\Discounts\VolumeController@edit');
             Route::get('{id}/show', 'Admin\Discounts\VolumeController@show');
             Route::patch('update/{id}', 'Admin\Discounts\VolumeController@update');
+            Route::get('featured/{id}', 'Admin\Discounts\VolumeController@featured');
         });
 
         Route::group(['prefix' => 'freebies'], function(){
@@ -53,6 +55,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('{id}/edit', 'Admin\Discounts\FreebiesController@edit');
             Route::get('{id}/show', 'Admin\Discounts\FreebiesController@show');
             Route::patch('update/{id}', 'Admin\Discounts\FreebiesController@update');
+            Route::get('featured/{id}', 'Admin\Discounts\FreebiesController@featured');
         });
     });
 
@@ -136,6 +139,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
 
     Route::group(['prefix' => 'reservations'], function(){
         Route::get('/', 'Admin\ReservationsController@index');
+        Route::post('/all', 'Admin\ReservationsController@loadAll');
+
         Route::get('/create', 'Admin\ReservationsController@create');
         Route::post('store', 'Admin\ReservationsController@store');
         Route::get('{id}/edit', 'Admin\ReservationsController@edit');
@@ -252,6 +257,7 @@ Route::get('login', 'UsersController@getLogin')->middleware('guest');
 Route::post('login', 'Auth\LoginController@login')->middleware('guest');
 Route::get('logout', 'Auth\LoginController@logout');
 Route::get('our_fleet', 'IndexController@ourFleet');
+Route::get('offers/{token}', 'OffersController@index');
 Route::get('contact-us', 'ContactUsController@index');
 Route::get('contact-us/contact', 'ContactUsController@contact');
 Route::post('contact-us/contact', 'ContactUsController@sendContactEmail');

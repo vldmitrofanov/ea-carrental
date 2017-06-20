@@ -3,18 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\CarReservation as RentalCarReservation;
-use App\DiscountFreebies;
-use App\RentalCar;
-use App\CarReservationExtra;
-use App\Setting;
-use App\Http\Requests\SearchFormRequest;
 use Session;
 use Carbon\Carbon;
-use App\CarModel;
+use App\Setting;
 use App\DiscountVolume;
+use App\RentalCar;
 
-class IndexController extends Controller
+class OffersController extends Controller
 {
     protected $option_arr = array();
     public function __construct()
@@ -25,101 +20,65 @@ class IndexController extends Controller
         }
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $oDiscountVolumes = DiscountVolume::whereIn('id', function($query){
-                                $query->select('discount_package_id')->from('discount_package_periods')
-                                    ->distinct()
-                                ->whereRaw(" start_date <= NOW() and end_date>=NOW() ");
-                            })
-                            ->where('featured', true)
-                            ->where('status',true)
-                            ->take(3)
-                            ->get();
+    public function index($token){
+        $tokenArr = explode("-", $token);
+        $volumeDiscountId =  end($tokenArr);
 
-        $oFeaturedCars = RentalCar::where('featured', true)->take(4)->get();
-        return view('welcome', compact('oFeaturedCars','oDiscountVolumes'));
-    }
-    
-    public function dashboard(){
-        $currency = $this->option_arr['currency'];
+        if((int)$volumeDiscountId==0){
+            \Session::flash('flash_message', 'Offer url is not valid.');
+            \Session::flash('flash_type', 'alert-danger');
 
-        $oReservations = RentalCarReservation::
-                            where('user_id', \Auth::user()->id)->orderby('processed_on', 'DESC')->get();
-        return view('frontend.dashboard.index', compact('oReservations', 'currency'));
-    }
-
-    public function calculateDateDiff($start , $end){
-        $from = Carbon::parse($start);
-        $to = Carbon::parse($end);
-        $datetime1 = new \DateTime($to); // Today's Date/Time
-        $datetime2 = new \DateTime($from);
-        $interval = $datetime1->diff($datetime2);
-        $data['days'] = $interval->format('%D');
-        $data['hours'] = $interval->format('%H');
-        return $data;
-    }
-
-
-    public function search(SearchFormRequest $request){
-        $searchData = Session::get('search');
-        if(empty($searchData) && \Request::isMethod('get')){
             return \Redirect::to('/');
         }
-        if(\Request::isMethod('post')) {
-            $search = new \stdClass();
-            Session::forget('search');
 
-            $search->start = $request->get('start');
-            $search->end = $request->get('end');
-            $search->location = $request->get('location');
+        $oDiscountVolume = DiscountVolume::whereIn('id', function($query){
+                                $query->select('discount_package_id')->from('discount_package_periods')
+                                    ->distinct()
+                                    ->whereRaw(" start_date <= NOW() and end_date>=NOW() ");
+                            })
+                            ->where('id',$volumeDiscountId)
+                            ->where('status',true)
+                            ->first();
+        if(!$oDiscountVolume){
+            \Session::flash('flash_message', 'Offer does exist any more.');
+            \Session::flash('flash_type', 'alert-danger');
 
-            $timeDiff = $this->calculateDateDiff($request->get('start'), $request->get('end'));
-            $search->days = $timeDiff['days'];
-            $search->hours = $timeDiff['hours'];
-
-            Session::put('search', $search);
-            $searchData = Session::get('search');
+            return \Redirect::to('/');
         }
 
-        $currency = $this->option_arr['currency'];
-        $oCars = $this->_getAvailableCars($searchData);
+        $oPeriod = $oDiscountVolume->periods()->whereRaw(" start_date <= NOW() and end_date>=NOW() ")->first();
+        $search = new \stdClass();
+        Session::forget('offers');
 
-        return view('frontend.search.index', compact('oCars', 'currency', 'searchData'));
+        $search->start = Carbon::parse($oPeriod->start_date);
+        switch ($oDiscountVolume->booking_duration_type){
+            case"days":
+                    $search->end = Carbon::parse($oPeriod->start_date)->addHours($oDiscountVolume->booking_duration);
+                break;
+            case"weeks":
+                $search->end = Carbon::parse($oPeriod->start_date)->addWeeks($oDiscountVolume->booking_duration);
+                break;
+            case"month":
+                $search->end = Carbon::parse($oPeriod->start_date)->addMonths($oDiscountVolume->booking_duration);
+                break;
+
+        }
+
+        $timeDiff = $this->_calculateDateDiff( $search->start, $search->end);
+        $search->days = $timeDiff['days'];
+        $search->hours = $timeDiff['hours'];
+
+        Session::put('offers', $search);
+        $offersData = Session::get('offers');
+
+        $currency = $this->option_arr['currency'];
+        $oCars = $this->_getAvailableCars($offersData, $oDiscountVolume);
+
+        return view('frontend.offers_fleet.index', compact('oCars', 'currency'));
 
     }
 
-    public function ourFleet(){
-        $searchData = Session::get('search');
-        if(empty($searchData)){
-            $search = new \stdClass();
-            Session::forget('search');
-
-            $search->start = Carbon::now();
-            $search->end = Carbon::now()->addHours(24);
-            $search->location = 0;
-
-            $timeDiff = $this->calculateDateDiff( Carbon::now(), Carbon::now()->addHours(24));
-            $search->days = $timeDiff['days'];
-            $search->hours = $timeDiff['hours'];
-
-            Session::put('search', $search);
-            $searchData = Session::get('search');
-        }
-
-        $currency = $this->option_arr['currency'];
-        $oCars = $this->_getAvailableCars($searchData);
-
-        return view('frontend.our_fleet.index', compact('oCars', 'currency', 'searchData'));
-
-    }
-
-    private function _getAvailableCars($searchData){
+    private function _getAvailableCars($searchData, $oDiscountVolume){
 
         $date_from =Carbon::parse($searchData->start);
         $date_to =Carbon::parse($searchData->end);
@@ -127,13 +86,14 @@ class IndexController extends Controller
         $date_from_ts = strtotime($date_from);
         $date_to_ts = strtotime($date_to);
         $oCars = RentalCar::whereNotIn('id', function($query) use ($date_from, $date_to){
-                        $query->select('car_id')->from('car_reservation_details')
-//                        ->whereRaw("(`rental_car_reservations`.`status` = 'cancelled' OR (`rental_car_reservations`.`status` = 'completed'))")
+                    $query->select('car_id')->from('car_reservation_details')
+        //                        ->whereRaw("(`rental_car_reservations`.`status` = 'cancelled' OR (`rental_car_reservations`.`status` = 'completed'))")
                         ->whereRaw(sprintf("(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to));
-                 })
-                 ->where('rental_cars.status','=', true)
+                })
+                ->whereIn('model_id',$oDiscountVolume->carModels()->pluck('id')->toArray())
+                ->where('rental_cars.status','=', true)
                 ->paginate(10);
-       
+
 //        $oCars = RentalCar::leftJoin('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')
 //            ->leftJoin('rental_car_reservations', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
 //            ->where('rental_cars.status','=', true)
@@ -163,4 +123,16 @@ class IndexController extends Controller
 //print_r($oCars);exit;
         return $oCars;
     }
+
+    private function _calculateDateDiff($start , $end){
+        $from = Carbon::parse($start);
+        $to = Carbon::parse($end);
+        $datetime1 = new \DateTime($to); // Today's Date/Time
+        $datetime2 = new \DateTime($from);
+        $interval = $datetime1->diff($datetime2);
+        $data['days'] = $interval->format('%D');
+        $data['hours'] = $interval->format('%H');
+        return $data;
+    }
+
 }

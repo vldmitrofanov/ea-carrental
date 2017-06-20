@@ -37,6 +37,7 @@ class UserRequest extends FormRequest
                     'email' => 'required|email|unique:users,email',
                     'username' => 'required|alpha_num|unique:users,username',
                     'password' => 'required',
+                    'phone' => 'required',
                     'role_id' => 'required'
                 ];
             }
@@ -47,6 +48,7 @@ class UserRequest extends FormRequest
                     'name' => 'required',
                     'email' => 'required|email|unique:users,email,'.$this->get('user'),
                     'username' => 'required|alpha_num|unique:users,username,'.$this->get('user'),
+                    'phone' => 'required',
                     'role_id' => 'required'
                 ];
             }

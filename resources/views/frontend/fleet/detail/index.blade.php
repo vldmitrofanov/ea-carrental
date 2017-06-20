@@ -106,7 +106,7 @@
                         @endforeach
                     </select>
 
-                    <select name="return" id="return" style="width: 100%">
+                    <select name="return" id="return" style="width: 100%; margin-top: 20px;margin-bottom: 20px;">
                         <option value="">Select Return Location</option>
                         @foreach ($officeLocations as $officeLocation)
                             <option value="{{$officeLocation->id}}">{{$officeLocation->name}} {{$officeLocation->country->name}}</option>
@@ -160,7 +160,9 @@
                         <li>
                             <div class="row">
                                 <div class="col-xs-6 col-sm-12">
-                                    <img class="container img-responsive" src="{{asset($oCar->thumb_image)}}" alt="" />
+                                    @if($oCar && Storage::has($oCar->thumb_image))
+                                        <img class="container img-responsive"  src="{{Storage::url($oCar->thumb_image)}}" alt="{{$oCar->makeAndModel->make}} {{$oCar->makeAndModel->model}}">
+                                    @endif
                                 </div>
                                 <div class="col-xs-6 col-sm-12">
                                     <div class="row">

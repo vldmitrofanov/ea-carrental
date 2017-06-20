@@ -40,12 +40,14 @@
         <input name="thumb_image" type="file">
     </div>
 
-    @if($oRentalCar && $oRentalCar->thumb_image)
-    <div class="form-group">
-        <label for="exampleInputFile"></label>
-        <img src="/{{$oRentalCar->thumb_image}}" width="150" alt="">
-    </div>
-    @endif;
+    @if($oRentalCar && Storage::disk('s3')->has($oRentalCar->thumb_image))
+        <div class="form-group">
+            <label for="exampleInputFile" class="col-sm-2 control-label"></label>
+            <div class="col-sm-10">
+                <img width="150" src="{{Storage::disk('s3')->url($oRentalCar->thumb_image)}}">
+            </div>
+        </div>
+    @endif
 
 </div>
 

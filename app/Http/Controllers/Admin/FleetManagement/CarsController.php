@@ -8,6 +8,7 @@ use App\RentalCar;
 use App\Types;
 use App\OfficeLocation;
 use App\Http\Requests\RentalCarRequest;
+use Storage;
 
 class CarsController extends Controller
 {
@@ -59,7 +60,12 @@ class CarsController extends Controller
         $oRentalCar->location_id = $request->input('location_id');
         $oRentalCar->save();
         if($request->file('thumb_image')){
-            $oRentalCar->thumb_image = $request->file('thumb_image')->store('/public/uploads/cars');
+//            $oRentalCar->thumb_image = $request->file('thumb_image')->store('/public/uploads/cars');
+//            $oRentalCar->save();
+            $imageName = time().'.'.$request->file('thumb_image')->getClientOriginalExtension();
+
+            $t = Storage::disk('s3')->put($imageName, file_get_contents($request->file('thumb_image')));
+            $oRentalCar->thumb_image = $imageName;
             $oRentalCar->save();
         }
 
@@ -112,8 +118,16 @@ class CarsController extends Controller
         $oRentalCar->location_id = $request->input('location_id');
         $oRentalCar->save();
         if($request->file('thumb_image')){
-            $oRentalCar->thumb_image = $request->file('thumb_image')->store('/public/uploads/cars');
+            if($oRentalCar->thumb_path) {
+                Storage::disk('s3')->delete($oRentalCar->thumb_path);
+            }
+            $imageName = time().'.'.$request->file('thumb_image')->getClientOriginalExtension();
+
+            $t = Storage::disk('s3')->put($imageName, file_get_contents($request->file('thumb_image')));
+            $oRentalCar->thumb_image = $imageName;
             $oRentalCar->save();
+//            $oRentalCar->thumb_image = $request->file('thumb_image')->store('/public/uploads/cars');
+//            $oRentalCar->save();
         }
 
         \Session::flash('flash_message', 'Rental Car Information saved successfully.');

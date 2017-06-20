@@ -93,6 +93,15 @@
                 <input name="type_image" type="file">
                 </div>
             </div>
+            @if(Storage::disk('s3')->has($oCarModel->thumb_path))
+                <div class="form-group">
+                    <label for="exampleInputFile" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <img width="150" src="{{Storage::disk('s3')->url($oCarModel->thumb_path)}}">
+                    </div>
+                </div>
+            @endif
+
             <div class="form-group">
                 <label for="description" class="col-sm-2 control-label">Description</label>
                 <div class="col-sm-10">

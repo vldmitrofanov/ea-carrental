@@ -104,9 +104,18 @@
                 <div class="form-group">
                     <label for="exampleInputFile" class="col-sm-2 control-label">Image</label>
                     <div class="col-sm-10">
-                    <input name="type_image" type="file">
+                    <input name="thumb_image" type="file">
                     </div>
                 </div>
+
+                @if($oOfficeLocation->thumb_path)
+                <div class="form-group">
+                    <label for="exampleInputFile" class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <img width="150" src="{{Storage::disk('s3')->url($oOfficeLocation->thumb_path)}}">
+                    </div>
+                </div>
+                @endif
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
