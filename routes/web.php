@@ -256,8 +256,9 @@ Route::post('register', 'Auth\RegisterController@register')->middleware('guest')
 Route::get('login', 'UsersController@getLogin')->middleware('guest');
 Route::post('login', 'Auth\LoginController@login')->middleware('guest');
 Route::get('logout', 'Auth\LoginController@logout');
-Route::get('our_fleet', 'IndexController@ourFleet');
+Route::get('fleet/{country?}/{city?}', 'IndexController@ourFleet');
 Route::get('offers/{token}', 'OffersController@index');
+Route::get('rental-offers', 'OffersController@rentalOffers');
 Route::get('contact-us', 'ContactUsController@index');
 Route::get('contact-us/contact', 'ContactUsController@contact');
 Route::post('contact-us/contact', 'ContactUsController@sendContactEmail');

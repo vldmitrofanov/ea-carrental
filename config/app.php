@@ -242,6 +242,7 @@ return [
         'GoogleCalendar' => 'Spatie\GoogleCalendar\GoogleCalendarFacade',
         'Calendar' => MaddHatter\LaravelFullcalendar\Facades\Calendar::class,
         'Recaptcha' => Greggilbert\Recaptcha\Facades\Recaptcha::class,
+        'Booking' => App\Helpers\Booking::class,
 
     ],
 

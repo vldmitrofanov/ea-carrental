@@ -13,6 +13,7 @@ use Session;
 use Carbon\Carbon;
 use App\CarModel;
 use App\DiscountVolume;
+use App\OfficeLocation;
 
 class IndexController extends Controller
 {
@@ -34,8 +35,8 @@ class IndexController extends Controller
     {
         $oDiscountVolumes = DiscountVolume::whereIn('id', function($query){
                                 $query->select('discount_package_id')->from('discount_package_periods')
-                                    ->distinct()
-                                ->whereRaw(" start_date <= NOW() and end_date>=NOW() ");
+                                ->distinct()
+                                ->whereRaw(" DATE_FORMAT(start_date, \"%Y-%m-%d\") <= CURDATE() and DATE_FORMAT(end_date, \"%Y-%m-%d\")>=CURDATE() ");
                             })
                             ->where('featured', true)
                             ->where('status',true)
@@ -94,15 +95,23 @@ class IndexController extends Controller
 
     }
 
-    public function ourFleet(){
+    public function ourFleet($country='', $city=''){
         $searchData = Session::get('search');
-        if(empty($searchData)){
+        //if(empty($searchData)){
+            $oOfficeLocation = false;
             $search = new \stdClass();
             Session::forget('search');
-
+            if($city!='' && $country!=''){
+                $oOfficeLocation = OfficeLocation::where('city', 'like', '%'.str_replace("-", " ", $city).'%')
+                                   ->whereIn('country_id', function($query) use ($country){
+                                        $query->select('id')->from('countries')
+                                        ->where('name', 'like', '%'.str_replace("-", " ", $country).'%');
+                                    })
+                                   ->first();
+            }
             $search->start = Carbon::now();
             $search->end = Carbon::now()->addHours(24);
-            $search->location = 0;
+            $search->location = ($oOfficeLocation)?$oOfficeLocation->id:0;
 
             $timeDiff = $this->calculateDateDiff( Carbon::now(), Carbon::now()->addHours(24));
             $search->days = $timeDiff['days'];
@@ -110,7 +119,7 @@ class IndexController extends Controller
 
             Session::put('search', $search);
             $searchData = Session::get('search');
-        }
+       // }
 
         $currency = $this->option_arr['currency'];
         $oCars = $this->_getAvailableCars($searchData);
@@ -122,16 +131,22 @@ class IndexController extends Controller
     private function _getAvailableCars($searchData){
 
         $date_from =Carbon::parse($searchData->start);
-        $date_to =Carbon::parse($searchData->end);
-
+        $date_to =Carbon::parse($searchData->end);        
         $date_from_ts = strtotime($date_from);
         $date_to_ts = strtotime($date_to);
+        
+        if($searchData->location==0){
+            $where = "rental_cars.location_id > $searchData->location ";
+        }else{
+            $where = "rental_cars.location_id = $searchData->location ";
+        }
         $oCars = RentalCar::whereNotIn('id', function($query) use ($date_from, $date_to){
                         $query->select('car_id')->from('car_reservation_details')
 //                        ->whereRaw("(`rental_car_reservations`.`status` = 'cancelled' OR (`rental_car_reservations`.`status` = 'completed'))")
                         ->whereRaw(sprintf("(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to));
                  })
                  ->where('rental_cars.status','=', true)
+                 ->whereRaw($where)
                 ->paginate(10);
        
 //        $oCars = RentalCar::leftJoin('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')

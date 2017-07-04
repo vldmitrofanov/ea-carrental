@@ -24,6 +24,7 @@ use App\Http\Requests\ReservationRequest;
 use \PDF;
 use \SendPulse;
 use Spatie\GoogleCalendar\Event;
+use App\DiscountVolume;
 
 
 class ReservationsController extends Controller
@@ -982,6 +983,20 @@ class ReservationsController extends Controller
             $discount_info = $this->getDiscountInfo($request);
         }
 
+        //        check if there is any volume discount available for the period
+        $oVDisocunt = DiscountVolume::whereIn('id', function($query) use($request){
+                        $query->select('discount_package_id')->from('discount_package_periods')
+                            ->distinct()
+                            ->whereRaw(" start_date <= '".Carbon::parse($request->input('date_from'))."' and end_date >= '".Carbon::parse($request->input('date_to'))."' ");
+                    })
+//                    ->where('id',$request->get('ref'))
+                    ->where('status',true)
+                    ->first();
+                    
+        if($oVDisocunt) {
+            $discount_info = $this->_getVolumeDiscountInfo(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel->id);
+        }
+        
         if(is_array($discount_info)){
             switch ($discount_info['amount_type']){
                 case 'percent':
@@ -1066,6 +1081,24 @@ class ReservationsController extends Controller
         return $this->_successJsonResponse(['message'=>'Car Type Custom Rate information saved.', 'data' => $data]);
     }
 
+    private function _getVolumeDiscountInfo($start, $end, $modelId){
+
+        $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
+            ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
+            ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::parse($start)->format('Y-m-d').'"')
+            ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::parse($end)->format('Y-m-d').'"')
+//                ->whereRaw('discount_voucher_recurring_rules.frequency = "weekly"')
+            ->whereRaw("discount_package_models.model_id = $modelId")
+            ->first();
+
+        if(!$oDiscount){
+            return false;
+        }
+
+        return ['amount' => $oDiscount->discount_amount, 'amount_type' => $oDiscount->discount_type];
+
+    }
+    
     public function formatCurrencySign($price, $currency, $separator = " ")
     {
         switch ($currency)

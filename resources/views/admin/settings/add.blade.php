@@ -175,6 +175,13 @@
             </div>
 
             <div class="form-group">
+                <label for="contact_us_notify" class="col-sm-2 control-label">Reservation Notify To<br><small>example: name:email,name:email2</small></label>
+                <div class="col-sm-10">
+                    {!! Form::textarea('data[reservations_notify]',($oSettings->where('key','reservations_notify')->first())?$oSettings->where('key','reservations_notify')->first()->value:'',['class'=>'form-control', 'id' => 'reservations_notify', 'placeholder' => 'example: name:email,name:email2']) !!}
+                </div>
+            </div>
+
+            <div class="form-group">
                 <div class="col-sm-12">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>

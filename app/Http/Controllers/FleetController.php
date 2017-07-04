@@ -22,6 +22,7 @@ use App\Http\Requests\ReservationRequest;
 use \PDF;
 use \SendPulse;
 use Session;
+use App\DiscountVolume;
 
 class FleetController extends Controller
 {
@@ -39,10 +40,13 @@ class FleetController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function detail($token)
+    public function detail($token, Request $request)
     {
         $searchData = Session::get('search');
-//        print_r($searchData);exit;
+        if($request->get('ref',0)>0){
+            $searchData = Session::get('offers');
+        }
+//        exit;
         $oCar = RentalCar::where('url_token', $token)->first();
         if(!$oCar){
             \Session::flash('flash_message', 'Car is not valid or has been removed.');
@@ -415,6 +419,23 @@ class FleetController extends Controller
         return $format;
     }
 
+    private function _getVolumeDiscountInfo($start, $end, $modelId){
+
+        $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
+            ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
+            ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') >= "'.Carbon::parse($start)->format('Y-m-d').'"')
+            ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') <= "'.Carbon::parse($end)->format('Y-m-d').'"')
+//                ->whereRaw('discount_voucher_recurring_rules.frequency = "weekly"')
+            ->whereRaw("discount_package_models.model_id = $modelId")
+            ->first();
+
+        if(!$oDiscount){
+            return false;
+        }
+
+        return ['amount' => $oDiscount->discount_amount, 'amount_type' => $oDiscount->discount_type];
+
+    }
 
     public function getDiscountInfo(Request $request){
         if($request->input('discount_code')==''){
@@ -493,6 +514,7 @@ class FleetController extends Controller
 
     public function loadCarPrices(Request $request){
         $this->_checkAjaxRequest();
+        $offersData = Session::get('offers');
 
         $o_new_day_per_day =0 ;
         $oSetting = Setting::where('key', 'currency')->first();
@@ -643,11 +665,26 @@ class FleetController extends Controller
             $discount_info = $this->getDiscountInfo($request);
         }
 
+//        overwrite the volume discount when found to coupoon discount
+//        print_r($offersData);exit;
+        if(!empty($offersData)) {
+            $discount_info = DiscountVolume::whereIn('id', function($query){
+                                $query->select('discount_package_id')->from('discount_package_periods')
+                                    ->distinct()
+                                    ->whereRaw(" start_date <= NOW() and end_date>=NOW() ");
+                            })
+                            ->where('id',$request->get('ref'))
+                            ->where('status',true)
+                            ->first();
+
+            $discount_info = $this->_getVolumeDiscountInfo($offersData->start, $offersData->end, $oCarModel->id);
+        }
+
         if(is_array($discount_info)){
             switch ($discount_info['amount_type']){
                 case 'percent':
                     $discount = ($total_price * $discount_info['amount']) / 100;
-                    $discount_detail = $discount_info['amount'] . '% of '. $this->formatCurrencySign($total_price, $this->option_arr['currency']);
+                    $discount_detail = round($discount_info['amount']) . '% of '. $this->formatCurrencySign($total_price, $this->option_arr['currency']);
                     break;
                 case 'amount':
                     $discount = $discount_info['amount'];

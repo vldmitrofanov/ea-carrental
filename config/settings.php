@@ -152,4 +152,12 @@ return [
         '{notification:paymentmethod}' => '{notification:paymentmethod}',
         '{notification:cancelURL}' => '{notification:cancelURL}',
     ],
+
+    'order_colors' => [
+        'completed' => 'success',
+        'pending' => 'warning',
+        'cancelled' => 'danger',
+        'confirmed' => 'warning',
+        'collected' => 'success',
+    ],
 ];

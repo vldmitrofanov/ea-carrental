@@ -18,7 +18,7 @@
                         @include('admin.partials.errors.errors')
                         {!! Form::model($oUser, array('url' =>array('admin/clients/update', $oUser->id), 'id' => 'user_form', 'autocomplete' => "off", 'method' => 'PATCH', 'enctype'=>'multipart/form-data')) !!}
                         {{ Form::hidden('user',$oUser->id ) }}
-                        @include('admin.clients.form', ['submit_button'=>'Save'])
+                        @include('admin.clients.form', ['submit_button'=>'Update'])
                     </div>
 
                 </div>

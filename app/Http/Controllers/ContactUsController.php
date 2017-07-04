@@ -7,6 +7,7 @@ use App\Http\Requests\ContactUsRequest;
 use Session;
 use \SendPulse;
 use App\Setting;
+use App\DiscountVolume;
 
 class ContactUsController extends Controller
 {
@@ -25,7 +26,17 @@ class ContactUsController extends Controller
     }
 
     public function contact(){
-        return view('frontend.contact_us.form');
+        $oDiscountVolumes = DiscountVolume::whereIn('id', function($query){
+                                $query->select('discount_package_id')->from('discount_package_periods')
+                                    ->distinct()
+                                    ->whereRaw(" DATE_FORMAT(start_date, \"%Y-%m-%d\") <= CURDATE() and DATE_FORMAT(end_date, \"%Y-%m-%d\")>=CURDATE() ");
+                            })
+                            ->where('featured', true)
+                            ->where('status',true)
+                            ->take(3)
+                            ->get();
+
+        return view('frontend.contact_us.form', compact('oDiscountVolumes'));
     }
 
     public function sendContactEmail(ContactUsRequest $request){

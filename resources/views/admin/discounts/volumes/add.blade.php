@@ -28,8 +28,12 @@
 @endsection
 
 @section('javascript')
+    <script src="https://cdn.ckeditor.com/4.5.7/full/ckeditor.js"></script>
+    <script type="text/javascript" >
+    $(function () {
+        CKEDITOR.replace('description');
+    });
 
-<script type="text/javascript" >
     $(document).ready(function(){
         var items = new Array();
         @foreach($oTypes as $oType)
@@ -40,6 +44,9 @@
         $('#end_date_0').datetimepicker({format:'m/d/Y', defaultDate:new Date(),timepicker:false,});
 
         $(document).on("click", "button.save-voucher", function(e) {
+            for ( instance in CKEDITOR.instances )
+                CKEDITOR.instances[instance].updateElement();
+
             var formData = $('form#vouchers').serializeArray();
             formData.push({
                 name: "_method",

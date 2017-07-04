@@ -63,6 +63,10 @@
     @yield('javascript')
 
     <script type="text/javascript">
+        $(document).ready(function(){
+            $('ul.sidebar-menu li.active').parents('li.treeview').addClass('active');
+        });
+
 //    $("ul.treeview-menu li").each(function (index, object) {
 //        if($(this).attr("data-breadcrumb")){
 //            breadcrumbs = $(this).attr("data-breadcrumb").toString();

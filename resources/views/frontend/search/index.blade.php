@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    @include('frontend.searchbar.search_bar')
+    @include('frontend.searchbar.search_by_location')
     @include('frontend.partials.errors.errors')
 
     @foreach($oCars as $oCar)
@@ -17,7 +17,11 @@
             <div class="row">
                 <div class="col-sm-2 col-md-3">
                     <div class="thumbnail">
-                        <a href="{{ url('fleet/'.$oCar->url_token) }}"><img src="{{asset($oCar->thumb_image)}}" alt="{{$oCar->makeAndModel->make}} {{$oCar->makeAndModel->model}}"></a>
+                        <a href="{{ url('fleet/'.$oCar->url_token) }}">
+                            @if($oCar && Storage::has($oCar->thumb_image))
+                            <img class="container img-responsive" src="{{Storage::url($oCar->thumb_image)}}" alt="{{$oCar->makeAndModel->make}} {{$oCar->makeAndModel->model}}">
+                            @endif
+                        </a>
                         @if($oCar->getCarPrice()['total_price_original'] > $oCar->getCarPrice()['total_price'])
                         <div class="offDeal">{{ $oCar->getCarPrice()['discount_information'] }}</div>
                         @endif
