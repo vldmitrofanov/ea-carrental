@@ -85,7 +85,7 @@ Dashboard
             <section class="col-lg-12 connectedSortable">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Latest Reservations</h3>
+                        <h3 class="box-title">Today Reservations</h3>
                     </div>
 
                     <div class="box-body">
@@ -102,7 +102,7 @@ Dashboard
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($oReservations->sortBy('id',1) as $oReservation)
+                                @forelse($oTodayReservations->sortBy('id',1) as $oReservation)
                                     <tr>
                                         <td><a href="{{url('admin/reservations/'.$oReservation->id.'/edit')}}">{{$oReservation->reservation_number}}</a></td>
                                         <td>{{ $oReservation->details->first()->car->registration_number  }} ({{ $oReservation->details->first()->model->make  }} - {{ $oReservation->details->first()->model->model  }})</td>
@@ -112,7 +112,11 @@ Dashboard
                                         <td><span class="label label-{{config('settings.order_colors')[$oReservation->status]}}">{{ $oReservation->status }}</span></td>
 
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="6" align="center"><strong>No Reservations for Today</strong></td>
+                                    </tr>
+                                @endforelse
                                 </tbody>
                             </table>
                         </div>
