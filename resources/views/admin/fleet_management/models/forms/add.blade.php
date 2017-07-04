@@ -55,6 +55,7 @@
     <div class="form-group">
         {!! Form::label('available_extras', 'Available Extras') !!}
         {!! Form::select('available_extras[]', array(''=>'Please Select')+$oExtras,null,array('class'=>'form-control', 'multiple'=>'true','id'=>'transmission')) !!}
+        <small><strong>Press CTRL or SHIFT to select multiple</strong></small>
     </div>
     <div class="form-group">
         <label for="exampleInputFile">Image</label>

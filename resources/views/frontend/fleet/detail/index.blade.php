@@ -34,6 +34,7 @@
         <input type="hidden" name="rdate_end" id="rdate_end" value="">
         <input type="hidden" name="date_from" id="date_from" value="">
         <input type="hidden" name="date_to" id="date_to" value="">
+        <input type="hidden" name="ref" id="ref" value="{{app('request')->get('ref')}}">
         <input type="hidden" name="car_id" id="car_id" value="{{$oCar->id}}">
         <input type="hidden" name="models" id="models" value="{{$oCar->makeAndModel->id}}">
         <input type="hidden" name="car_type_id" id="car_type_id" value="{{$oCar->makeAndModel->type_id}}">

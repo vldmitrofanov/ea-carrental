@@ -85,6 +85,7 @@
                 <label for="available_extras" class="col-sm-2 control-label">Available Extras</label>
                 <div class="col-sm-10">
                 {!! Form::select('available_extras[]', array(''=>'Please Select')+$oExtras,$oCarModel->extras()->pluck('car_extras_id')->toArray(),array('class'=>'form-control', 'multiple'=>'true','id'=>'transmission')) !!}
+                <small><strong>Press CTRL or SHIFT to select multiple</strong></small>
                 </div>
             </div>
             <div class="form-group">

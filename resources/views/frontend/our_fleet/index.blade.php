@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    @include('frontend.searchbar.search_bar')
+    @include('frontend.searchbar.search_by_location')
     @include('frontend.partials.errors.errors')
 
     @if($oCars->count()>0)
@@ -66,13 +66,6 @@
                     {!! $oCars->render() !!}
                 </div>
             @endif
-            {{--<ul class="pagination pagination-lg">--}}
-                {{--<li><a href="#">«</a></li>--}}
-                {{--<li><a href="#">1</a></li>--}}
-                {{--<li><a href="#">2</a></li>--}}
-                {{--<li><a href="#">3</a></li>--}}
-                {{--<li><a href="#">»</a></li>--}}
-            {{--</ul>--}}
         </div>
     </div>
 

@@ -22,9 +22,10 @@
                                 <img class="container img-responsive" src="{{Storage::url($oCar->thumb_image)}}" alt="{{$oCar->makeAndModel->make}} {{$oCar->makeAndModel->model}}">
                             @endif
                         </a>
-                        @if($oCar->getCarPrice()['total_price_original'] > $oCar->getCarPrice()['total_price'])
-                        <div class="offDeal">{{ $oCar->getCarPrice()['discount_information'] }}</div>
+                        @if($oCar->getCarVolumeDiscountPrice($oDiscountVolume,$search)['total_price_original'] > $oCar->getCarVolumeDiscountPrice($oDiscountVolume,$search)['total_price'])
+                            <div class="offDeal">{{ $oCar->getCarVolumeDiscountPrice($oDiscountVolume,$search)['discount_information'] }}</div>
                         @endif
+
                     </div>
                 </div>
                 <div class="col-sm-4 col-md-5">
@@ -42,13 +43,13 @@
                 </div>
                 <div class="col-sm-3 col-md-2 total text-center">
                     <h5>TOTAL PRICE:</h5>
-                    @if($oCar->getCarPrice()['total_price_original'] > $oCar->getCarPrice()['total_price'])
-                        <h6 class="cross">{{$currency}} {{ $oCar->getCarPrice()['total_price_original'] }}</h6>
-                        <h6>{{$currency}} {{ $oCar->getCarPrice()['total_price'] }}</h6>
+                    @if($oCar->getCarVolumeDiscountPrice($oDiscountVolume,$search)['total_price_original'] > $oCar->getCarVolumeDiscountPrice($oDiscountVolume,$search)['total_price'])
+                        <h6 class="cross">{{$currency}} {{ $oCar->getCarVolumeDiscountPrice($oDiscountVolume,$search)['total_price_original'] }}</h6>
+                        <h6>{{$currency}} {{ $oCar->getCarVolumeDiscountPrice($oDiscountVolume,$search)['total_price'] }}</h6>
                     @else
-                        <h6>{{$currency}} {{ $oCar->getCarPrice()['total_price'] }}</h6>
+                        <h6>{{$currency}} {{ $oCar->getCarVolumeDiscountPrice($oDiscountVolume,$search)['total_price'] }}</h6>
                     @endif
-                    <div class="mt10"> <a class="btn text-uppercase have-radius btn-primary" href="{{ url('fleet/'.$oCar->url_token) }}">book this car</a> </div>
+                    <div class="mt10"> <a class="btn text-uppercase have-radius btn-primary" href="{{ url('fleet/'.$oCar->url_token.'?ref='.$oDiscountVolume->id) }}">book this car</a> </div>
                 </div>
             </div>
         </div>

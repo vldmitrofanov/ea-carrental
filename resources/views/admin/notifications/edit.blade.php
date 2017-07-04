@@ -59,22 +59,31 @@
 @endsection
 
 @section('javascript')
+    <script src="https://cdn.ckeditor.com/4.5.7/full/ckeditor.js"></script>
     <script type="text/javascript" >
+        $(function () {
+            CKEDITOR.replace('email_body');
+        });
+
         $(document).on("click", "a.insert-tag", function(e) {
+            for ( instance in CKEDITOR.instances )
+                CKEDITOR.instances[instance].updateElement();
+
             var text = $(this).attr('data-tag');
             if (document.selection) {
                     $('#email_body').focus();
                     sel = document.selection.createRange();
                     sel.text = text;
-            } else if (document.getElementById('email_body').selectionStart || document.getElementById('email_body').selectionStart == '0') {
+            } else if (CKEDITOR.instances['email_body'].selectionStart || CKEDITOR.instances['email_body'].selectionStart == '0') {
                     var startPos = document.getElementById('email_body').selectionStart;
                     var endPos = document.getElementById('email_body').selectionEnd;
-                    document.getElementById('email_body').value = document.getElementById('email_body').value.substring(0, startPos)
+                CKEDITOR.instances['email_body'].setData(CKEDITOR.instances['email_body'].getData().substring(0, startPos)
                             + text
-                            + document.getElementById('email_body').value.substring(endPos, document.getElementById('email_body').value.length);
+                            + CKEDITOR.instances['email_body'].getData().substring(endPos, CKEDITOR.instances['email_body'].getData().length));
             } else {
-                    document.getElementById('email_body').value += text;
+                CKEDITOR.instances['email_body'].setData(document.getElementById('email_body').value += text);
             }
+
         });
         
         $(document).on("click", "button.btn-tags", function(e) {

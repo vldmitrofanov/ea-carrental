@@ -26,6 +26,7 @@ use App\Http\Requests\CheckOutRequest;
 use App\Http\Requests\CartStepOneRequest;
 use Session;
 use Auth;
+use App\DiscountVolume;
 
 class CartController extends Controller
 {
@@ -171,7 +172,10 @@ class CartController extends Controller
                         
                         \Session::flash('flash_message', 'Your car has been booked.');
                         \Session::flash('flash_type', 'alert-success');
-            
+                        Session::forget('oCart');
+                        Session::forget('search');
+                        Session::forget('offers');
+
                         return $this->_successJsonResponse(['message'=>'Reservation information saved.', 'data' => $oCarReservation]);
                     }
                 }
@@ -685,6 +689,22 @@ class CartController extends Controller
             $discount_info = $this->getDiscountInfo($request);
         }
 
+        //        overwrite the volume discount when found to coupoon discount
+        $offersData = Session::get('offers');
+
+        if(!empty($offersData)) {
+            $discount_info = DiscountVolume::whereIn('id', function($query){
+                $query->select('discount_package_id')->from('discount_package_periods')
+                    ->distinct()
+                    ->whereRaw(" start_date <= NOW() and end_date>=NOW() ");
+            })
+                ->where('id',$request->get('ref'))
+                ->where('status',true)
+                ->first();
+
+            $discount_info = $this->_getVolumeDiscountInfo($offersData->start, $offersData->end, $oCarModel->id);
+        }
+
         if(is_array($discount_info)){
             switch ($discount_info['amount_type']){
                 case 'percent':
@@ -849,7 +869,25 @@ class CartController extends Controller
         return $this->_successJsonResponse(['message'=>'Discount Voucher Code is valid.', 'data' => $data]);
 
     }
-    
+
+    private function _getVolumeDiscountInfo($start, $end, $modelId){
+
+        $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
+            ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
+            ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') >= "'.Carbon::parse($start)->format('Y-m-d').'"')
+            ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') <= "'.Carbon::parse($end)->format('Y-m-d').'"')
+//                ->whereRaw('discount_voucher_recurring_rules.frequency = "weekly"')
+            ->whereRaw("discount_package_models.model_id = $modelId")
+            ->first();
+
+        if(!$oDiscount){
+            return false;
+        }
+
+        return ['amount' => $oDiscount->discount_amount, 'amount_type' => $oDiscount->discount_type];
+
+    }
+
     public function calculateDateDiff($start , $end){
         $from = Carbon::parse($start);
         $to = Carbon::parse($end);
