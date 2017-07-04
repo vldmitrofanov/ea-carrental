@@ -39,22 +39,32 @@
         <script type="text/javascript">
             $(function () {
                 $('#start').datetimepicker({
+                    minDate: 0,
+                    onShow:function( ct ){
+                        this.setOptions({
+                            maxDate:$('#end').val()?$('#end').val():false
+                        })
+                    },
                     useCurrent: false //Important! See issue #1075
                 });
                 $('#end').datetimepicker({
+                    minDate:0,
+                    onShow:function( ct ) {
+                        this.setOptions({
+                            minDate: $('#start').val() ? $('#start').val() : false
+                        })
+                    },
                     useCurrent: false //Important! See issue #1075
                 });
-                $("#start").on("dp.change", function (e) {
-                    $('#end').data("DateTimePicker").minDate(e.date);
-                });
-                $("#end").on("dp.change", function (e) {
-                    $('#start').data("DateTimePicker").maxDate(e.date);
-                });
+//                $("#start").on("dp.change", function (e) {
+//                    $('#end').data("DateTimePicker").minDate(e.date);
+//                });
+//                $("#end").on("dp.change", function (e) {
+//                    $('#start').data("DateTimePicker").maxDate(e.date);
+//                });
 
             });
-            $(function () {
 
-            });
             $(window).on('scroll', function () {
                 scrollPosition = $(this).scrollTop();
                 if (scrollPosition < 670) {

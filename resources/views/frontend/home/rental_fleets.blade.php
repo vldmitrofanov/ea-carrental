@@ -33,7 +33,7 @@
                         <a href="javascript:;"> <img class="media-object" src="{{asset('template/images/img_1.jpg')}}" alt=" "> </a>
                     </div>
                     <div class="media-body">
-                        <h4 class="media-heading">1024</h4>
+                        <h4 class="media-heading"></h4>
                         <p>Experienced Licenced Tour Operator in Malaysia &amp; Singapur</p>
                     </div>
                 </div>

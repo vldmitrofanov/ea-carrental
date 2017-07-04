@@ -20,8 +20,13 @@ class DashboardController extends Controller
         $oCustomers = User::whereHas('roles', function($q){$q->whereIn('name', ['customer']);})->get();
         $oUsers = User::whereHas('roles', function($q){$q->whereIn('name', ['admin','editor']);})->get();
         $oReservations = CarReservation::all();
+        $oTodayReservations = CarReservation::whereIn('id', function($query){
+                                $query->select('reservation_id')->from('car_reservation_details')
+                                    ->whereRaw(" DATE_FORMAT(date_from, \"%Y-%m-%d\") = CURDATE() ");
+                            })
+                            ->where('status','pending')->get();
 
-        return view('admin.dashboard.index', compact('oCustomers','oUsers','oReservations'));
+        return view('admin.dashboard.index', compact('oCustomers','oUsers','oReservations', 'oTodayReservations'));
     }
 
     public function email(Request $request){
