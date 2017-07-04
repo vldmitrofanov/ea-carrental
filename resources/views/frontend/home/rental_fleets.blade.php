@@ -34,7 +34,7 @@
                     </div>
                     <div class="media-body">
                         <h4 class="media-heading"></h4>
-                        <p>Experienced Licenced Tour Operator in Malaysia &amp; Singapur</p>
+                        <p>Experienced Licenced Tour Operator in Malaysia &amp; Singapore</p>
                     </div>
                 </div>
             </div>
