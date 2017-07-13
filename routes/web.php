@@ -14,6 +14,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
     Route::post('dashboard/email', 'Admin\DashboardController@email');
     Route::get('api', 'Admin\DashboardController@api');
     Route::get('fleetavailability', 'Admin\FleetAvailabilityController@index');
+    Route::get('fleetavailability/report', 'Admin\FleetAvailabilityController@report');
 
     Route::group(['prefix' => 'locations'], function(){
         Route::get('/', 'Admin\OfficeLocationController@index');

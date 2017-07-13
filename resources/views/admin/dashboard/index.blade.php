@@ -58,7 +58,7 @@ Dashboard
                 <div class="small-box bg-yellow">
                     <div class="inner">
                         <h3>{{ $oUsers->count()  }}</h3>
-                        <p>Users Registrations</p>
+                        <p>Admin Users</p>
                     </div>
                     <div class="icon">
                         <i class="ion ion-person-stalker"></i>
@@ -77,6 +77,19 @@ Dashboard
                         <i class="ion ion-person-add"></i>
                     </div>
                     <a href="{{url('admin/clients')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-xs-6">
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3>{{ $oReservedCars->count() }}/{{ $oAvailableCars->count()  }}</h3>
+                        <p>Reserved/Available Cars</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-information-circled"></i>
+                    </div>
+                    <a href="{{url('admin/fleetavailability/report')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
         </div>

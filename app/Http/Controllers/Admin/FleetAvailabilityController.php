@@ -143,4 +143,21 @@ class FleetAvailabilityController extends Controller
         }
         return $format;
     }
+    
+    public function report(Request $request){
+        $oPendingReservationCarsIds = CarReservation::Join('car_reservation_details', 'car_reservation_details.reservation_id', '=', 'rental_car_reservations.id')
+                                ->where('status','pending')->distinct()->pluck('car_reservation_details.car_id')->toArray();
+        
+        if(!empty($request->input('q'))) {            
+            if($request->input('q')=='reserved'){
+                $oCars = RentalCar::whereIn('id', $oPendingReservationCarsIds)->paginate(15);
+            }else{
+                $oCars = RentalCar::whereNotIn('id', $oPendingReservationCarsIds)->paginate(15);
+            }
+        }else{
+            $oCars = RentalCar::whereNotIn('id', $oPendingReservationCarsIds)->paginate(15);
+        }
+        
+        return view('admin.fleetavailabilty.report', compact('oCars'))->with('q', $request->input('q'));
+    }
 }

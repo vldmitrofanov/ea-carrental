@@ -12,6 +12,8 @@ use App\Setting;
 use App\User;
 use App\Role;
 use \SendPulse;
+use App\CarReservationDetail;
+use App\RentalCar;
 
 class DashboardController extends Controller
 {
@@ -25,8 +27,17 @@ class DashboardController extends Controller
                                     ->whereRaw(" DATE_FORMAT(date_from, \"%Y-%m-%d\") = CURDATE() ");
                             })
                             ->where('status','pending')->get();
-
-        return view('admin.dashboard.index', compact('oCustomers','oUsers','oReservations', 'oTodayReservations'));
+        
+        //$carIdArr = CarReservationDetail::distinct()->pluck('car_id')->toArray();
+        
+        $oPendingReservationCarsIds = CarReservation::Join('car_reservation_details', 'car_reservation_details.reservation_id', '=', 'rental_car_reservations.id')
+                                //->wherein('car_reservation_details.car_id',$carIdArr )
+                                ->where('status','pending')->distinct()->pluck('car_reservation_details.car_id')->toArray();
+                   
+        $oReservedCars = RentalCar::whereIn('id', $oPendingReservationCarsIds)->get();
+        $oAvailableCars = RentalCar::whereNotIn('id', $oPendingReservationCarsIds)->get();
+        
+        return view('admin.dashboard.index', compact('oCustomers','oUsers','oReservations', 'oTodayReservations', 'oReservedCars', 'oAvailableCars'));
     }
 
     public function email(Request $request){
