@@ -26,18 +26,24 @@ class DashboardController extends Controller
                                 $query->select('reservation_id')->from('car_reservation_details')
                                     ->whereRaw(" DATE_FORMAT(date_from, \"%Y-%m-%d\") = CURDATE() ");
                             })
-                            ->where('status','pending')->get();
-        
-        //$carIdArr = CarReservationDetail::distinct()->pluck('car_id')->toArray();
-        
+                            ->whereIn('status',['pending', 'confirmed'])
+                            ->take(10)
+                            ->get();
+        $oTodayCollections = CarReservation::whereIn('id', function($query){
+                                $query->select('reservation_id')->from('car_reservation_details')
+                                    ->whereRaw(" DATE_FORMAT(date_to, \"%Y-%m-%d\") = CURDATE() ");
+                            })
+                            ->whereIn('status',['pending', 'confirmed'])
+                            ->take(10)
+                            ->get();
+                
         $oPendingReservationCarsIds = CarReservation::Join('car_reservation_details', 'car_reservation_details.reservation_id', '=', 'rental_car_reservations.id')
-                                //->wherein('car_reservation_details.car_id',$carIdArr )
                                 ->where('status','pending')->distinct()->pluck('car_reservation_details.car_id')->toArray();
                    
         $oReservedCars = RentalCar::whereIn('id', $oPendingReservationCarsIds)->get();
         $oAvailableCars = RentalCar::whereNotIn('id', $oPendingReservationCarsIds)->get();
         
-        return view('admin.dashboard.index', compact('oCustomers','oUsers','oReservations', 'oTodayReservations', 'oReservedCars', 'oAvailableCars'));
+        return view('admin.dashboard.index', compact('oCustomers','oUsers','oReservations', 'oTodayReservations', 'oReservedCars', 'oAvailableCars', 'oTodayCollections'));
     }
 
     public function email(Request $request){

@@ -14,8 +14,16 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
     Route::post('dashboard/email', 'Admin\DashboardController@email');
     Route::get('api', 'Admin\DashboardController@api');
     Route::get('fleetavailability', 'Admin\FleetAvailabilityController@index');
-    Route::get('fleetavailability/report', 'Admin\FleetAvailabilityController@report');
+//    Route::get('fleetavailability/report', 'Admin\FleetAvailabilityController@report');
 
+    Route::group(['prefix' => 'reports'], function(){
+        Route::get('fleetavailability', 'Admin\Reports\FleetAvailabilityController@report');
+        Route::get('collection', 'Admin\Reports\CarCollectionController@index');
+        Route::post('all_collection', 'Admin\Reports\CarCollectionController@report');
+        Route::get('delivery', 'Admin\Reports\CarDeliveryController@index'); 
+        Route::post('all_deliveries', 'Admin\Reports\CarDeliveryController@report');
+    });
+    
     Route::group(['prefix' => 'locations'], function(){
         Route::get('/', 'Admin\OfficeLocationController@index');
         Route::get('/create', 'Admin\OfficeLocationController@create');
@@ -141,6 +149,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
     Route::group(['prefix' => 'reservations'], function(){
         Route::get('/', 'Admin\ReservationsController@index');
         Route::post('/all', 'Admin\ReservationsController@loadAll');
+        Route::post('/info', 'Admin\ReservationsController@loadInformation');
+        Route::post('/update_status', 'Admin\ReservationsController@updateInformation');
 
         Route::get('/create', 'Admin\ReservationsController@create');
         Route::post('store', 'Admin\ReservationsController@store');
@@ -160,7 +170,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             $datetime2 = new \DateTime($from);
             $interval = $datetime1->diff($datetime2);
 //        echo $interval->format('%D days %H hours');
-            $data['days'] = $interval->format('%D');
+            $data['days'] = $interval->days;
             $data['hours'] = $interval->format('%H');
             return $data;
         });
@@ -201,11 +211,9 @@ Route::get('api/email_tags', function(){
 
 Route::get('api/load_car_list', function(){
     $data['data']['cars'] = \App\CarType::where('id',Request::get('car_type_id'))->first()->cars()->get();
-//    $data['data']['extras'] = \App\CarType::where('id',Request::get('car_type_id'))->first()->extras()->get();
     return $data;
 });
 Route::get('api/load_extras', function(){
-//    $data['data']['cars'] = \App\CarType::where('id',Request::get('car_type_id'))->first()->cars()->get();
     $data['data']['extras'] = \App\CarModel::where('id',Request::get('car_model_id'))->first()->extras()->get();
     $oSetting = \App\Setting::where('key', 'currency')->first();
     $data['data']['currency'] = ($oSetting)?$oSetting->value:'USD';
@@ -215,10 +223,8 @@ Route::get('api/load_extras', function(){
 
 
 Route::group(['prefix' => 'fleet'], function(){
-
     Route::post('search', 'IndexController@search');
     Route::get('search', 'IndexController@search');
-
     Route::post('load_car_prices', 'FleetController@loadCarPrices');
     Route::post('calculate_difference', function(){
         $from = \Carbon\Carbon::parse(Request::get('rdate_start'));
@@ -226,7 +232,7 @@ Route::group(['prefix' => 'fleet'], function(){
         $datetime1 = new \DateTime($to); // Today's Date/Time
         $datetime2 = new \DateTime($from);
         $interval = $datetime1->diff($datetime2);
-        $data['days'] = $interval->format('%D');
+        $data['days'] = $interval->days;
         $data['hours'] = $interval->format('%H');
         $data['start'] = $from->format('m/d/Y H:i');
         $data['end'] = $to->format('m/d/Y H:i');
@@ -248,10 +254,7 @@ Route::group(['prefix' => 'cart'], function (){
     Route::post('checkout', 'CartController@checkout');
 });
 
-
-
 Route::get('dashboard', 'IndexController@dashboard')->middleware('auth');
-
 Route::get('register', 'UsersController@getRegistration')->middleware('guest');
 Route::post('register', 'Auth\RegisterController@register')->middleware('guest');
 Route::get('login', 'UsersController@getLogin')->middleware('guest');
@@ -263,6 +266,4 @@ Route::get('rental-offers', 'OffersController@rentalOffers');
 Route::get('contact-us', 'ContactUsController@index');
 Route::get('contact-us/contact', 'ContactUsController@contact');
 Route::post('contact-us/contact', 'ContactUsController@sendContactEmail');
-
-
 Route::get('/', 'IndexController@index');

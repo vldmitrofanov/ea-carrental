@@ -1,14 +1,28 @@
 $(document).ready(function() {
+    
+    $('#start_date').datetimepicker({
+        format:'m/d/Y', defaultDate:new Date(),
+        timepicker:false,
+    });
+    $('#end_date').datetimepicker({
+        format:'m/d/Y', defaultDate:new Date(),
+        timepicker:false,
+    });
+            
+            
     var table =  $('#reservationsTbl').DataTable( {
         "processing": true,
         "serverSide": true,
-        "select": true,
         pageLength: 50,
         "ajax": {
-            "url": "/admin/reservations/all",
+            "url": "/admin/reports/all_deliveries",
             type: 'POST',
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            "data": function ( d ) {
+                d.start_date = $('#start_date').val();
+                d.end_date = $('#end_date').val();
             }
         },
         "order": [[1, 'desc']],
@@ -51,13 +65,21 @@ $(document).ready(function() {
                         +''+full.details[0].car_type.vehicle_transmission_and_drive.code_letter
                         +''+full.details[0].car_type.vehicle_fuel_and_a_c.code_letter;
                 }
-            }, 
+            },
+            {
+                orderable:      false,
+                data:           null,
+                name:"Booking",
+                render: function ( data, type, full, meta ) {
+                    return full.details[0].date_from+' - '+full.details[0].date_to;
+                }
+            },
             {
                 data: "rental_car_reservations.status",
                 name:"Status",
                 render: function ( data, type, full, meta ) {
-                    return '<a title="Update Reservation Status" href="#" data-id="' + full.id + '"  class="editor_edit">'+full.status.toUpperCase()+'</a>';
-                }  
+                    return full.status;
+                }
             },
             {
                 data: "car_reservation_details.total_price",
@@ -93,61 +115,8 @@ $(document).ready(function() {
         },
     });
 
-    // Edit record
-    table.on('click', 'a.editor_edit', function (e) {
-        e.preventDefault();
-        processing();
-        
-        formData =  {'_method' : 'POST', 'id': $(this).data('id')};
-        $.ajax({
-            url: '/admin/reservations/info',
-            type: 'post',
-            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-            data: formData
-        })
-        .done(function(response){
-            $('form#editReservation input#id').val(response.data.id)
-            $('form#editReservation select#status').val(response.data.status)
-            $.unblockUI();
-            $('#editReservation').modal({show: true, backdrop: 'static',keyboard: false});
-        })
-        .fail(function(response){
-            $.unblockUI();
-            $.each(response.responseJSON, function (key, value) {
-                $.each(value, function (index, message) {
-                    displayMessageAlert(message, 'danger', 'warning-sign');
-                });
-            });
-        });
+    $(document).on("click", "button.btn-filter", function(e) {
+        table.draw();
     });
-    
-    $(".modal").on('hidden.bs.modal', function () {
-        $(this).data('bs.modal', null);
-    });
-    
-    $(document).on("click", "button.btn-editreservation", function(e) {
-        processing();
-        var formData = $('form#editReservation').serializeArray();
-        formData.push({
-            name: "_method",
-            value: "POST"
-        });
-        $.post($('form#editReservation').attr('action'), formData)
-        .done(function(response){
-            $.unblockUI();
-            displayMessageAlert(response.message);
-            $('#editReservation').modal('hide');
-            table.ajax.reload();
-        })
-        .fail(function(response){
-            $('#discount_code').val('');
-            $.unblockUI();
-            $.each(response.responseJSON, function (key, value) {
-                $.each(value, function (index, message) {
-                    displayMessageAlert(message, 'danger', 'warning-sign');
-                });
-            });
-        });
-    });
-    
+
 } );

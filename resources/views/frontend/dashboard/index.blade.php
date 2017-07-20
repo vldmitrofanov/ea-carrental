@@ -30,7 +30,7 @@
                 <h4>{{ $oReservation->processed_on }}</h4>
                 <div class="row">
                     <div class="col-sm-2">
-                        <a href="{{ url('fleet/'.$oReservation->details->first()->car->url_token) }}"><img width="78" src="{{asset($oReservation->details->first()->car->thumb_image)}}" alt=""></a>
+                        <a href="{{ url('fleet/'.$oReservation->details->first()->car->url_token) }}"><img width="78" src="{{Storage::url($oReservation->details->first()->car->thumb_image)}}" alt=""></a>
                     </div>
                     <div class="col-sm-5">
                         <h3>{{ $oReservation->details->first()->car->makeAndModel->make }} {{ $oReservation->details->first()->car->makeAndModel->model }}</h3>
@@ -47,7 +47,7 @@
                 </div>
                 <div class="row moreDetailAdmin">
                     <div class="moreDetail">
-                        <span>More Details</span>
+                        <span>Less Details</span>
                         <i class="fa fa-angle-down"></i>
                     </div>
                     <div class="bookSummary showLess" style="display:block;">
@@ -73,6 +73,34 @@
                                     </div>
                                 </div>
                             </li>
+                            @if($oReservation->details->first()->discount>0)
+                            <li class="bgGray">
+                                <div class="row">
+                                    <div class="col-xs-6 bookingColHeading">Discounts</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        6%
+                                    </div>
+                                    <div class="col-xs-6 weight-700">
+                                        <span>{{$currency}} {{$oReservation->details->first()->discount}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                            @endif
+                            @if($oReservation->details->first()->car_rental_fee>0)
+                            <li class="bgGray">
+                                <div class="row">
+                                    <div class="col-xs-6 bookingColHeading">Car Rental Fee</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6"></div>
+                                    <div class="col-xs-6 weight-700">
+                                        <span>{{$currency}} {{$oReservation->details->first()->car_rental_fee}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                            @endif                            
                             <li class="bgGray">
                                 <div class="row">
                                     <div class="col-xs-6 bookingColHeading">Additional Services</div>
@@ -90,34 +118,57 @@
                                 @endforeach
                                 @endif
                             </li>
-                            @if($oReservation->details->first()->discount>0)
+                            @if($oReservation->details->first()->insurance>0)
                             <li class="bgGray">
                                 <div class="row">
-                                    <div class="col-xs-6 bookingColHeading">Discounts</div>
+                                    <div class="col-xs-6 bookingColHeading">Insurance</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-6">
-                                        6%
-                                    </div>
+                                    <div class="col-xs-6"></div>
                                     <div class="col-xs-6 weight-700">
-                                        <span>{{$currency}} {{$oReservation->details->first()->discount}}</span>
+                                        <span>{{$currency}} {{$oReservation->details->first()->insurance}}</span>
                                     </div>
                                 </div>
                             </li>
-                            @endif
+                            @endif 
+                            <li class="bgGray">
+                                <div class="row">
+                                    <div class="col-xs-6 bookingColHeading">Sub-Total</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6"></div>
+                                    <div class="col-xs-6 weight-700">
+                                        <span>{{$currency}} {{$oReservation->details->first()->sub_total}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                            
                             <li class="bgGray">
                                 <div class="row">
                                     <div class="col-xs-6 bookingColHeading">Tax</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-xs-6">
-                                        {{--6% GST--}}
-                                    </div>
+                                    <div class="col-xs-6"></div>
                                     <div class="col-xs-6 weight-700">
                                         <span>{{$currency}} {{$oReservation->details->first()->tax}}</span>
                                     </div>
                                 </div>
                             </li>
+                            
+                            @if($oReservation->details->first()->required_deposit>0)
+                            <li class="bgGray">
+                                <div class="row">
+                                    <div class="col-xs-6 bookingColHeading">Required Deposit</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-6"></div>
+                                    <div class="col-xs-6 weight-700">
+                                        <span>{{$currency}} {{$oReservation->details->first()->required_deposit}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                            @endif 
+                            
                         </ul>
                     </div>
                     <div class="totalRow row">

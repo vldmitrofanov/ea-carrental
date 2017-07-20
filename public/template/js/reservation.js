@@ -66,6 +66,7 @@ $(document).ready(function(){
 
 
     $('#resetDateStart').datetimepicker({
+        defaultTime:'10:00',
         useCurrent: false,
         onChangeDateTime:function(dp,$input){
             $('#rdate_start').val($input.val());
@@ -74,6 +75,7 @@ $(document).ready(function(){
     });
     $('#resetDateEnd').datetimepicker({
         useCurrent: false,
+        defaultTime:'18:00',
         onChangeDateTime:function(dp,$input){
             $('#rdate_end').val($input.val());
             calculatePrices();
@@ -171,50 +173,42 @@ function calculateRental () {
         $('.days-duration-price').html(prices.price_per_day_label);
         $('.hours-duration-price').html(prices.price_per_hour_label);
 
+        if(prices.hasVDiscount==true){
+            $('#discount_code').prop('disabled', true);
+            $('#discount_code').val('');
+            $('.validate-code').prop('disabled', true);
+        }else{
+            $('#discount_code').prop('disabled', false);
+            $('.validate-code').prop('disabled', false);
+        }
+                    
         if(prices.discount>0) {
             $('li.discounts').removeClass('hidden');
             $('.discount-label').html(prices.discount_detail);
-            $('.discount-amount').html(prices.discount);
-        }else{
+            $('.discount-amount').html(currencySign+' '+prices.discount);
+        }else{ 
             $('li.discounts').addClass('hidden');
         }
 
-        $('.tax-label').html(prices.tax_detail);
-        $('.tax-amount').html(prices.tax);
+        $('.rentalfee-label').html(prices.car_rental_fee_detail);
+        $('.rentalfee-amount').html(currencySign+' '+prices.car_rental_fee);
 
         $('.extra-label').html('Extras Price');
         $('.extra-amount').html(prices.extra_price_label);
+        
+        $('.insurance-label').html(prices.insurance_detail);
+        $('.insurance-amount').html(currencySign+' '+prices.insurance);
+        
+        $('.subtotal-fee').html(currencySign+' '+prices.sub_total);
+        
+        $('.tax-label').html(prices.tax_detail);
+        $('.tax-amount').html(currencySign+' '+prices.tax);
 
-        /*
-
-        $("table.payment_detail> tbody tr:nth-child(2)").find('th').html('Price per day:<br/><small>'+prices.price_per_day_detail+'<small>');
-        $("table.payment_detail> tbody tr:nth-child(2)").find('td').html(currencySign+' '+prices.price_per_day);
-
-        $("table.payment_detail> tbody tr:nth-child(3)").find('th').html('Discount:<br/><small>'+prices.discount_detail+'<small>');
-        $("table.payment_detail> tbody tr:nth-child(3)").find('td').html(currencySign+' '+prices.discount);
-
-
-        $("table.payment_detail> tbody tr:nth-child(4)").find('th').html('Price per hour:<br/><small>'+prices.price_per_hour_detail+'<small>');
-        $("table.payment_detail> tbody tr:nth-child(4)").find('td').html(currencySign+' '+prices.price_per_hour);
-
-
-        $("table.payment_detail> tbody tr:nth-child(5)").find('th').html('Car rental fee:<br/><small>'+prices.car_rental_fee_detail+'<small>');
-        $("table.payment_detail> tbody tr:nth-child(5)").find('td').html(currencySign+' '+prices.car_rental_fee);
-
-
-        $("table.payment_detail> tbody tr:nth-child(6)").find('td').html(currencySign+' '+prices.extra_price);
-
-        $("table.payment_detail> tbody tr:nth-child(7)").find('th').html('Insurance:<br/><small>'+prices.insurance_detail+'<small>');
-        $("table.payment_detail> tbody tr:nth-child(7)").find('td').html(currencySign+' '+prices.insurance);
-
-        $("table.payment_detail> tbody tr:nth-child(8)").find('td').html(currencySign+' '+prices.sub_total);
-
-        $("table.payment_detail> tbody tr:nth-child(9)").find('th').html('Tax:<br/><small>'+prices.tax_detail+'<small>');
-        $("table.payment_detail> tbody tr:nth-child(9)").find('td').html(currencySign+' '+prices.tax);
-
-        $("table.payment_detail> tbody tr:nth-child(10)").find('td').html(currencySign+' '+prices.total_price);
-        $("table.payment_detail> tbody tr:nth-child(11)").find('td').html(currencySign+' '+prices.required_deposit);
-        */
+        $('.total-cost').html(currencySign+' '+prices.total_price);
+        
+        $('.deposit-label').html(prices.required_deposit_detail);
+        $('.deposit-fee').html(currencySign+' '+prices.required_deposit);
+        
         $.unblockUI();
     })
     .fail(function(response){
@@ -224,8 +218,5 @@ function calculateRental () {
                 displayMessageAlert(message, 'danger', 'warning-sign');
             });
         });
-
-//                    $('input#date_from').val('');
-//                    $('input#date_to').val('');
     });
 }

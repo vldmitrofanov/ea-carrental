@@ -17,7 +17,7 @@ class SettingsController extends Controller
     public function index()
     {
         $oSettings = Setting::get();
-        $oCurrencies = Country::where('currency_name', '<>', '')->get();
+        $oCurrencies = Country::where('currency_name', '<>', '')->distinct()->get(['currency_name','currency_code']);
         return view('admin.settings.index', compact('oSettings', 'oCurrencies'));
     }
 

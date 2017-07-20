@@ -89,7 +89,7 @@ Dashboard
                     <div class="icon">
                         <i class="ion ion-information-circled"></i>
                     </div>
-                    <a href="{{url('admin/fleetavailability/report')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                    <a href="{{url('admin/reports/fleetavailability')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
         </div>
@@ -98,7 +98,7 @@ Dashboard
             <section class="col-lg-12 connectedSortable">
                 <div class="box box-info">
                     <div class="box-header with-border">
-                        <h3 class="box-title">Today Reservations</h3>
+                        <h3 class="box-title">Today Deliveries</h3>
                     </div>
 
                     <div class="box-body">
@@ -137,7 +137,51 @@ Dashboard
 
                     <div class="box-footer clearfix">
                         <a href="{{url('admin/reservations/create')}}" class="btn btn-sm btn-info btn-flat pull-left">Place New Reservation</a>
-                        <a href="{{url('admin/reservations')}}" class="btn btn-sm btn-default btn-flat pull-right">View All Reservations</a>
+                        <a href="{{url('admin/reports/delivery')}}" class="btn btn-sm btn-default btn-flat pull-right">View More Reservations</a>
+                    </div>
+                </div>
+                
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Today Collections</h3>
+                    </div>
+
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table no-margin">
+                                <thead>
+                                <tr>
+                                    <th>Number</th>
+                                    <th>Car</th>
+                                    <th>Customer</th>
+                                    <th>Duration</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @forelse($oTodayCollections->sortBy('id',1) as $oReservation)
+                                    <tr>
+                                        <td><a href="{{url('admin/reservations/'.$oReservation->id.'/edit')}}">{{$oReservation->reservation_number}}</a></td>
+                                        <td>{{ $oReservation->details->first()->car->registration_number  }} ({{ $oReservation->details->first()->model->make  }} - {{ $oReservation->details->first()->model->model  }})</td>
+                                        <td>{{ $oReservation->details->first()->car->registration_number  }} ({{ $oReservation->details->first()->model->make  }} - {{ $oReservation->details->first()->model->model  }})</td>
+                                        <td>{!! Booking::calculateDateDiff($oReservation->details->first()->date_from, $oReservation->details->first()->date_to) !!}</td>
+                                        <td>{!! Booking::formatTotal($oReservation->details->first()->total_price) !!}</td>
+                                        <td><span class="label label-{{config('settings.order_colors')[$oReservation->status]}}">{{ $oReservation->status }}</span></td>
+
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" align="center"><strong>No Collections for Today</strong></td>
+                                    </tr>
+                                @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="box-footer clearfix">
+                        <a href="{{url('admin/reports/collection')}}" class="btn btn-sm btn-default btn-flat pull-right">View More</a>
                     </div>
                 </div>
 

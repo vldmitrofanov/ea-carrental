@@ -26,7 +26,6 @@ use \SendPulse;
 use Spatie\GoogleCalendar\Event;
 use App\DiscountVolume;
 
-
 class ReservationsController extends Controller
 {
     protected $option_arr = array();
@@ -287,6 +286,9 @@ class ReservationsController extends Controller
                             $oCarReservationExtra->save();
                         }
                     }
+                    
+                    $this->_sendReservationEmail($oCarReservation);
+                    
                     return $this->_successJsonResponse(['message'=>'Reservation information saved.', 'data' => $oCarReservation]);
                 }else{
                     return $this->_failedJsonResponse([['Failed to save <strong>Reservation Information</strong>.']]);
@@ -834,7 +836,7 @@ class ReservationsController extends Controller
         $currency = ($oSetting)?$oSetting->value:'USD';
 
         $data['time'] = $this->calculateDateDiff($request->input('date_from'), $request->input('date_to'));
-
+        
         $oCarType = Types::where('id',$request->input('car_type_id'))->first();
         if(!$oCarType){
             return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
@@ -859,14 +861,15 @@ class ReservationsController extends Controller
             return $this->_failedJsonResponse([['Car is <strong>not available</strong> during selected time period. Please select another Car and/or change time period.']]);
         }
         $oPrices = $oCarModel->prices()
-            ->where('car_model_prices.date_from','>=',Carbon::parse($request->input('date_from'))->format('Y-m-d'))
-            ->where('car_model_prices.date_to','<=',Carbon::parse($request->input('date_to'))->format('Y-m-d'))
-            ->get();
+                    ->where('car_model_prices.date_from','>=',Carbon::parse($request->input('date_from'))->format('Y-m-d'))
+                    ->where('car_model_prices.date_to','<=',Carbon::parse($request->input('date_to'))->format('Y-m-d'))
+                    ->get();
 
         $rental_days = $data['time']['days'];
         $rental_hours = $data['time']['hours'];
         $hours = intval($rental_hours - ($rental_days * 24));
 
+        $hasVDiscount = false;
         $price = 0;
         $extra_price = 0;
         $price_per_day = 0;
@@ -966,7 +969,7 @@ class ReservationsController extends Controller
         }
         $total_price = $sub_total + $tax;
         $security  = $this->option_arr['security_payment'];
-        switch ($this->option_arr['deposit_type'])
+        /*switch ($this->option_arr['deposit_type'])
         {
             case 'percent':
                 $required_deposit = ($total_price * $this->option_arr['deposit_payment']) / 100;
@@ -976,25 +979,64 @@ class ReservationsController extends Controller
                 $required_deposit = $this->option_arr['deposit_payment'];
                 $required_deposit_detail = '';
                 break;
-        }
+        }*/
 
+        $required_deposit =0 ;
+        $required_deposit_detail = '';
+        
         $discount_info = false;
         if($request->input('discount_code')){
             $discount_info = $this->getDiscountInfo($request);
         }
-
-        //        check if there is any volume discount available for the period
-        $oVDisocunt = DiscountVolume::whereIn('id', function($query) use($request){
-                        $query->select('discount_package_id')->from('discount_package_periods')
-                            ->distinct()
-                            ->whereRaw(" start_date <= '".Carbon::parse($request->input('date_from'))."' and end_date >= '".Carbon::parse($request->input('date_to'))."' ");
-                    })
-//                    ->where('id',$request->get('ref'))
-                    ->where('status',true)
-                    ->first();
-                    
+        
+        $oVDisocunt = false;
+        $daysDiff = Carbon::parse($request->input('date_to'))->diffInDays(Carbon::parse($request->input('date_from')));
+        $weeksDiff = Carbon::parse($request->input('date_to'))->diffInWeeks(Carbon::parse($request->input('date_from')));
+        $monthsDiff = Carbon::parse($request->input('date_to'))->diffInMonths(Carbon::parse($request->input('date_from')));
+        // check if there is any volume discount available for the period
+        if($daysDiff>0){
+            $oVDisocunt = DiscountVolume::whereIn('id', function($query) use($request){
+                            $query->select('discount_package_id')->from('discount_package_periods')
+                                ->distinct()
+                                //  ->whereRaw(" start_date <= '".Carbon::parse($request->input('date_from'))."' and end_date >= '".Carbon::parse($request->input('date_to'))."' ");
+                                ->whereRaw(" DATE_FORMAT(start_date,'%Y-%m-%d') <= '".Carbon::now()->format('Y-m-d')."' and DATE_FORMAT(end_date,'%Y-%m-%d') >= '".Carbon::now()->format('Y-m-d')."' ");
+                        })
+                        ->where('booking_duration', $daysDiff)
+                        ->where('booking_duration_type','days')
+                        ->where('status',true)
+                        ->first();
+        }/*else if($daysDiff==0 && $weeksDiff>0 && $monthsDiff==0){
+            echo "w";
+            $oVDisocunt = DiscountVolume::whereIn('id', function($query) use($request){
+                            $query->select('discount_package_id')->from('discount_package_periods')
+                                ->distinct()
+                                //  ->whereRaw(" start_date <= '".Carbon::parse($request->input('date_from'))."' and end_date >= '".Carbon::parse($request->input('date_to'))."' ");
+                                ->whereRaw(" DATE_FORMAT(start_date,'%Y-%m-%d') <= '".Carbon::now()->format('Y-m-d')."' and DATE_FORMAT(end_date,'%Y-%m-%d') >= '".Carbon::now()->format('Y-m-d')."' ");
+                        })
+                        ->where('booking_duration', $weeksDiff)
+                        ->where('booking_duration_type','weeks')
+                        ->where('status',true)
+                        ->toSql();
+        }else if($daysDiff==0 && $weeksDiff==0 && $monthsDiff>0){
+            echo "m";
+            $oVDisocunt = DiscountVolume::whereIn('id', function($query) use($request){
+                            $query->select('discount_package_id')->from('discount_package_periods')
+                                ->distinct()
+                                //  ->whereRaw(" start_date <= '".Carbon::parse($request->input('date_from'))."' and end_date >= '".Carbon::parse($request->input('date_to'))."' ");
+                                ->whereRaw(" DATE_FORMAT(start_date,'%Y-%m-%d') <= '".Carbon::now()->format('Y-m-d')."' and DATE_FORMAT(end_date,'%Y-%m-%d') >= '".Carbon::now()->format('Y-m-d')."' ");
+                        })
+                        ->where('booking_duration', $monthsDiff)
+                        ->where('booking_duration_type','months')
+                        ->where('status',true)
+                        ->toSql();
+        }*/
+        
         if($oVDisocunt) {
-            $discount_info = $this->_getVolumeDiscountInfo(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel->id);
+            $vDiscount = $this->_getVolumeDiscountInfo(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel->id, $request);
+            if($vDiscount){
+                $hasVDiscount = true;
+                $discount_info = $vDiscount;
+            }
         }
         
         if(is_array($discount_info)){
@@ -1011,12 +1053,10 @@ class ReservationsController extends Controller
         }
 
         $total_price = $total_price - $discount;
-
         $total_amount_due = $total_price;
         if($request->input('status') == 'confirmed'){
             $total_amount_due = $total_price - $required_deposit;
         }
-
 
         $price_per_day = number_format($price_per_day, 2, '.', '');
         $price_per_hour = number_format($price_per_hour, 2, '.', '');
@@ -1062,7 +1102,7 @@ class ReservationsController extends Controller
             }
         }
 
-        $data['prices'] = compact('rental_time', 'rental_days', 'hours',
+        $data['prices'] = compact('rental_time', 'rental_days', 'hours','hasVDiscount',
             'price_per_day', 'price_per_hour', 'price_per_day_detail', 'price_per_hour_detail',
             'car_rental_fee', 'extra_price', 'discount', 'insurance', 'sub_total', 'tax',
             'total_price', 'required_deposit', 'total_amount_due',
@@ -1081,22 +1121,60 @@ class ReservationsController extends Controller
         return $this->_successJsonResponse(['message'=>'Car Type Custom Rate information saved.', 'data' => $data]);
     }
 
-    private function _getVolumeDiscountInfo($start, $end, $modelId){
-
-        $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
-            ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
-            ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::parse($start)->format('Y-m-d').'"')
-            ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::parse($end)->format('Y-m-d').'"')
-//                ->whereRaw('discount_voucher_recurring_rules.frequency = "weekly"')
-            ->whereRaw("discount_package_models.model_id = $modelId")
-            ->first();
-
+    private function _getVolumeDiscountInfo($start, $end, $modelId, $request){
+        $daysDiff = Carbon::parse($start)->diffInDays($end);
+        $weeksDiff = Carbon::parse($start)->diffInWeeks($end);
+        $monthsDiff = Carbon::parse($start)->diffInMonths($end);
+      
+        if($daysDiff>0){
+            if((int)$request->input('id')>0){
+                $oReservation = CarReservation::where('id', $request->input('id'))->firstOrFail();
+                $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
+                    ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
+                    ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::parse($oReservation->processed_on)->format('Y-m-d').'"')
+                    ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::parse($oReservation->processed_on)->format('Y-m-d').'"')
+                    ->whereRaw("discount_package_models.model_id = $modelId")
+                    ->where('discount_packages.booking_duration', $daysDiff)
+                    ->where('discount_packages.booking_duration_type','days')
+                    ->where('discount_packages.status',true)
+                    ->first();
+            }else{
+                $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
+                    ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
+                    ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::now()->format('Y-m-d').'"')
+                    ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::now()->format('Y-m-d').'"')
+                    ->whereRaw("discount_package_models.model_id = $modelId")
+                    ->where('discount_packages.booking_duration', $daysDiff)
+                    ->where('discount_packages.booking_duration_type','days')
+                    ->where('discount_packages.status',true)
+                    ->first();
+            }
+        }/*else if($daysDiff==0 && $weeksDiff>0 && $monthsDiff==0){
+            $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
+                ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
+                ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw("discount_package_models.model_id = $modelId")
+                ->where('discount_packages.booking_duration', $weeksDiff)
+                ->where('discount_packages.booking_duration_type','weeks')
+                ->where('discount_packages.status',true)
+                ->first();
+        }else if($daysDiff==0 && $weeksDiff==0 && $monthsDiff>0){
+            $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
+                ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
+                ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw("discount_package_models.model_id = $modelId")
+                ->where('discount_packages.booking_duration', $monthsDiff)
+                ->where('discount_packages.booking_duration_type','months')
+                ->where('discount_packages.status',true)
+                ->first();
+        }*/
         if(!$oDiscount){
             return false;
         }
 
         return ['amount' => $oDiscount->discount_amount, 'amount_type' => $oDiscount->discount_type];
-
     }
     
     public function formatCurrencySign($price, $currency, $separator = " ")
@@ -1186,8 +1264,9 @@ class ReservationsController extends Controller
         $datetime1 = new \DateTime($to); // Today's Date/Time
         $datetime2 = new \DateTime($from);
         $interval = $datetime1->diff($datetime2);
-        $data['days'] = $interval->format('%D');
+        $data['days'] = $interval->days;
         $data['hours'] = $interval->format('%H');
+        $data['info'] = $interval;
         return $data;
     }
     
@@ -1316,8 +1395,8 @@ class ReservationsController extends Controller
         }
 
         $oInfo = $oDiscount->recurring->repititions()
-                    ->where('start_repeat', '<=', Carbon::parse($request->input('date_from')))
-                    ->where('end_repeat', '>=', Carbon::parse($request->input('date_to')))
+                    ->whereRaw('DATE_FORMAT(start_repeat,\'%Y-%m-%d\') <= "'.Carbon::parse($request->input('date_from'))->format('Y-m-d').'"')
+                    ->whereRaw('DATE_FORMAT(end_repeat,\'%Y-%m-%d\') >= "'.Carbon::parse($request->input('date_from'))->format('Y-m-d').'"')
                     ->first();
         if(!$oInfo){
             return false;
@@ -1353,16 +1432,47 @@ class ReservationsController extends Controller
         }
 
         $oInfo = $oDiscount->recurring->repititions()
-                    ->where('start_repeat', '<=', Carbon::parse($request->input('date_from')))
-                    ->where('end_repeat', '>=', Carbon::parse($request->input('date_to')))
-                    ->first();
+                ->whereRaw('DATE_FORMAT(start_repeat,\'%Y-%m-%d\') <= "'.Carbon::parse($request->input('date_from'))->format('Y-m-d').'"')
+                ->whereRaw('DATE_FORMAT(end_repeat,\'%Y-%m-%d\') >= "'.Carbon::parse($request->input('date_from'))->format('Y-m-d').'"')                
+                ->first();
         if(!$oInfo){
             return $this->_failedJsonResponse([['Discount Voucher is not valid for selected Duration.']]);
         }
 
         $data['voucher'] = $oDiscount;
         return $this->_successJsonResponse(['message'=>'Discount Voucher Code is valid.', 'data' => $data]);
-
+    }
+    
+    public function loadInformation(Request $request)
+    {
+        $this->_checkAjaxRequest();
+        if($request->input('id')==''){
+            return $this->_failedJsonResponse([['Reservation Id is not valid or has been removed.']]);
+        }
+        
+        $oReservation = CarReservation::where('id',$request->input('id'))->first();
+        if(!$oReservation){
+            return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
+        }
+        
+        return $this->_successJsonResponse(['message'=>'Reservation is valid.', 'data' => $oReservation]);
+    }
+    
+    public function updateInformation(Request $request)
+    {
+        $this->_checkAjaxRequest();
+        if($request->input('id')==''){
+            return $this->_failedJsonResponse([['Reservation Id is not valid or has been removed.']]);
+        }
+        
+        $oReservation = CarReservation::where('id',$request->input('id'))->first();
+        if(!$oReservation){
+            return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
+        }
+        $oReservation->status = $request->input('status');
+        $oReservation->save();
+        
+        return $this->_successJsonResponse(['message'=>'Reservation is valid.', 'data' => $oReservation]);
     }
     
     private function _sendReservationEmail($oReservation){
@@ -1370,6 +1480,13 @@ class ReservationsController extends Controller
             return $this->_failedJsonResponse([['Reservation is not valid or has been removed.']]);
         }
 
+        $toNotifiers = explode(",", $this->option_arr['reservations_notify']);
+        $toEmails = [];
+        foreach ($toNotifiers as $toNotifier){
+            $toInfo = explode(":", $toNotifier);
+            $toEmails[] = ['name' =>$toInfo[0], 'email' => $toInfo[1]];
+        }
+        
         $currency = $this->getCurrencySign($this->option_arr['currency']);
         $pdf = PDF::loadView('emails.reservation.pdf', compact('oReservation', 'currency'))->save(storage_path('emails/'.$oReservation->reservation_number.'.pdf'));
         
@@ -1384,18 +1501,7 @@ class ReservationsController extends Controller
                 'name' => 'suzanne',
                 'email' => 'suzanne@embassyalliance.com'
             ),
-            'to' => array(
-                array(
-                    'name' => 'Idrees',
-                    'email' => 'medriis@gmail.com'
-                )
-            ),
-    //        'bcc' => array(
-    //            array(
-    //                'name' => 'Manager',
-    //                'email' => 'manager@domain.com'
-    //            )
-    //        ),
+            'to' => $toEmails,
             'attachments' => array(
                 'invoice.pdf' => file_get_contents(str_replace('public/', 'storage/', storage_path('emails/'.$oReservation->reservation_number.'.pdf')))
             )

@@ -116,7 +116,19 @@
                 </a>
             </li>
 
-
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-book"></i> <span>Reports</span>
+                    <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                </a>
+                <ul class="treeview-menu"> 
+                    <li class="{{ (\Request::is('admin/reports/fleetavailability'))? 'active' : '' }}"><a href="{{ url('admin/reports/fleetavailability') }}"><i class="fa fa-file-text-o"></i> Fleet Availability</a></li>
+                    <li class="{{ (\Request::is('admin/reports/collection')) ? 'active' : '' }}"><a href="{{ url('admin/reports/collection') }}"><i class="fa fa-file-text-o"></i> Car Collection Report</a></li>
+                    <li class="{{ (\Request::is('admin/reports/delivery')) ? 'active' : '' }}"><a href="{{ url('admin/reports/delivery') }}"><i class="fa fa-file-text-o"></i> Car Delivery Report</a></li>
+                </ul>
+            </li>
             
         </ul>
     </section>

@@ -5,7 +5,7 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li class="{{ Request::is('fleet') ? 'active' : '' }}"><a href="{{ url('fleet') }}">Our Fleet</a></li>
+            <li class="{{ Request::is('fleet') ? 'active' : '' }}"><a href="{{ url('fleet/malaysia/kuala-lumpur') }}">Our Fleet</a></li>
             <li><a href="javascript:;">Chafeur Driven</a></li>
             <li class="{{ Request::is('rental-offers') ? 'active' : '' }}"><a href="{{ url('rental-offers') }}">Rental Offers</a></li>
             <li class="{{ Request::is('contact-us') ? 'active' : '' }}"><a href="{{ url('contact-us') }}">Contact us</a></li>

@@ -218,6 +218,29 @@
                                 </div>
                             </div>
                         </li>
+                        <li class="bgGray showLess discounts">
+                            <div class="row">
+                                <div class="col-xs-6 bookingColHeading">Discounts</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 discount-label"></div>
+                                <div class="col-xs-6 weight-700">
+                                    <span class="discount-amount"></span>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="bgGray showLess rentalfee">
+                            <div class="row">
+                                <div class="col-xs-6 bookingColHeading">Car Rental Fee</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 rentalfee-label"></div>
+                                <div class="col-xs-6 weight-700">
+                                    <span class="rentalfee-amount"></span>
+                                </div>
+                            </div>
+                        </li>
+                        
                         <li class="bgGray showLess">
                             <div class="row">
                                 <div class="col-xs-6 bookingColHeading">Additional Services</div>
@@ -230,17 +253,31 @@
                                 </div>
                             </div>
                         </li>
-                        <li class="bgGray showLess discounts">
+                        
+                        <li class="bgGray showLess insurance">
                             <div class="row">
-                                <div class="col-xs-6 bookingColHeading">Discounts</div>
+                                <div class="col-xs-6 bookingColHeading">Insurance</div>
                             </div>
                             <div class="row">
-                                <div class="col-xs-6 discount-label"></div>
+                                <div class="col-xs-6 insurance-label"></div>
                                 <div class="col-xs-6 weight-700">
-                                    <span class="discount-amount"></span>
+                                    <span class="insurance-amount"></span>
                                 </div>
                             </div>
                         </li>
+                        
+                        <li class="bgGray showLess subtotal">
+                            <div class="row">
+                                <div class="col-xs-6 bookingColHeading">Sub-total</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 subtotal-label"></div>
+                                <div class="col-xs-6 weight-700">
+                                    <span class="subtotal-fee"></span>
+                                </div>
+                            </div>
+                        </li>
+                        
                         <li class="bgGray showLess">
                             <div class="row">
                                 <div class="col-xs-6 bookingColHeading">Taxes</div>
@@ -252,6 +289,7 @@
                                 </div>
                             </div>
                         </li>
+                        
                         <li class="showLess">
                             <div class="row">
                                 <div class="totalpayment col-xs-12">
@@ -262,6 +300,19 @@
                                 </div>
                             </div>
                         </li>
+                        
+                        <li class="bgGray showLess hidden deposit">
+                            <div class="row">
+                                <div class="col-xs-6 bookingColHeading">Required Deposit</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 deposit-label"></div> 
+                                <div class="col-xs-6 weight-700">
+                                    <span class="deposit-fee"></span>
+                                </div>
+                            </div>
+                        </li>
+                        
                         <li class="showLess">
                             <a role="button" class="btn btn-default btn-continue" href="javascript:;">CONTINUE</a>
                         </li>

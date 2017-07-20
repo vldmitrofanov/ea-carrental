@@ -499,17 +499,24 @@
                     $('#required_deposit').val(prices.required_deposit);
                     $('#discount').val(prices.discount);
                     $('#discount_detail').val(prices.discount_detail);
+                    
+                    if(prices.hasVDiscount==true){
+                        $('#discount_code').prop('disabled', true);
+                        $('#discount_code').val('');
+                        $('.validate-code').prop('disabled', true);
+                    }else{
+                        $('#discount_code').prop('disabled', false);
+                        $('.validate-code').prop('disabled', false);
+                    }
 
                     $("table.payment_detail> tbody tr:nth-child(2)").find('th').html('Price per day:<br/><small>'+prices.price_per_day_detail+'<small>');
                     $("table.payment_detail> tbody tr:nth-child(2)").find('td').html(currencySign+' '+prices.price_per_day);
 
-                    $("table.payment_detail> tbody tr:nth-child(3)").find('th').html('Discount:<br/><small>'+prices.discount_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(3)").find('td').html(currencySign+' '+prices.discount);
+                    $("table.payment_detail> tbody tr:nth-child(3)").find('th').html('Price per hour:<br/><small>'+prices.price_per_hour_detail+'<small>');
+                    $("table.payment_detail> tbody tr:nth-child(3)").find('td').html(currencySign+' '+prices.price_per_hour);
 
-
-                    $("table.payment_detail> tbody tr:nth-child(4)").find('th').html('Price per hour:<br/><small>'+prices.price_per_hour_detail+'<small>');
-                    $("table.payment_detail> tbody tr:nth-child(4)").find('td').html(currencySign+' '+prices.price_per_hour);
-
+                    $("table.payment_detail> tbody tr:nth-child(4)").find('th').html('Discount:<br/><small>'+prices.discount_detail+'<small>');
+                    $("table.payment_detail> tbody tr:nth-child(4)").find('td').html(currencySign+' '+prices.discount);
 
                     $("table.payment_detail> tbody tr:nth-child(5)").find('th').html('Car rental fee:<br/><small>'+prices.car_rental_fee_detail+'<small>');
                     $("table.payment_detail> tbody tr:nth-child(5)").find('td').html(currencySign+' '+prices.car_rental_fee);
@@ -543,13 +550,16 @@
                 });
             });
 
-            $('#date_from').datetimepicker({format:'m/d/Y H:i', defaultDate:new Date(),
+            $('#date_from').datetimepicker({
+                format:'m/d/Y H:i', defaultDate:new Date(),
+                defaultTime:'10:00',
                 onChangeDateTime:function(dp,$input){
                     calculatePrices();
                 }
             });
             $('#date_to').datetimepicker({
                 format:'m/d/Y H:i', defaultDate:new Date(),
+                defaultTime:'18:00',
                 onChangeDateTime:function(dp,$input){
 //                    $("table.payment_detail> tbody tr:first").find('td').html(
 //                        moment($('#date_to').val(), "MM-DD-YYYY HH:mm").diff(moment($('#date_from').val(), "MM-DD-YYYY HH:mm"),'days')

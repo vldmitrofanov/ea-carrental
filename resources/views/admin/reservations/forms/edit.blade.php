@@ -171,12 +171,12 @@
                         <td>{{$currencySign}} {{ $oReservation->details->first()->price_per_day }}</td>
                     </tr>
                     <tr>
-                        <th>Discount:<br/>{{ $oReservation->details->first()->discount_detail }}</th>
-                        <td>{{$currencySign}} {{ $oReservation->details->first()->discount }}</td>
-                    </tr>
-                    <tr>
                         <th>Price per hour:<br/>{{ $oReservation->details->first()->price_per_hour_detail }}</th>
                         <td>{{$currencySign}} {{ $oReservation->details->first()->price_per_hour }}</td>
+                    </tr>
+                    <tr>
+                        <th>Discount:<br/>{{ $oReservation->details->first()->discount_detail }}</th>
+                        <td>{{$currencySign}} {{ $oReservation->details->first()->discount }}</td>
                     </tr>
                     <tr>
                         <th>Car rental fee:</th>
@@ -202,7 +202,7 @@
                         <th class="text-red">Total Price:</th>
                         <td>{{$currencySign}} {{ $oReservation->details->first()->total_price }}</td>
                     </tr>
-                    <tr>
+                    <tr class="hidden">
                         <th>Required deposit:</th>
                         <td>{{$currencySign}} {{ $oReservation->details->first()->required_deposit }}</td>
                     </tr>

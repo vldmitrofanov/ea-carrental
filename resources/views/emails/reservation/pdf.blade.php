@@ -101,9 +101,15 @@
                                         <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $currency }} {{ $oReservation->details()->get()->sum('price_per_hour') }}</td>
                                     </tr>
                                     @endif
+                                    @if($oReservation->details()->get()->sum('discount')>0)
+                                    <tr>
+                                        <th style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">Discounts:</th>
+                                        <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $currency }} {{ $oReservation->details()->get()->sum('discount') }}</td>
+                                    </tr>
+                                    @endif
                                     @if($oReservation->details()->get()->sum('car_rental_fee')>0)
                                     <tr>
-                                        <th style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">Car rental fee:</th>
+                                        <th style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">Car Rental Fee:</th>
                                         <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $currency }} {{ $oReservation->details()->get()->sum('car_rental_fee') }}</td>
                                     </tr>
                                     @endif
@@ -137,6 +143,14 @@
                                         <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $currency }} {{ $oReservation->details()->get()->sum('total_price') }}</td>
                                     </tr>
                                     @endif
+                                    
+                                    <?php /*
+                                    @if($oReservation->details()->get()->sum('required_deposit')>0)
+                                    <tr>
+                                        <th style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">Required Deposit:</th>
+                                        <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $currency }} {{ $oReservation->details()->get()->sum('required_deposit') }}</td>
+                                    </tr>
+                                    @endif */ ?>
                                 </table>
                             </td>
                         </tr>

@@ -42,6 +42,12 @@
                                             {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleDoors->code_letter:'-'  }}
                                             {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleTransmissionAndDrive->code_letter:'-'  }}
                                             {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleFuelAndAC->code_letter:'-'  }}
+                                            (
+                                            {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleSize->description.'|':'-'  }}
+                                            {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleDoors->description.'|':'-'  }}
+                                            {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleTransmissionAndDrive->description.'|':'-'  }}
+                                            {{ ($oCarModel->SIPPCode)?$oCarModel->SIPPCode->vehicleFuelAndAC->description:'-'  }}
+                                            )
                                         </td>
                                         <td>{{ $oCarModel->make }}</td>
                                         <td>{{ $oCarModel->model }}</td>
