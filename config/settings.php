@@ -112,8 +112,8 @@ return [
 
     'booking_duration_type' => [
         'days' => 'Days of Rental',
-        'weeks' => 'Weeks of Rental',
-        'month' => 'Month of Rental',
+        /*'weeks' => 'Weeks of Rental',
+        'month' => 'Month of Rental',*/
     ],
     
     'email_notification_types' => [

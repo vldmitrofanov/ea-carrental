@@ -110,6 +110,7 @@
                             obj.find('i').removeClass('fa-times-circle-o').addClass('fa-check-square-o');
                         }
                         $.unblockUI();
+                        window.location.reload();
                     })
                     .fail(function(response){
                         $.unblockUI();

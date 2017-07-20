@@ -93,14 +93,14 @@
                 <h4><i class="icon fa fa-info"></i> Payment Options!</h4>
                 Here you can choose your payment methods and set payment gateway accounts and payment preferences. Note that for cash payments the system will not be able to collect deposit amount online.
             </div>
-            <div class="form-group">
+            <?php /*<div class="form-group">
                 <label for="deposit_payment" class="col-sm-3 control-label">Rental Deposit &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title="  Set flat amount or % of total price."></label>
                 <div class="col-sm-9">
                     {!! Form::number('data[deposit_payment]', ($oSettings->where('key','deposit_payment')->first())?$oSettings->where('key','deposit_payment')->first()->value:'null', ['class' => 'form-control', 'id' => 'deposit_payment', 'min' => '0', 'style' => 'width:180px; display:inline']) !!}&nbsp;
 
                     {!! Form::select('data[deposit_type]', config('settings.deposit_type'),($oSettings->where('key','deposit_type')->first())?$oSettings->where('key','deposit_type')->first()->value:'null',array('class'=>'form-control','id'=>'deposit_type', 'style' => 'width:180px; display:inline')) !!}
                 </div>
-            </div>
+            </div>*/ ?>
             <div class="form-group">
                 <label for="deposit_payment" class="col-sm-3 control-label">Tax payment &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title=" If there is no tax for payments, just enter 0. You can also add a fixed tax value or % of the total price. "></label>
                 <div class="col-sm-9">
@@ -109,14 +109,14 @@
                     {!! Form::select('data[tax_type]', config('settings.tax_type'),($oSettings->where('key','tax_type')->first())?$oSettings->where('key','tax_type')->first()->value:'null',array('class'=>'form-control','id'=>'tax_type', 'style' => 'width:180px; display:inline')) !!}
                 </div>
             </div>
-            <div class="form-group">
+            <?php /*<div class="form-group">
                 <label for="service_tax_payment" class="col-sm-3 control-label">Service payment &nbsp;&nbsp;<img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title=" If there is no tax for payments, just enter 0. You can also add a fixed tax value or % of the total price. "></label>
                 <div class="col-sm-9">
                     {!! Form::number('data[service_tax_payment]', ($oSettings->where('key','service_tax_payment')->first())?$oSettings->where('key','service_tax_payment')->first()->value:'null', ['class' => 'form-control', 'id' => 'service_tax_payment', 'min' => '0', 'style' => 'width:180px; display:inline']) !!}&nbsp;
 
                     {!! Form::select('data[service_tax_type]', config('settings.service_tax_type'),($oSettings->where('key','service_tax_type')->first())?$oSettings->where('key','service_tax_type')->first()->value:'null',array('class'=>'form-control','id'=>'service_tax_type', 'style' => 'width:180px; display:inline')) !!}
                 </div>
-            </div>
+            </div>*/?>
             <div class="form-group">
                 <label for="security_payment" class="col-sm-3 control-label">Security Deposit <img  width="14" src="{{asset('images/help.png') }}" class="protip" data-pt-title=" The system does not calculate the Security payment in the Deposit payment amount or the Total rental price. It will be used for defining reservation payments for each reservation that you can manage on Payments tab while editing a reservation."></label>
                 <div class="col-sm-9">

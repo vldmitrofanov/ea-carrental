@@ -136,15 +136,15 @@
                         <td>0</td>
                     </tr>
                     <tr>
-                        <th>Discount:</th>
-                        <td>0</td>
-                    </tr>
-                    <tr>
                         <th>Price per hour:</th>
                         <td>0</td>
                     </tr>
                     <tr>
-                        <th>Car rental fee:</th>
+                        <th>Discount:</th>
+                        <td>0</td>
+                    </tr>
+                    <tr>
+                        <th>Car Rental Fee:</th>
                         <td>0</td>
                     </tr>
                     <tr>
@@ -167,8 +167,8 @@
                         <th class="text-red">Total Price:</th>
                         <td>0</td>
                     </tr>
-                    <tr>
-                        <th>Required deposit:</th>
+                    <tr class="hidden">
+                        <th>Required Deposit:</th>
                         <td>0</td>
                     </tr>
                     </tbody>

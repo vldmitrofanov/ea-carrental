@@ -50,6 +50,7 @@
             $(function () {
                 $('#start').datetimepicker({
                     minDate: 0,
+                    defaultTime:'10:00',
                     onShow:function( ct ){
                         this.setOptions({
                             maxDate:$('#end').val()?$('#end').val():false
@@ -59,6 +60,7 @@
                 });
                 $('#end').datetimepicker({
                     minDate:0,
+                    defaultTime:'18:00',
                     onShow:function( ct ) {
                         this.setOptions({
                             minDate: $('#start').val() ? $('#start').val() : false

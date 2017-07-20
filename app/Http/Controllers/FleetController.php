@@ -46,7 +46,6 @@ class FleetController extends Controller
         if($request->get('ref',0)>0){
             $searchData = Session::get('offers');
         }
-//        exit;
         $oCar = RentalCar::where('url_token', $token)->first();
         if(!$oCar){
             \Session::flash('flash_message', 'Car is not valid or has been removed.');
@@ -66,7 +65,7 @@ class FleetController extends Controller
         $datetime1 = new \DateTime($to); // Today's Date/Time
         $datetime2 = new \DateTime($from);
         $interval = $datetime1->diff($datetime2);
-        $data['days'] = $interval->format('%D');
+        $data['days'] = $interval->days;
         $data['hours'] = $interval->format('%H');
         return $data;
     }
@@ -104,7 +103,8 @@ class FleetController extends Controller
                     ->where('car_reservation_details.car_model_id', $request->input('models'))
                     ->where('car_reservation_details.car_id', $request->input('car_id'))
                     ->where('rental_car_reservations.id','<>', $id)
-                    ->whereRaw("(`status` = 'confirmed' OR (`status` = 'pending' AND rental_car_reservations.created_at >= '$current_datetime'))")
+                    ->whereIn('status', ['confirmed', 'pending'])
+//                    ->whereRaw("(`status` = 'confirmed' OR (`status` = 'pending' AND rental_car_reservations.created_at >= '$current_datetime'))")
                     ->whereRaw(sprintf("(((`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`date_from` < '%1\$s' AND `date_to` > '%2\$s') OR (`date_from` > '%1\$s' AND `date_to` < '%2\$s'))",$date_from, $date_to))
                     ->distinct('rental_car_reservations.id')
                     ->count('rental_car_reservations.id');
@@ -153,8 +153,6 @@ class FleetController extends Controller
     public function getPrices($datetime_from, $datetime_to, $oCarModel)
     {
         $o_new_day_per_day =0 ;
-//        $oBookingPeriod = Setting::where('key', 'calculate_rental_fee')->first();
-
         $date_from = date('Y-m-d',strtotime($datetime_from));
         $date_to = date('Y-m-d',strtotime($datetime_to));
 
@@ -420,21 +418,24 @@ class FleetController extends Controller
     }
 
     private function _getVolumeDiscountInfo($start, $end, $modelId){
-
-        $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
-            ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
-            ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') >= "'.Carbon::parse($start)->format('Y-m-d').'"')
-            ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') <= "'.Carbon::parse($end)->format('Y-m-d').'"')
-//                ->whereRaw('discount_voucher_recurring_rules.frequency = "weekly"')
-            ->whereRaw("discount_package_models.model_id = $modelId")
-            ->first();
-
+        $daysDiff = Carbon::parse($start)->diffInDays($end);
+        
+        if($daysDiff>0){
+            $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
+                    ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
+                    ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::now()->format('Y-m-d').'"')
+                    ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::now()->format('Y-m-d').'"')
+                    ->whereRaw("discount_package_models.model_id = $modelId")
+                    ->where('discount_packages.booking_duration', $daysDiff)
+                    ->where('discount_packages.booking_duration_type','days')
+                    ->where('discount_packages.status',true)
+                    ->first();
+        }
+        
         if(!$oDiscount){
             return false;
         }
-
         return ['amount' => $oDiscount->discount_amount, 'amount_type' => $oDiscount->discount_type];
-
     }
 
     public function getDiscountInfo(Request $request){
@@ -541,9 +542,9 @@ class FleetController extends Controller
             return $this->_failedJsonResponse([['Car is <strong>not available</strong> during selected time period. Please select another Car and/or change time period.']]);
         }
         $oPrices = $oCarModel->prices()
-            ->where('car_model_prices.date_from','>=',Carbon::parse($request->input('date_from'))->format('Y-m-d'))
-            ->where('car_model_prices.date_to','<=',Carbon::parse($request->input('date_to'))->format('Y-m-d'))
-            ->get();
+                    ->where('car_model_prices.date_from','>=',Carbon::parse($request->input('date_from'))->format('Y-m-d'))
+                    ->where('car_model_prices.date_to','<=',Carbon::parse($request->input('date_to'))->format('Y-m-d'))
+                    ->get();
 
         $rental_days = $data['time']['days'];
         $rental_hours = $data['time']['hours'];
@@ -565,6 +566,7 @@ class FleetController extends Controller
         $required_deposit_detail = '';
         $discount = 0;
         $discount_detail = '';
+        $hasVDiscount = false;
 
         $car_rental_fee_arr = array();
         $e_arr = array();
@@ -647,8 +649,8 @@ class FleetController extends Controller
             $tax_detail = $this->option_arr['tax_payment'] . '% of ' . $this->formatCurrencySign($sub_total, $this->option_arr['currency']);
         }
         $total_price = $sub_total + $tax;
-        $security  = $this->option_arr['security_payment'];
-        switch ($this->option_arr['deposit_type'])
+        $security  = $this->option_arr['security_payment']; 
+        /*switch ($this->option_arr['deposit_type'])
         {
             case 'percent':
                 $required_deposit = ($total_price * $this->option_arr['deposit_payment']) / 100;
@@ -658,26 +660,53 @@ class FleetController extends Controller
                 $required_deposit = $this->option_arr['deposit_payment'];
                 $required_deposit_detail = '';
                 break;
-        }
-
+        }*/
+        $required_deposit=0;
+        $required_deposit_detail ='';
+        
         $discount_info = false;
         if($request->input('discount_code')){
             $discount_info = $this->getDiscountInfo($request);
         }
 
-//        overwrite the volume discount when found to coupoon discount
-//        print_r($offersData);exit;
+//        overwrite the volume discount when found to coupon discount
+        $oVDisocunt = false;
+        $daysDiff = Carbon::parse($request->input('date_to'))->diffInDays(Carbon::parse($request->input('date_from')));
         if(!empty($offersData)) {
-            $discount_info = DiscountVolume::whereIn('id', function($query){
+            $vDiscount = DiscountVolume::whereIn('id', function($query){
                                 $query->select('discount_package_id')->from('discount_package_periods')
                                     ->distinct()
-                                    ->whereRaw(" start_date <= NOW() and end_date>=NOW() ");
+                                    ->whereRaw(" DATE_FORMAT(start_date,'%Y-%m-%d') <= '".Carbon::now()->format('Y-m-d')."' and DATE_FORMAT(end_date,'%Y-%m-%d') >= '".Carbon::now()->format('Y-m-d')."' ");
                             })
                             ->where('id',$request->get('ref'))
+                            ->where('booking_duration', $daysDiff)
+                            ->where('booking_duration_type','days')
                             ->where('status',true)
                             ->first();
-
-            $discount_info = $this->_getVolumeDiscountInfo($offersData->start, $offersData->end, $oCarModel->id);
+            if($oVDisocunt) {
+                $oVDisocunt = true;
+                $discount_info = $vDiscount;
+            }
+        }
+        
+        if($daysDiff>0 && empty($offersData)){
+            $oVDisocunt = DiscountVolume::whereIn('id', function($query) use($request){
+                            $query->select('discount_package_id')->from('discount_package_periods')
+                                ->distinct()
+                                ->whereRaw(" DATE_FORMAT(start_date,'%Y-%m-%d') <= '".Carbon::now()->format('Y-m-d')."' and DATE_FORMAT(end_date,'%Y-%m-%d') >= '".Carbon::now()->format('Y-m-d')."' ");
+                        })
+                        ->where('booking_duration', $daysDiff)
+                        ->where('booking_duration_type','days')
+                        ->where('status',true)
+                        ->first();
+        }
+        
+        if($oVDisocunt && empty($offersData)) {
+            $vDiscount = $this->_getVolumeDiscountInfo(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel->id);
+            if($vDiscount){
+                $hasVDiscount = true;
+                $discount_info = $vDiscount;
+            }
         }
 
         if(is_array($discount_info)){
@@ -699,7 +728,6 @@ class FleetController extends Controller
         if($request->input('status') == 'confirmed'){
             $total_amount_due = $total_price - $required_deposit;
         }
-
 
         $price_per_day = number_format($price_per_day, 2, '.', '');
         $price_per_hour = number_format($price_per_hour, 2, '.', '');
@@ -745,7 +773,7 @@ class FleetController extends Controller
             }
         }
 
-        $data['prices'] = compact('rental_time', 'rental_days', 'hours',
+        $data['prices'] = compact('rental_time', 'rental_days', 'hours', 'hasVDiscount',
             'price_per_day', 'price_per_hour', 'price_per_day_detail', 'price_per_hour_detail',
             'car_rental_fee', 'extra_price', 'discount', 'insurance', 'sub_total', 'tax',
             'total_price', 'required_deposit', 'total_amount_due',
@@ -753,8 +781,6 @@ class FleetController extends Controller
             'extra_price_label', 'insurance_label', 'sub_total_label', 'tax_label',
             'total_price_label', 'required_deposit_label', 'total_amount_due_label', 'discount_label',
             'car_rental_fee_detail', 'insurance_detail', 'discount_detail', 'tax_detail', 'required_deposit_detail');
-
-//        $oCar = $oCarModel->cars()->where('rental_cars.id', $request->input('car_id'))->first();
 
 //        $data['type'] = $oCarType;
         $data['model'] = $oCarModel;

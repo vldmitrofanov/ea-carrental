@@ -122,14 +122,13 @@ class IndexController extends Controller
        // }
 
         $currency = $this->option_arr['currency'];
-        $oCars = $this->_getAvailableCars($searchData);
+        $oCars = $this->_getAllCars($searchData);
 
         return view('frontend.our_fleet.index', compact('oCars', 'currency', 'searchData'));
 
     }
 
     private function _getAvailableCars($searchData){
-
         $date_from =Carbon::parse($searchData->start);
         $date_to =Carbon::parse($searchData->end);        
         $date_from_ts = strtotime($date_from);
@@ -142,40 +141,23 @@ class IndexController extends Controller
         }
         $oCars = RentalCar::whereNotIn('id', function($query) use ($date_from, $date_to){
                         $query->select('car_id')->from('car_reservation_details')
-//                        ->whereRaw("(`rental_car_reservations`.`status` = 'cancelled' OR (`rental_car_reservations`.`status` = 'completed'))")
                         ->whereRaw(sprintf("(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to));
                  })
                  ->where('rental_cars.status','=', true)
                  ->whereRaw($where)
                 ->paginate(10);
-       
-//        $oCars = RentalCar::leftJoin('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')
-//            ->leftJoin('rental_car_reservations', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
-//            ->where('rental_cars.status','=', true)
-////            ->whereRaw("(`rental_car_reservations`.`status` = 'cancelled' OR (`rental_car_reservations`.`status` = 'completed'))")
-//            ->whereRaw(sprintf("!(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to))
-////
-////            ->with([
-////                'makeAndModel'
-////            ])
-////            ->select('rental_cars.*')
-////            ->groupBy('rental_cars.id')
-//            ->distinct()
-//            ->paginate();
-//            ->toSql();
-//            ->get(['rental_cars.id']);
-//        dd($oCars->count());
-//        exit;
-
-//        $oModels = CarModel::Join('rental_cars', 'car_models.id', '=', 'rental_cars.model_id')
-//            ->Join('car_reservation_details', 'rental_cars.id', '=', 'car_reservation_details.car_id')
-//            ->Join('rental_car_reservations', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
-//            ->where('rental_cars.status','=', true)
-//            ->whereRaw("(`rental_car_reservations`.`status` != 'confirmed' OR (`rental_car_reservations`.`status` != 'pending'))")
-//            ->whereRaw(sprintf("!(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to))
-//            ->distinct('car_models.*')
-//            ->paginate(10);
-//print_r($oCars);exit;
+        return $oCars;
+    }
+    
+    private function _getAllCars($searchData){
+        if($searchData->location==0){
+            $where = "rental_cars.location_id > $searchData->location ";
+        }else{
+            $where = "rental_cars.location_id = $searchData->location ";
+        }
+        $oCars = RentalCar::where('rental_cars.status','=', true)
+                 ->whereRaw($where)
+                ->paginate(10);
         return $oCars;
     }
 }
