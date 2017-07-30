@@ -298,6 +298,16 @@ class VouchersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $oDiscount = Discount::where('id',$id)->first();
+        if(!$oDiscount){
+            \Session::flash('flash_message', 'Discount not valid or has been removed.');
+            \Session::flash('flash_type', 'alert-error');
+            return \Redirect::to('admin/discounts/vouchers');
+        }
+
+        $oDiscount->delete();
+        \Session::flash('flash_message', 'Discount Information has been removed.');
+        \Session::flash('flash_type', 'alert-success');
+        return \Redirect::to('admin/discounts/vouchers');
     }
 }

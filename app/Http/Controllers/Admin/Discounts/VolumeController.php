@@ -177,7 +177,17 @@ class VolumeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $oDiscountVolume = DiscountVolume::where('id',$id)->first();
+        if(!$oDiscountVolume){
+            \Session::flash('flash_message', 'Volume Discount not valid or has been removed.');
+            \Session::flash('flash_type', 'alert-error');
+            return \Redirect::to('admin/discounts/volume');
+        }
+
+        $oDiscountVolume->delete();
+        \Session::flash('flash_message', 'Volume Discount Information has been removed.');
+        \Session::flash('flash_type', 'alert-success');
+        return \Redirect::to('admin/discounts/volume');
     }
 
     /**

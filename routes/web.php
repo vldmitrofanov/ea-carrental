@@ -45,6 +45,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('{id}/edit', 'Admin\Discounts\VouchersController@edit');
             Route::get('{id}/show', 'Admin\Discounts\VouchersController@show');
             Route::patch('update/{id}', 'Admin\Discounts\VouchersController@update');
+            Route::get('{id}/delete', 'Admin\Discounts\VouchersController@destroy');
         });
 
         Route::group(['prefix' => 'volume'], function(){
@@ -55,6 +56,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('{id}/show', 'Admin\Discounts\VolumeController@show');
             Route::patch('update/{id}', 'Admin\Discounts\VolumeController@update');
             Route::get('featured/{id}', 'Admin\Discounts\VolumeController@featured');
+            Route::get('{id}/delete', 'Admin\Discounts\VolumeController@destroy');
         });
 
         Route::group(['prefix' => 'freebies'], function(){
@@ -65,6 +67,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['authadmin','role:admin']], 
             Route::get('{id}/show', 'Admin\Discounts\FreebiesController@show');
             Route::patch('update/{id}', 'Admin\Discounts\FreebiesController@update');
             Route::get('featured/{id}', 'Admin\Discounts\FreebiesController@featured');
+            Route::get('{id}/delete', 'Admin\Discounts\FreebiesController@destroy');
         });
     });
 

@@ -167,7 +167,17 @@ class FreebiesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $oDiscountFreebies = DiscountFreebies::where('id',$id)->first();
+        if(!$oDiscountFreebies){
+            \Session::flash('flash_message', 'Freebies is not valid or has been removed.');
+            \Session::flash('flash_type', 'alert-error');
+            return \Redirect::to('admin/discounts/freebies');
+        }
+
+        $oDiscountFreebies->delete();
+        \Session::flash('flash_message', 'Freebies Information has been removed.');
+        \Session::flash('flash_type', 'alert-success');
+        return \Redirect::to('admin/discounts/freebies');
     }
     
     

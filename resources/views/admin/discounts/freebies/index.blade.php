@@ -59,7 +59,6 @@
                                                 </button>
                                                 <ul class="dropdown-menu" role="menu">
                                                     <li><a href="{{ url('admin/discounts/freebies/'.$oDiscount->id.'/edit') }}"><i class="fa fa-edit"></i>Edit</a>&nbsp;&nbsp;</li>
-                                                    <?php /*<a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i></a>*/?>
                                                     <li>
                                                         <a class="featured" title="{{ ($oDiscount->featured)?'Mark Not Featured':'Mark Featured' }}" style="padding-left: 18px;" href="javascript:;" data-id="{{$oDiscount->id}}">
                                                             @if($oDiscount->featured)
@@ -69,6 +68,7 @@
                                                             @endif
                                                         </a>
                                                     </li>
+                                                    <li><a href="{{ url('admin/discounts/freebies/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i>Delete</a></li>
                                                 </ul>
                                             </div>
 
