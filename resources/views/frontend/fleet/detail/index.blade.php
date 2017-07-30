@@ -277,7 +277,7 @@
                                 </div>
                             </div>
                         </li>
-                        
+
                         <li class="bgGray showLess">
                             <div class="row">
                                 <div class="col-xs-6 bookingColHeading">Taxes</div>
@@ -289,7 +289,16 @@
                                 </div>
                             </div>
                         </li>
-                        
+
+                        <li class="bgGray showLess freeBiesInfo">
+                            <div class="row">
+                                <div class="col-xs-6 bookingColHeading">FreeBies</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 freebies-label"></div>
+                            </div>
+                        </li>
+
                         <li class="showLess">
                             <div class="row">
                                 <div class="totalpayment col-xs-12">

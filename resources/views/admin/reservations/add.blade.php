@@ -37,6 +37,7 @@
                      <input type="hidden" name="rental_form" id="rental_form" value="">
                      <input type="hidden" name="discount" id="discount" value="">
                      <input type="hidden" name="discount_detail" id="discount_detail" value="">
+                     <input type="hidden" name="freebies_detail" id="freebies_detail" value="">
 
                         @include('admin.reservations.forms.add', ['submit_button'=>'Create'])
                     {!! Form::close() !!}
@@ -534,6 +535,14 @@
 
                     $("table.payment_detail> tbody tr:nth-child(10)").find('td').html(currencySign+' '+prices.total_price);
                     $("table.payment_detail> tbody tr:nth-child(11)").find('td').html(currencySign+' '+prices.required_deposit);
+
+                    if(prices.hasFreeBies){
+                        $("table.payment_detail> tbody tr:nth-child(12)").find('td').html(prices.oFreeBies.name);
+                        $('#freebies_detail').val(prices.oFreeBies.name);
+                    }else{
+                        $("table.payment_detail> tbody tr:nth-child(12)").find('td').html('');
+                        $('#freebies_detail').val();
+                    }
 
                     $.unblockUI();
                 })
