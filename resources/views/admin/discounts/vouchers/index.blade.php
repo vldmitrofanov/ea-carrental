@@ -25,7 +25,7 @@
                             <h3 class="box-title">Showing {!! $oDiscounts->currentPage() !!} of {!! $oDiscounts->lastPage() !!} </h3>
 
                         </div>
-                        <div class="box-body table-responsive no-padding">
+                        <div class="box-body">
                             <table class="table table-hover">
                                 <tr>
                                     <th>No</th>
@@ -45,8 +45,21 @@
                                         </td>
                                         <td>{{ ($oDiscount->status)?'Active':'In-active' }}</td>
                                         <td>
-                                            <a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/show') }}"><i class="fa fa-eye"></i></a>&nbsp;&nbsp;
-                                            <a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/edit') }}"><i class="fa fa-edit"></i></a>&nbsp;&nbsp;
+                                            <div class="btn-group">
+                                                <button type="button" class="btn btn-info">Action</button>
+                                                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                                                    <span class="caret"></span>
+                                                    <span class="sr-only">Toggle Dropdown</span>
+                                                </button>
+                                                <ul class="dropdown-menu" role="menu">
+                                                    <li><a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/show') }}"><i class="fa fa-eye"></i>Details</a></li>
+                                                    <li><a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/edit') }}"><i class="fa fa-edit"></i>Edit</a></li>
+                                                    <li><a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i>Delete</a></li>
+                                                </ul>
+                                            </div>
+
+
+
                                             <?php /*<a href="{{ url('admin/discounts/vouchers/'.$oDiscount->id.'/delete') }}"><i class="fa fa-trash"></i></a>*/?>
                                         </td>
                                     </tr>

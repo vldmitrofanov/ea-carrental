@@ -89,7 +89,7 @@ Dashboard
                     <div class="icon">
                         <i class="ion ion-information-circled"></i>
                     </div>
-                    <a href="{{url('admin/reports/fleetavailability')}}" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                    <a href="{{url('admin/reports/fleetavailability')}}?q=available" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
                 </div>
             </div>
         </div>
