@@ -224,6 +224,18 @@
                             </div>
                         </li>
                         @endif
+
+                        @if($cartData[key($cartData)]->info['prices']['freebies']!='')
+                        <li class="bgGray showLess freeBiesInfo">
+                            <div class="row">
+                                <div class="col-xs-6 bookingColHeading">FreeBies</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 freebies-label">{{ $cartData[key($cartData)]->info['prices']['freebies'] }}</div>
+                            </div>
+                        </li>
+                        @endif
+
                         
                         <li class="showLess">
                             <div class="row">

@@ -139,11 +139,11 @@ class IndexController extends Controller
         }else{
             $where = "rental_cars.location_id = $searchData->location ";
         }
-        $oCars = RentalCar::whereNotIn('id', function($query) use ($date_from, $date_to){
+        $oCars = RentalCar::/*whereNotIn('id', function($query) use ($date_from, $date_to){
                         $query->select('car_id')->from('car_reservation_details')
                         ->whereRaw(sprintf("(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to));
                  })
-                 ->where('rental_cars.status','=', true)
+                 ->*/where('rental_cars.status','=', true)
                  ->whereRaw($where)
                 ->paginate(10);
         return $oCars;

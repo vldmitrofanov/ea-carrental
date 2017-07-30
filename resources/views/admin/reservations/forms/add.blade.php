@@ -171,6 +171,10 @@
                         <th>Required Deposit:</th>
                         <td>0</td>
                     </tr>
+                    <tr>
+                        <th>FreeBies:</th>
+                        <td></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>

@@ -27,6 +27,8 @@ use App\Http\Requests\CartStepOneRequest;
 use Session;
 use Auth;
 use App\DiscountVolume;
+use App\DiscountFreebies;
+
 
 class CartController extends Controller
 {
@@ -149,6 +151,7 @@ class CartController extends Controller
                         $oCarReservationDetail->discount_code = (isset($cart->info['prices']['discount_code']))?:'';
                         $oCarReservationDetail->discount = ($cart->info['prices']['discount'])?:0;
                         $oCarReservationDetail->discount_detail = ($cart->info['prices']['discount_detail'])?:'';
+                        $oCarReservationDetail->freebies = ($cart->info['prices']['freebies'])?:'';
                         $oCarReservationDetail->google_event_id = /*($googleEventResult->id)?:*/'';
                         $oCarReservationDetail->save();
 
@@ -711,6 +714,13 @@ class CartController extends Controller
             }
         }
 
+        $freebies = '';
+        $oFreeBies = $this->_getFreeBiesInfo(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel->id);
+        if($oFreeBies){
+            $freebies = $oFreeBies['name'];
+        }
+
+
         $total_price = $total_price - $discount;
         $total_amount_due = $total_price;
         if($request->input('status') == 'confirmed'){
@@ -764,7 +774,7 @@ class CartController extends Controller
         $data['prices'] = compact('rental_time', 'rental_days', 'hours', 'hasVDiscount',
             'price_per_day', 'price_per_hour', 'price_per_day_detail', 'price_per_hour_detail',
             'car_rental_fee', 'extra_price', 'discount', 'insurance', 'sub_total', 'tax',
-            'total_price', 'required_deposit', 'total_amount_due',
+            'total_price', 'required_deposit', 'total_amount_due','freebies',
             'price_per_day_label', 'price_per_hour_label', 'car_rental_fee_label',
             'extra_price_label', 'insurance_label', 'sub_total_label', 'tax_label',
             'total_price_label', 'required_deposit_label', 'total_amount_due_label', 'discount_label',
@@ -781,7 +791,27 @@ class CartController extends Controller
         return $this->_successJsonResponse(['message'=>'Car Reservation information added to cart.']);
     }
 
-    
+    private function _getFreeBiesInfo($start, $end, $modelId){
+        $daysDiff = Carbon::parse($start)->diffInDays($end);
+
+        if($daysDiff>0){
+            $oFreeBies = DiscountFreebies::Join('discount_freebie_periods', 'discount_freebies.id', '=', 'discount_freebie_periods.discount_freebies_id')
+                ->Join('discount_freebie_models', 'discount_freebies.id', '=', 'discount_freebie_models.discount_freebies_id')
+                ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw("discount_freebie_models.model_id = $modelId")
+                ->where('discount_freebies.booking_duration', $daysDiff)
+                ->where('discount_freebies.booking_duration_type','days')
+                ->where('discount_freebies.status',true)
+                ->first();
+        }
+
+        if(!$oFreeBies){
+            return false;
+        }
+        return ['name' => $oFreeBies->name, 'description' => $oFreeBies->description];
+    }
+
     public function getDiscountInfo(Request $request){
         if($request->input('discount_code')==''){
             return false;

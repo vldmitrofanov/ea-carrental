@@ -23,6 +23,7 @@ use \PDF;
 use \SendPulse;
 use Session;
 use App\DiscountVolume;
+use App\DiscountFreebies;
 
 class FleetController extends Controller
 {
@@ -417,6 +418,28 @@ class FleetController extends Controller
         return $format;
     }
 
+
+    private function _getFreeBiesInfo($start, $end, $modelId){
+        $daysDiff = Carbon::parse($start)->diffInDays($end);
+
+        if($daysDiff>0){
+            $oFreeBies = DiscountFreebies::Join('discount_freebie_periods', 'discount_freebies.id', '=', 'discount_freebie_periods.discount_freebies_id')
+                ->Join('discount_freebie_models', 'discount_freebies.id', '=', 'discount_freebie_models.discount_freebies_id')
+                ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw("discount_freebie_models.model_id = $modelId")
+                ->where('discount_freebies.booking_duration', $daysDiff)
+                ->where('discount_freebies.booking_duration_type','days')
+                ->where('discount_freebies.status',true)
+                ->first();
+        }
+
+        if(!$oFreeBies){
+            return false;
+        }
+        return ['name' => $oFreeBies->name, 'description' => $oFreeBies->description];
+    }
+
     private function _getVolumeDiscountInfo($start, $end, $modelId){
         $daysDiff = Carbon::parse($start)->diffInDays($end);
         
@@ -709,6 +732,12 @@ class FleetController extends Controller
             }
         }
 
+        $hasFreeBies = true;
+        $oFreeBies = $this->_getFreeBiesInfo(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel->id);
+        if(!$oFreeBies){
+            $hasFreeBies = false;
+        }
+
         if(is_array($discount_info)){
             switch ($discount_info['amount_type']){
                 case 'percent':
@@ -776,7 +805,7 @@ class FleetController extends Controller
         $data['prices'] = compact('rental_time', 'rental_days', 'hours', 'hasVDiscount',
             'price_per_day', 'price_per_hour', 'price_per_day_detail', 'price_per_hour_detail',
             'car_rental_fee', 'extra_price', 'discount', 'insurance', 'sub_total', 'tax',
-            'total_price', 'required_deposit', 'total_amount_due',
+            'total_price', 'required_deposit', 'total_amount_due', 'oFreeBies', 'hasFreeBies',
             'price_per_day_label', 'price_per_hour_label', 'car_rental_fee_label',
             'extra_price_label', 'insurance_label', 'sub_total_label', 'tax_label',
             'total_price_label', 'required_deposit_label', 'total_amount_due_label', 'discount_label',

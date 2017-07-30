@@ -206,6 +206,10 @@
                         <th>Required deposit:</th>
                         <td>{{$currencySign}} {{ $oReservation->details->first()->required_deposit }}</td>
                     </tr>
+                    <tr>
+                        <th>FreeBies:</th>
+                        <td>{{ $oReservation->details->first()->freebies }}</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>

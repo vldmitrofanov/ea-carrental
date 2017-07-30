@@ -190,6 +190,14 @@ function calculateRental () {
             $('li.discounts').addClass('hidden');
         }
 
+        if(prices.hasFreeBies>0) {
+            $('li.freeBiesInfo').removeClass('hidden');
+            $('.freebies-label').html(prices.oFreeBies.name);
+        }else{
+            $('li.freeBiesInfo').addClass('hidden');
+            $('.freebies-label').html('');
+        }
+
         $('.rentalfee-label').html(prices.car_rental_fee_detail);
         $('.rentalfee-amount').html(currencySign+' '+prices.car_rental_fee);
 

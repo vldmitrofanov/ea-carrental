@@ -39,6 +39,7 @@
                      <input type="hidden" name="passport" id="passport" value="{{ $oReservation->user->passport_id}}">
                      <input type="hidden" name="licence" id="licence" value="{{ $oReservation->user->driver_licence}}">
                      <input type="hidden" name="rental_form" id="rental_form" value="{{ $oReservation->user->rental_form}}">
+                     <input type="hidden" name="freebies_Detail" id="freebies_detail" value="{{ $oReservation->details->first()->freebies}}">
 
                     @include('admin.reservations.forms.edit', ['submit_button'=>'Update'])
                     {!! Form::close() !!}
@@ -662,6 +663,14 @@
 
                             $("table.payment_detail> tbody tr:nth-child(10)").find('td').html(currencySign+' '+prices.total_price);
                             $("table.payment_detail> tbody tr:nth-child(11)").find('td').html(currencySign+' '+prices.required_deposit);
+
+                            if(prices.hasFreeBies){
+                                $("table.payment_detail> tbody tr:nth-child(12)").find('td').html(prices.oFreeBies.name);
+                                $('#freebies_detail').val(prices.oFreeBies.name);
+                            }else{
+                                $("table.payment_detail> tbody tr:nth-child(12)").find('td').html('');
+                                $('#freebies_detail').val();
+                            }
 
                             $.unblockUI();
                         })
