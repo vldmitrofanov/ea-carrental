@@ -94,7 +94,10 @@ class OffersController extends Controller
                 })
                 ->whereIn('model_id',$oDiscountVolume->carModels()->pluck('id')->toArray())
                 ->where('rental_cars.status','=', true)
-                ->paginate(10);
+                ->toSql();
+        print_r($oCars);
+        exit;
+//                ->paginate(10);
         return $oCars;
     }
 
