@@ -12,7 +12,7 @@
 
     @foreach($oCars as $index=>$oCar)
     <?php // print_r($oCar->makeAndModel); exit;?>
-        <div class="searchCarList {{ ($index/2!=0)?'greyBg':''  }} ">
+        <div class="searchCarList {{ ($index%2!=0)?'greyBg':''  }} ">
         <div class="container">
             <div class="row">
                 <div class="col-sm-2 col-md-3">
@@ -64,11 +64,11 @@
                 </div>
             @endif
             {{--<ul class="pagination pagination-lg">--}}
-                {{--<li><a href="#">Â«</a></li>--}}
+                {{--<li><a href="#">«</a></li>--}}
                 {{--<li><a href="#">1</a></li>--}}
                 {{--<li><a href="#">2</a></li>--}}
                 {{--<li><a href="#">3</a></li>--}}
-                {{--<li><a href="#">Â»</a></li>--}}
+                {{--<li><a href="#">»</a></li>--}}
             {{--</ul>--}}
         </div>
     </div>
