@@ -73,7 +73,7 @@ class OffersController extends Controller
 
         $currency = $this->option_arr['currency'];
         $oCars = $this->_getAvailableCars($offersData, $oDiscountVolume);
-print_r($oCars);exit;
+
         return view('frontend.offers_fleet.index', compact('oCars', 'currency', 'oDiscountVolume', 'search'));
 
     }
