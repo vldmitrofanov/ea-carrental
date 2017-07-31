@@ -4,7 +4,12 @@
         <select name="type_id" id="type_id" class="form-control">
             <option value="">Select Type</option>
             @foreach($oTypes as $oType)
-                <option {{ ($oRentalCar && $oRentalCar->type_id==$oType->id)?'selected':''  }} value="{{ $oType->id }}" data-size="{{ ($oType->vehicleSize)?$oType->vehicleSize->description:'-'  }}" data-doors="{{ ($oType->vehicleDoors)?$oType->vehicleDoors->description:'-'  }}" data-transmission="{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->description:'-'  }}" data-fuel="{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->description:'-'  }}">{{ ($oType->vehicleSize)?$oType->vehicleSize->code_letter:'-'  }}{{ ($oType->vehicleDoors)?$oType->vehicleDoors->code_letter:'-'  }}{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->code_letter:'-'  }}</option>
+                <option {{ ($oRentalCar && $oRentalCar->type_id==$oType->id)?'selected':''  }} value="{{ $oType->id }}" data-size="{{ ($oType->vehicleSize)?$oType->vehicleSize->description:'-'  }}" data-doors="{{ ($oType->vehicleDoors)?$oType->vehicleDoors->description:'-'  }}" data-transmission="{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->description:'-'  }}" data-fuel="{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->description:'-'  }}">{{ ($oType->vehicleSize)?$oType->vehicleSize->code_letter:'-'  }}{{ ($oType->vehicleDoors)?$oType->vehicleDoors->code_letter:'-'  }}{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->code_letter:'-'  }}(
+                    {{ ($oType->vehicleSize)?$oType->vehicleSize->description.'|':'-'  }}
+                    {{ ($oType->vehicleDoors)?$oType->vehicleDoors->description.'|':'-'  }}
+                    {{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->description.'|':'-'  }}
+                    {{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->description:'-'  }}
+                    )</option>
             @endforeach
         </select>
     </div>
