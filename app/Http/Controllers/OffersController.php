@@ -80,8 +80,8 @@ class OffersController extends Controller
 
     private function _getAvailableCars($searchData, $oDiscountVolume){
 
-        echo $date_from =Carbon::parse($searchData->start);
-        echo '<br>'.$date_to =Carbon::parse($searchData->end);
+       echo  $date_from =Carbon::now();//Carbon::parse($searchData->start);
+        echo  '<br>'.$date_to = Carbon::now()->addDays($oDiscountVolume->booking_duration); //Carbon::parse($searchData->end);
 
         $date_from_ts = strtotime($date_from);
         $date_to_ts = strtotime($date_to);
@@ -89,7 +89,7 @@ class OffersController extends Controller
                     $query->select('car_id')
                         ->from('car_reservation_details')
                         ->Join('rental_car_reservations', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
-                        ->whereRaw("(`rental_car_reservations`.`status` != 'cancelled' OR (`rental_car_reservations`.`status` != 'completed'))")
+                        ->whereRaw("(`rental_car_reservations`.`status` = 'confirmed' OR `rental_car_reservations`.`status` = 'collected'  OR (`rental_car_reservations`.`status` = 'pending'))")
                         ->whereRaw(sprintf("(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to));
                 })
                 ->whereIn('model_id',$oDiscountVolume->carModels()->pluck('id')->toArray())
