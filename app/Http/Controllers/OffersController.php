@@ -85,12 +85,12 @@ class OffersController extends Controller
 
         $date_from_ts = strtotime($date_from);
         $date_to_ts = strtotime($date_to);
-        $oCars = RentalCar::whereNotIn('id', function($query) use ($date_from, $date_to){
+        $oCars = RentalCar::/*whereNotIn('id', function($query) use ($date_from, $date_to){
                     $query->select('car_id')->from('car_reservation_details')
         //                        ->whereRaw("(`rental_car_reservations`.`status` = 'cancelled' OR (`rental_car_reservations`.`status` = 'completed'))")
                         ->whereRaw(sprintf("(((`car_reservation_details`.`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`car_reservation_details`.`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`car_reservation_details`.`date_from` < '%1\$s' AND `car_reservation_details`.`date_to` > '%2\$s') OR (`car_reservation_details`.`date_from` > '%1\$s' AND `car_reservation_details`.`date_to` < '%2\$s'))",$date_from, $date_to));
                 })
-                ->whereIn('model_id',$oDiscountVolume->carModels()->pluck('id')->toArray())
+                ->*/whereIn('model_id',$oDiscountVolume->carModels()->pluck('id')->toArray())
                 ->where('rental_cars.status','=', true)
                 ->paginate(10);
         return $oCars;
