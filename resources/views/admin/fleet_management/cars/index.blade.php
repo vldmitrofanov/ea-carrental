@@ -1,13 +1,16 @@
 @extends('admin.partials.layouts.master')
 @section('title')
-    Rental Cars Management
+    Car Inventory Management
+@endsection
+@section('meta-info')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 
 @section('content')
     <div class="content-wrapper">
         <section class="content-header">
             <h1>
-                Rental Cars
+                Car Inventory
                 <small>Management</small>
             </h1>
             <ol class="breadcrumb">
@@ -24,18 +27,24 @@
                         <div class="box-header">
                             <h3 class="box-title">Showing {!! $oRentalCars->currentPage() !!} of {!! $oRentalCars->lastPage() !!} </h3>
                             <div class="box-tools">
-                                <div class="input-group" style="width: 200px;">
+                                <div class="input-group" style="width: auto;">
                                     <select name="ctype" id="ctype" class="form-control">
                                         <option value="">Select Car Type</option>
                                         @foreach($oTypes as $oType)
-                                        <option value="{{ $oType->id }}" {{ ($q==$oType->id ) ? 'selected' : '' }}>{{ $oType->name }}</option>
+                                        <option value="{{ $oType->id }}" {{ ($q==$oType->id ) ? 'selected' : '' }}>{{ ($oType->vehicleSize)?$oType->vehicleSize->code_letter:'-'  }}{{ ($oType->vehicleDoors)?$oType->vehicleDoors->code_letter:'-'  }}{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->code_letter:'-'  }}(
+                                            {{ ($oType->vehicleSize)?$oType->vehicleSize->description.'|':'-'  }}
+                                            {{ ($oType->vehicleDoors)?$oType->vehicleDoors->description.'|':'-'  }}
+                                            {{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->description.'|':'-'  }}
+                                            {{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->description:'-'  }}
+                                            )</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="box-body table-responsive no-padding">
-                            <table class="table table-hover">
+                            <table id="carInventoryTbl" cellspacing="0" width="100%" class="display table table-hover">
+                                <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>Registration No</th>
@@ -45,6 +54,8 @@
                                     <th>Status</th>
                                     <th>&nbsp;</th>
                                 </tr>
+                                </thead>
+                                <tbody>
                                 @foreach($oRentalCars as $index =>$oRentalCar)
                                     <tr>
                                         <td>{{ ++$index }}</td>
@@ -75,6 +86,7 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                </tbody>
                             </table>
                         </div>
                         @if($oRentalCars->render())
@@ -89,6 +101,13 @@
     </div>
 @endsection
 
+<?php /*
+@section('javascript')
+    <script src="//cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.datatables.net/select/1.2.2/js/dataTables.select.min.js"></script>
+    <script src="{{ asset('administration/dist/js/carinventory.js') }}"></script>
+@endsection
+*/ ?>
 @section('javascript')
     <script>
         $(function () {

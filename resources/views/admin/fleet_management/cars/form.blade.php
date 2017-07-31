@@ -52,6 +52,6 @@
 </div>
 
 <div class="box-footer">
-    <button type="submit" class="btn btn-primary">{!! $submit_button !!}</button>
+    <button type="button" class="btn btn-primary btn-save">{!! $submit_button !!}</button>
 </div>
 {!! Form::close() !!}

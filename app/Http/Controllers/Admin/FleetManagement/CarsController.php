@@ -20,7 +20,7 @@ class CarsController extends Controller
     public function index(Request $request)
     {
         if(!empty($request->input('q'))) {
-            $oRentalCars = RentalCar::where('rental_car_types.car_type_id', $request->input('q'))
+            $oRentalCars = RentalCar::where('type_id', $request->input('q'))
                             ->paginate(15);
         }else{
             $oRentalCars = RentalCar::paginate(15);
@@ -68,11 +68,12 @@ class CarsController extends Controller
             $oRentalCar->thumb_image = $imageName;
             $oRentalCar->save();
         }
+        return $this->_successJsonResponse(['message'=>'Car information saved.', 'data' => $oRentalCar]);
 
-        \Session::flash('flash_message', 'Car Information saved successfully.');
-        \Session::flash('flash_type', 'alert-success');
-
-        return \Redirect::to('admin/fleet/cars');
+//        \Session::flash('flash_message', 'Car Information saved successfully.');
+//        \Session::flash('flash_type', 'alert-success');
+//
+//        return \Redirect::to('admin/fleet/cars');
     }
 
     /**
@@ -129,11 +130,12 @@ class CarsController extends Controller
 //            $oRentalCar->thumb_image = $request->file('thumb_image')->store('/public/uploads/cars');
 //            $oRentalCar->save();
         }
+        return $this->_successJsonResponse(['message'=>'Car information saved.', 'data' => $oRentalCar]);
 
-        \Session::flash('flash_message', 'Rental Car Information saved successfully.');
-        \Session::flash('flash_type', 'alert-success');
-
-        return \Redirect::to('admin/fleet/cars');
+//        \Session::flash('flash_message', 'Rental Car Information saved successfully.');
+//        \Session::flash('flash_type', 'alert-success');
+//
+//        return \Redirect::to('admin/fleet/cars');
     }
 
     /**
