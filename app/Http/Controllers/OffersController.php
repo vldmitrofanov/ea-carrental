@@ -80,8 +80,8 @@ class OffersController extends Controller
 
     private function _getAvailableCars($searchData, $oDiscountVolume){
 
-       echo  $date_from =Carbon::now();//Carbon::parse($searchData->start);
-        echo  '<br>'.$date_to = Carbon::now()->addDays($oDiscountVolume->booking_duration); //Carbon::parse($searchData->end);
+       $date_from =Carbon::now();//Carbon::parse($searchData->start);
+        $date_to = Carbon::now()->addDays($oDiscountVolume->booking_duration); //Carbon::parse($searchData->end);
 
         $date_from_ts = strtotime($date_from);
         $date_to_ts = strtotime($date_to);
@@ -94,10 +94,7 @@ class OffersController extends Controller
                 })
                 ->whereIn('model_id',$oDiscountVolume->carModels()->pluck('id')->toArray())
                 ->where('rental_cars.status','=', true)
-                ->toSql();
-        print_r($oCars);
-        exit;
-//                ->paginate(10);
+                ->paginate(10);
         return $oCars;
     }
 
