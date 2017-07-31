@@ -11,8 +11,8 @@
     @include('frontend.partials.errors.errors')
 
     @if($oCars->count()>0)
-    @foreach($oCars as $oCar)
-    <div class="searchCarList">
+    @foreach($oCars as $index=>$oCar)
+    <div class="searchCarList {{ ($index/2!=0)?'greyBg':''  }} ">
         <div class="container">
             <div class="row">
                 <div class="col-sm-2 col-md-3">

@@ -35,7 +35,7 @@
                                         @endforeach
                                     </select>&nbsp</div>
 
-                                <div class="col-sm-4"><select style="display: inline;" class="form-control" name="models[]" id="models_0" data-index="0">
+                                <div class="col-sm-4"><select style="display: inline;" class="form-control models" name="models[]" id="models_0" data-index="0">
                                         <option value="">Make & Model</option>
                                     </select>&nbsp</div>
 

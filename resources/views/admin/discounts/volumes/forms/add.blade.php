@@ -62,14 +62,14 @@
                     <td>
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-2">
-                                <select style="display: inline;" onchange="loadModels(this)" class="form-control" name="types[]" id="types_0" data-index="0">
+                                <select style="display: inline;" onchange="loadModels(this)" class="form-control" required name="types[]" id="types_0" data-index="0">
                                     <option value="">Type</option>
                                     @foreach($oTypes as $oType)
                                         <option value="{{ $oType->id }}">{{ ($oType->vehicleSize)?$oType->vehicleSize->code_letter:'-'  }}{{ ($oType->vehicleDoors)?$oType->vehicleDoors->code_letter:'-'  }}{{ ($oType->vehicleTransmissionAndDrive)?$oType->vehicleTransmissionAndDrive->code_letter:'-'  }}{{ ($oType->vehicleFuelAndAC)?$oType->vehicleFuelAndAC->code_letter:'-'  }}</option>
                                     @endforeach
                                 </select>&nbsp</div>
 
-                            <div class="col-sm-4"><select style="display: inline;" class="form-control" name="models[]" id="models_0" data-index="0">
+                            <div class="col-sm-4"><select style="display: inline;" class="form-control models" name="models[]" required id="models_0" data-index="0">
                                     <option value="">Make & Model</option>
                                 </select>&nbsp</div>
 
