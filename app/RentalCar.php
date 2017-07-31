@@ -86,7 +86,7 @@ class RentalCar extends Model
                 $oBooking = CarReservation::Join('car_reservation_details', 'rental_car_reservations.id', '=', 'car_reservation_details.reservation_id')
                     ->where('car_reservation_details.car_model_id', $makeAndModel->id)
                     ->where('car_reservation_details.car_id', $oRentalCar->id)
-                    ->whereRaw("(`status` != 'confirmed' OR `status` != 'collected' OR (`status` != 'pending'))")
+                    ->whereRaw("(`status` = 'confirmed' OR `status` = 'collected' OR (`status` = 'pending'))")
                     ->whereRaw(sprintf("(((`date_from` BETWEEN '%1\$s' AND '%2\$s') OR (`date_to` BETWEEN '%1\$s' AND '%2\$s')) OR (`date_from` < '%1\$s' AND `date_to` > '%2\$s') OR (`date_from` > '%1\$s' AND `date_to` < '%2\$s'))",$date_from, $date_to))
                     ->distinct('rental_car_reservations.id')
 //                    ->toSql();
