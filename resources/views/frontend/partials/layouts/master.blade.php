@@ -51,11 +51,11 @@
                 $('#start').datetimepicker({
                     minDate: 0,
                     defaultTime:'10:00',
-                    onShow:function( ct ){
-                        this.setOptions({
-                            maxDate:$('#end').val()?$('#end').val():false
-                        })
-                    },
+//                    onShow:function( ct ){
+//                        this.setOptions({
+//                            maxDate:$('#end').val()?$('#end').val():false
+//                        })
+//                    },
                     useCurrent: false //Important! See issue #1075
                 });
                 $('#end').datetimepicker({

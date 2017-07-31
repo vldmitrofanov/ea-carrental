@@ -39,6 +39,21 @@
         $('#end_date_0').datetimepicker({format:'m/d/Y', defaultDate:new Date(),timepicker:false,});
 
         $(document).on("click", "button.save-voucher", function(e) {
+            var models= $('.models');
+            var error = 0;
+            for (var i = 0; i < models.length; i++) {
+                if($(models[i]).val()==''){
+                    $(models[i]).closest('div.form-group').addClass('has-error');
+                    error++;
+                }else{
+                    $(models[i]).closest('div.form-group').removeClass('has-error');
+                }
+            }
+            if(error>0){
+                displayMessageAlert('Please enter the missing fields', 'danger', 'warning-sign');
+                return false;
+            }
+
             var formData = $('form#vouchers').serializeArray();
             formData.push({
                 name: "_method",
@@ -84,7 +99,7 @@
                                             .append($('<div>')
                                                     .attr('class', 'col-sm-4')
                                                     .append($('<select>')
-                                                            .attr('class', 'form-control')
+                                                            .attr('class', 'form-control models')
                                                             .attr('name', 'models['+id+']')
                                                             .attr('id', 'models_'+id+'')
                                                             .attr('data-index', id)

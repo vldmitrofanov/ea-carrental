@@ -10,9 +10,9 @@
     @include('frontend.searchbar.search_by_location')
     @include('frontend.partials.errors.errors')
 
-    @foreach($oCars as $oCar)
+    @foreach($oCars as $index=>$oCar)
     <?php // print_r($oCar->makeAndModel); exit;?>
-        <div class="searchCarList">
+        <div class="searchCarList {{ ($index/2!=0)?'greyBg':''  }} ">
         <div class="container">
             <div class="row">
                 <div class="col-sm-2 col-md-3">

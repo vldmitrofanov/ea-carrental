@@ -58,7 +58,7 @@
                                     </select>&nbsp</div>
 
                                 <div class="col-sm-4">
-                                    <select style="display: inline;" data-m="{{$oCarModel->id}}" class="form-control" name="models[]" id="models_{{$index}}" data-index="{{$index}}">
+                                    <select style="display: inline;" data-m="{{$oCarModel->id}}" class="form-control models" name="models[]" id="models_{{$index}}" data-index="{{$index}}">
                                         <option value="">Make & Model</option>
                                     </select>&nbsp</div>
 
