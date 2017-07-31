@@ -647,8 +647,8 @@ class RentalCar extends Model
                 ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') <= "'.Carbon::parse($end)->format('Y-m-d').'"')
 //                ->whereRaw('discount_voucher_recurring_rules.frequency = "weekly"')
                 ->whereRaw("discount_package_models.model_id = $modelId")
-                ->first();
-                
+                ->toSql();
+          print_r($oDiscount);exit;
         if(!$oDiscount){
             return false;
         }
