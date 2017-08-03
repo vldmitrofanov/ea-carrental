@@ -101,6 +101,12 @@
                                         <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $currency }} {{ $oReservation->details()->get()->sum('price_per_hour') }}</td>
                                     </tr>
                                     @endif
+                                    @if($oReservation->details()->get()->sum('discount')>0)
+                                        <tr>
+                                            <th style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">Discounts:</th>
+                                            <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $currency }} {{ $oReservation->details()->get()->sum('discount') }}</td>
+                                        </tr>
+                                    @endif
                                     @if($oReservation->details()->get()->sum('car_rental_fee')>0)
                                     <tr>
                                         <th style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">Car rental fee:</th>
@@ -130,6 +136,12 @@
                                         <th style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">Tax:</th>
                                         <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $currency }} {{ $oReservation->details()->get()->sum('tax') }}</td>
                                     </tr>
+                                    @endif
+                                    @if($oReservation->details()->first()->freebies!='')
+                                        <tr>
+                                            <th style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">FreeBies:</th>
+                                            <td style="text-align:left;border-top:1px solid #eee;padding:7px 10px; font-size:13px;">{{ $oReservation->details()->first()->freebies }}</td>
+                                        </tr>
                                     @endif
                                     @if($oReservation->details()->get()->sum('total_price')>0)
                                     <tr>

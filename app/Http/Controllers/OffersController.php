@@ -50,16 +50,17 @@ class OffersController extends Controller
         $search = new \stdClass();
         Session::forget('offers');
 
-        $search->start = Carbon::parse($oPeriod->start_date);
+        $search->start = Carbon::now()->format('Y-m-d'); //Carbon::parse($oPeriod->start_date);
+
         switch ($oDiscountVolume->booking_duration_type){
             case"days":
-                $search->end = Carbon::parse($oPeriod->start_date)->addDays($oDiscountVolume->booking_duration);
+                $search->end = Carbon::parse($oPeriod->start)->addDays($oDiscountVolume->booking_duration)->format('Y-m-d');
                 break;
             case"weeks":
-                $search->end = Carbon::parse($oPeriod->start_date)->addWeeks($oDiscountVolume->booking_duration);
+                $search->end = Carbon::parse($oPeriod->start)->addWeeks($oDiscountVolume->booking_duration)->format('Y-m-d');
                 break;
             case"month":
-                $search->end = Carbon::parse($oPeriod->start_date)->addMonths($oDiscountVolume->booking_duration);
+                $search->end = Carbon::parse($oPeriod->start)->addMonths($oDiscountVolume->booking_duration)->format('Y-m-d');
                 break;
 
         }
@@ -79,9 +80,8 @@ class OffersController extends Controller
     }
 
     private function _getAvailableCars($searchData, $oDiscountVolume){
-
-       $date_from =Carbon::now();//Carbon::parse($searchData->start);
-        $date_to = Carbon::now()->addDays($oDiscountVolume->booking_duration); //Carbon::parse($searchData->end);
+        $date_from =Carbon::parse($searchData->start);
+        $date_to = Carbon::parse($searchData->end);
 
         $date_from_ts = strtotime($date_from);
         $date_to_ts = strtotime($date_to);
