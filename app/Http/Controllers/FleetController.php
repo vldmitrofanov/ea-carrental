@@ -695,24 +695,26 @@ class FleetController extends Controller
 //        overwrite the volume discount when found to coupon discount
         $oVDisocunt = false;
         $daysDiff = Carbon::parse($request->input('date_to'))->diffInDays(Carbon::parse($request->input('date_from')));
-        if(!empty($offersData)) {
-            $vDiscount = DiscountVolume::whereIn('id', function($query){
-                                $query->select('discount_package_id')->from('discount_package_periods')
-                                    ->distinct()
-                                    ->whereRaw(" DATE_FORMAT(start_date,'%Y-%m-%d') <= '".Carbon::now()->format('Y-m-d')."' and DATE_FORMAT(end_date,'%Y-%m-%d') >= '".Carbon::now()->format('Y-m-d')."' ");
-                            })
-                            ->where('id',$request->get('ref'))
-                            ->where('booking_duration', $daysDiff)
-                            ->where('booking_duration_type','days')
-                            ->where('status',true)
-                            ->first();
-            if($oVDisocunt) {
-                $oVDisocunt = true;
-                $discount_info = $vDiscount;
-            }
-        }
-        
-        if($daysDiff>0 && empty($offersData)){
+//        if(!empty($offersData)) {
+//            $vDiscount = DiscountVolume::whereIn('id', function($query){
+//                                $query->select('discount_package_id')->from('discount_package_periods')
+//                                    ->distinct()
+//                                    ->whereRaw(" DATE_FORMAT(start_date,'%Y-%m-%d') <= '".Carbon::now()->format('Y-m-d')."' and DATE_FORMAT(end_date,'%Y-%m-%d') >= '".Carbon::now()->format('Y-m-d')."' ");
+//                            })
+//                            ->where('id',$request->get('ref'))
+//                            ->where('booking_duration', $daysDiff)
+//                            ->where('booking_duration_type','days')
+//                            ->where('status',true)
+//                            ->toSql();
+//
+//            print_r($vDiscount);exit;
+//            if($oVDisocunt) {
+//                $oVDisocunt = true;
+//                $discount_info = $vDiscount;
+//            }
+//        }
+
+        if($daysDiff>0/* && empty($offersData)*/){
             $oVDisocunt = DiscountVolume::whereIn('id', function($query) use($request){
                             $query->select('discount_package_id')->from('discount_package_periods')
                                 ->distinct()
@@ -723,8 +725,7 @@ class FleetController extends Controller
                         ->where('status',true)
                         ->first();
         }
-        
-        if($oVDisocunt && empty($offersData)) {
+        if($oVDisocunt /*&& empty($offersData)*/) {
             $vDiscount = $this->_getVolumeDiscountInfo(Carbon::parse($request->input('date_from')), Carbon::parse($request->input('date_to')), $oCarModel->id);
             if($vDiscount){
                 $hasVDiscount = true;

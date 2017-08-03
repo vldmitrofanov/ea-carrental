@@ -72,7 +72,7 @@
             processing();
 //                var formData = $('form#rental_cars').serializeArray();
             var formData = new FormData($('form#rental_cars')[0]);
-            formData.append("_method", "PATCH");
+            formData.append("_method", "POST");
 //                $.post($('form#rental_cars').attr('action'), formData)
             $.ajax({
                 url: $('form#rental_cars').attr('action'),

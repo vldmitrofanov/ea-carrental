@@ -60,7 +60,7 @@ class RentalCar extends Model
 
 
     private function _checkCarAvailabilityWithinDates($oRentalCar, $makeAndModel, $search){
-//        $oRentalCar = $this;
+
         $response = array('code' => 100);
         $date_from =Carbon::parse($search->start);
         $date_to =Carbon::parse($search->end);
@@ -170,6 +170,8 @@ class RentalCar extends Model
             return $this->_failedJsonResponse([['Car Type is not valid or has been removed.']]);
         }
 
+        $start = Carbon::parse($search->start)->format('Y-m-d');
+        $end = Carbon::parse($search->start)->addDays($oDiscountVolume->booking_duration)->format('Y-m-d');
         $carAvailable = $this->_checkCarAvailabilityWithinDates($oRentalCar, $oRentalCar->makeAndModel, $search);
         if($carAvailable['code']==100){
             return $this->_failedJsonResponse([['Reservation date range is not valid.']]);
@@ -643,12 +645,12 @@ class RentalCar extends Model
 
         $oDiscount = DiscountVolume::Join('discount_package_periods', 'discount_packages.id', '=', 'discount_package_periods.discount_package_id')
                 ->Join('discount_package_models', 'discount_packages.id', '=', 'discount_package_models.discount_package_id')
-                ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') >= "'.Carbon::parse($start)->format('Y-m-d').'"')
-                ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') <= "'.Carbon::parse($end)->format('Y-m-d').'"')
+                ->whereRaw('DATE_FORMAT(start_date,\'%Y-%m-%d\') <= "'.Carbon::now()->format('Y-m-d').'"')
+                ->whereRaw('DATE_FORMAT(end_date,\'%Y-%m-%d\') >= "'.Carbon::now()->format('Y-m-d').'"')
 //                ->whereRaw('discount_voucher_recurring_rules.frequency = "weekly"')
                 ->whereRaw("discount_package_models.model_id = $modelId")
                 ->first();
-                
+//print_r($oDiscount);exit;
         if(!$oDiscount){
             return false;
         }
