@@ -12,6 +12,7 @@
 A BitBucket Builds template for deploying an application revision to AWS CodeDeploy
 narshiva@amazon.com
 v1.0.0
+
 """
 from __future__ import print_function
 import os
