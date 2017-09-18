@@ -184,6 +184,7 @@ return [
         Spatie\GoogleCalendar\GoogleCalendarServiceProvider::class,
         MaddHatter\LaravelFullcalendar\ServiceProvider::class,
         Greggilbert\Recaptcha\RecaptchaServiceProvider::class,
+        'Fideloper\Proxy\TrustedProxyServiceProvider',
     ],
 
     /*
