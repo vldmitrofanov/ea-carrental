@@ -46,7 +46,8 @@ def upload_to_s3(bucket, artefact, bucket_key):
 
 
 def main():
-
+    """help
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("bucket", help="Name of the existing S3 bucket")
     parser.add_argument("artefact", help="Name of the artefact to be uploaded to S3")
