@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
         if (! $this->app->runningInConsole()) {
             \View::share('officeLocations', OfficeLocation::where('status', true)->get() );
         }
-        Schema::defaultStringLength(190);
+        Schema::defaultStringLength(191);
     }
 
     /**
