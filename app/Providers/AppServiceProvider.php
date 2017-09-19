@@ -18,9 +18,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         //    \URL::forceScheme('https');
-        //if (! $this->app->runningInConsole()) {
-       //     \View::share('officeLocations', OfficeLocation::where('status', true)->get() );
-        //}
+        if (! $this->app->runningInConsole()) {
+            \View::share('officeLocations', OfficeLocation::where('status', true)->get() );
+        }
         Schema::defaultStringLength(191);
     }
 

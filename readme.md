@@ -1,6 +1,6 @@
 ## About Application
 - name: tender-larkspur
-- [Applicatio URL](tender-larkspur.deis.impressitsolutions.com)
+- [Applicatio URL](http://tender-larkspur.deis.impressitsolutions.com)
 
 ## About Laravel
 
