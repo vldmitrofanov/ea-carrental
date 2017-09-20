@@ -14,7 +14,7 @@ class BackupSeeder extends Seeder
         Eloquent::unguard();
         
         $path = 'database/backup/insert.sql';
-        DB::unprepared(file_get_contents($path));
+        \DB::unprepared(file_get_contents($path));
         $this->command->info('backup seeded!');
     }
 }
