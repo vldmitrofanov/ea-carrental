@@ -30,10 +30,10 @@ variables:
   # AUTO_DEVOPS_DOMAIN is the application deployment domain and should be set as a variable at the group or project level.
   # AUTO_DEVOPS_DOMAIN: domain.example.com
 
-  POSTGRES_USER: user
-  POSTGRES_PASSWORD: testing-password
-  POSTGRES_ENABLED: "true"
-  POSTGRES_DB: $CI_ENVIRONMENT_SLUG
+  # POSTGRES_USER: user
+  # POSTGRES_PASSWORD: testing-password
+  # POSTGRES_ENABLED: "true"
+  # POSTGRES_DB: $CI_ENVIRONMENT_SLUG
 
 stages:
   - build
@@ -57,7 +57,8 @@ build:
   only:
     - branches
 
-test:
+# no test for now..
+.test:
   services:
     - postgres:latest
   variables:
@@ -71,7 +72,8 @@ test:
   only:
     - branches
 
-codequality:
+# disabled quality check
+.codequality:
   image: docker:latest
   variables:
     DOCKER_DRIVER: overlay2
