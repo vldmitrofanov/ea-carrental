@@ -316,7 +316,7 @@ production:
       auto_chart_name=${auto_chart_name%.tgz}
     else
       auto_chart="chart/php"
-      auto_chart_name="php"
+      auto_chart_name="chart/php"
     fi
 
     helm init --client-only
