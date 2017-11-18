@@ -315,7 +315,7 @@ production:
       auto_chart_name=$(basename $auto_chart)
       auto_chart_name=${auto_chart_name%.tgz}
     else
-      auto_chart="chart"
+      auto_chart="chart/php"
       auto_chart_name="php"
     fi
 
