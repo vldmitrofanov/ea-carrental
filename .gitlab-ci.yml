@@ -265,6 +265,8 @@ production:
       --set application.database_url="$DATABASE_URL" \
       --set service.url="$CI_ENVIRONMENT_URL" \
       --set replicaCount="$replicas" \
+      --set env.APP_KEY="$APP_KEY" \
+      --set env.DB_PASSWORD="$DB_PASSWORD" \
       --set postgresql.enabled="$postgres_enabled" \
       --set postgresql.nameOverride="postgres" \
       --set postgresql.postgresUser="$POSTGRES_USER" \

@@ -44,20 +44,30 @@ spec:
         env:
         - name: DATABASE_URL
           value: {{ .Values.application.database_url | quote }}
+        - name: APP_KEY
+          value: {{ .Values.env.APP_KEY | quote }}
+        - name: DB_HOST
+          value: {{ .Values.env.DB_HOST | quote }}
+        - name: DB_DATABASE
+          value: {{ .Values.env.DB_DATABASE | quote }}
+        - name: DB_USERNAME
+          value: {{ .Values.env.DB_USERNAME | quote }}
+        - name: DB_PASSWORD
+          value: {{ .Values.env.DB_PASSWORD | quote }}
         ports:
         - name: "{{ .Values.service.name }}"
           containerPort: {{ .Values.service.internalPort }}
-        livenessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.internalPort }}
-          initialDelaySeconds: 15
-          timeoutSeconds: 15
-        readinessProbe:
-          httpGet:
-            path: /
-            port: {{ .Values.service.internalPort }}
-          initialDelaySeconds: 5
-          timeoutSeconds: 3
+        # livenessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: {{ .Values.service.internalPort }}
+        #   initialDelaySeconds: 15
+        #   timeoutSeconds: 15
+        # readinessProbe:
+        #   httpGet:
+        #     path: /
+        #     port: {{ .Values.service.internalPort }}
+        #   initialDelaySeconds: 5
+        #   timeoutSeconds: 3
         resources:
 {{ toYaml .Values.resources | indent 12 }}
