@@ -26,6 +26,7 @@ postgresql:
   enabled: false
 env:
   APP_KEY: 
+  APP_DEBUG: 
   DB_HOST: carrental-mysqldb-mysql
   DB_PORT: 3306
   DB_DATABASE: ebdb

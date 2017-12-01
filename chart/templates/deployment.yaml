@@ -46,6 +46,8 @@ spec:
           value: {{ .Values.application.database_url | quote }}
         - name: APP_KEY
           value: {{ .Values.env.APP_KEY | quote }}
+        - name: APP_DEBUG
+          value: {{ .Values.env.APP_DEBUG | quote }}  
         - name: DB_HOST
           value: {{ .Values.env.DB_HOST | quote }}
         - name: DB_DATABASE
