@@ -254,9 +254,9 @@ production:
       replicas="$new_replicas"
     fi
 
-    prod = false
-    if [[ "$CI_ENVIRONMENT_SLUG" == "production" ]]; then
-      prod = true
+    prod="false"
+    if [[ "$name" == "production" ]]; then
+      prod="true"
     fi
 
     helm upgrade --install \
