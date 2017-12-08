@@ -24,6 +24,8 @@ service:
   internalPort: 80
 postgresql:
   enabled: false
+prod:
+  enabled: false
 env:
   APP_KEY: 
   APP_DEBUG: 

@@ -254,10 +254,16 @@ production:
       replicas="$new_replicas"
     fi
 
+    prod = false
+    if [[ "$CI_ENVIRONMENT_SLUG" == "production" ]]; then
+      prod = true
+    fi
+
     helm upgrade --install \
       --wait \
       --set service.enabled="$service_enabled" \
       --set releaseOverride="$CI_ENVIRONMENT_SLUG" \
+      --set prod.enabled="$prod" \
       --set image.repository="$CI_APPLICATION_REPOSITORY" \
       --set image.tag="$CI_APPLICATION_TAG" \
       --set image.pullPolicy=IfNotPresent \
